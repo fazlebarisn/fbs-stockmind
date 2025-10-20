@@ -69,18 +69,12 @@ defined('ABSPATH') or die('Nice Try!');
                          data-reminder-id="<?php echo esc_attr($reminder['id']); ?>"
                          data-status="<?php echo esc_attr($reminder['is_active'] ? 'active' : 'inactive'); ?>">
                         
-                        <div class="fbs-reminder-image">
-                            <?php if ($reminder['product_image']): ?>
-                                <img src="<?php echo esc_url($reminder['product_image']); ?>" alt="<?php echo esc_attr($reminder['product_name']); ?>" />
-                            <?php else: ?>
-                                <div class="fbs-no-image">📦</div>
-                            <?php endif; ?>
-                        </div>
-                        
                         <div class="fbs-reminder-details">
                             <div class="fbs-reminder-header">
                                 <h3 class="fbs-reminder-product-name">
-                                    <?php echo esc_html($reminder['product_name']); ?>
+                                    <a href="<?php echo esc_url(get_permalink($reminder['product_id'])); ?>" target="_blank">
+                                        <?php echo esc_html($reminder['product_name']); ?>
+                                    </a>
                                 </h3>
                                 <div class="fbs-reminder-status">
                                     <span class="fbs-status-badge fbs-status-<?php echo esc_attr($reminder['is_active'] ? 'active' : 'inactive'); ?>">
@@ -134,12 +128,6 @@ defined('ABSPATH') or die('Nice Try!');
                         </div>
                         
                         <div class="fbs-reminder-actions">
-                            <a href="<?php echo esc_url(get_permalink($reminder['product_id'])); ?>" 
-                               target="_blank" 
-                               class="fbs-btn fbs-btn-sm fbs-btn-secondary">
-                                <?php esc_html_e('View Product', 'fbs-stockmind'); ?>
-                            </a>
-                            
                             <?php if ($reminder['is_active']): ?>
                                 <button type="button" 
                                         class="fbs-btn fbs-btn-sm fbs-btn-warning fbs-deactivate-reminder" 
