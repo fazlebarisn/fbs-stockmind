@@ -1,0 +1,1121 @@
+# Copyright (C) 2024 Fazle Bari
+# This file is distributed under the same license as the FBS StockMind package.
+msgid ""
+msgstr ""
+"Project-Id-Version: FBS StockMind 1.0.0\n"
+"Report-Msgid-Bugs-To: https://www.cansoft.com/\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2024-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: fbs-stockmind.php:25
+msgid "FBS StockMind"
+msgstr ""
+
+#: fbs-stockmind.php:26
+msgid "requires WooCommerce to be installed and active."
+msgstr ""
+
+#: inc/classes/fbs-stockmind/class-fbs-stockmind.php:45
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: inc/classes/fbs-stockmind/class-fbs-stockmind.php:50
+msgid "Invalid action."
+msgstr ""
+
+#: inc/classes/fbs-stockmind/class-fbs-stockmind.php:55
+msgid "Security check failed."
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:25
+msgid "StockMind"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:35
+msgid "Dashboard"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:45
+msgid "Predictions"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:55
+msgid "Suppliers"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:65
+msgid "Customer Reminders"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:75
+msgid "Settings"
+msgstr ""
+
+#: inc/classes/admin/class-menu.php:85
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:8
+msgid "StockMind Dashboard"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:12
+msgid "Predictive inventory management and smart replenishment alerts"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:18
+msgid "Refresh Predictions"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:25
+msgid "Products Needing Attention"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:33
+msgid "Active Customer Reminders"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:41
+msgid "Active Suppliers"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:49
+msgid "Low Stock Products"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:58
+msgid "Recent Predictions"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:62
+msgid "View All"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:66
+msgid "No products need immediate attention"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:85
+msgid "in stock"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:88
+msgid "Out of stock predicted"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:92
+msgid "%d day until runout"
+msgid_plural "%d days until runout"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/templates/admin/dashboard.php:100
+msgid "Create Purchase Draft"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:103
+msgid "Dismiss"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:112
+msgid "Upcoming Replenishments"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:116
+msgid "View All"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:120
+msgid "No customer reminders set"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:145
+msgid "reminder sent"
+msgid_plural "reminders sent"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/templates/admin/dashboard.php:147
+msgid "No reminders sent yet"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:155
+msgid "View Order"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:163
+msgid "Quick Actions"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:168
+msgid "Manage Suppliers"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:169
+msgid "Add and configure supplier information"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:175
+msgid "Plugin Settings"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:176
+msgid "Configure prediction and reminder settings"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:182
+msgid "Manage Products"
+msgstr ""
+
+#: inc/templates/admin/dashboard.php:183
+msgid "Configure replenishable products and suppliers"
+msgstr ""
+
+#: inc/templates/admin/settings.php:8
+msgid "StockMind Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:12
+msgid "Configure prediction algorithms, reminder settings, and email preferences"
+msgstr ""
+
+#: inc/templates/admin/settings.php:20
+msgid "General"
+msgstr ""
+
+#: inc/templates/admin/settings.php:25
+msgid "Predictions"
+msgstr ""
+
+#: inc/templates/admin/settings.php:30
+msgid "Reminders"
+msgstr ""
+
+#: inc/templates/admin/settings.php:35
+msgid "Email"
+msgstr ""
+
+#: inc/templates/admin/settings.php:42
+msgid "General Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:45
+msgid "Alert Window (Days)"
+msgstr ""
+
+#: inc/templates/admin/settings.php:52
+msgid "How many days in advance to show low stock alerts"
+msgstr ""
+
+#: inc/templates/admin/settings.php:57
+msgid "Default Lead Time (Days)"
+msgstr ""
+
+#: inc/templates/admin/settings.php:64
+msgid "Default time needed to restock products (can be overridden per supplier)"
+msgstr ""
+
+#: inc/templates/admin/settings.php:70
+msgid "Enable Admin Alerts"
+msgstr ""
+
+#: inc/templates/admin/settings.php:73
+msgid "Show low stock alerts in the admin dashboard"
+msgstr ""
+
+#: inc/templates/admin/settings.php:80
+msgid "Prediction Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:83
+msgid "Prediction Accuracy Threshold"
+msgstr ""
+
+#: inc/templates/admin/settings.php:90
+msgid "Minimum confidence level for predictions (0.1 = 10%, 1.0 = 100%)"
+msgstr ""
+
+#: inc/templates/admin/settings.php:95
+msgid "How Predictions Work"
+msgstr ""
+
+#: inc/templates/admin/settings.php:97
+msgid "Analyzes sales data from the last 90 days"
+msgstr ""
+
+#: inc/templates/admin/settings.php:98
+msgid "Calculates average daily sales rate"
+msgstr ""
+
+#: inc/templates/admin/settings.php:99
+msgid "Factors in supplier lead times"
+msgstr ""
+
+#: inc/templates/admin/settings.php:100
+msgid "Updates predictions daily via cron job"
+msgstr ""
+
+#: inc/templates/admin/settings.php:106
+msgid "Customer Reminder Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:109
+msgid "Enable Customer Reminders"
+msgstr ""
+
+#: inc/templates/admin/settings.php:112
+msgid "Allow customers to set up replenishment reminders"
+msgstr ""
+
+#: inc/templates/admin/settings.php:117
+msgid "Reminder Advance Days"
+msgstr ""
+
+#: inc/templates/admin/settings.php:124
+msgid "How many days before predicted runout to send reminders"
+msgstr ""
+
+#: inc/templates/admin/settings.php:129
+msgid "Maximum Reminder Attempts"
+msgstr ""
+
+#: inc/templates/admin/settings.php:136
+msgid "Maximum number of reminder emails to send per customer"
+msgstr ""
+
+#: inc/templates/admin/settings.php:143
+msgid "Email Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:146
+msgid "From Name"
+msgstr ""
+
+#: inc/templates/admin/settings.php:151
+msgid "Name to use in reminder emails"
+msgstr ""
+
+#: inc/templates/admin/settings.php:156
+msgid "From Email Address"
+msgstr ""
+
+#: inc/templates/admin/settings.php:161
+msgid "Email address to use for reminder emails"
+msgstr ""
+
+#: inc/templates/admin/settings.php:166
+msgid "Email Templates"
+msgstr ""
+
+#: inc/templates/admin/settings.php:168
+msgid "Email templates can be customized by editing the files in the templates/email directory."
+msgstr ""
+
+#: inc/templates/admin/settings.php:175
+msgid "Save Settings"
+msgstr ""
+
+#: inc/templates/admin/settings.php:179
+msgid "Reset to Defaults"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:12
+msgid "Enable Customer Reminders"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:15
+msgid "Allow customers to set up replenishment reminders for this product"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:20
+msgid "Supplier"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:23
+msgid "Select Supplier"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:30
+msgid "days"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:33
+msgid "Select the supplier for this product to calculate accurate lead times"
+msgstr ""
+
+#: inc/templates/admin/product-meta-box.php:38
+msgid "Manage Suppliers"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:8
+msgid "Suppliers"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:12
+msgid "Manage your suppliers and their lead times for accurate predictions"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:18
+msgid "Add New Supplier"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:25
+msgid "No Suppliers Found"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:27
+msgid "Add your first supplier to start getting accurate stock predictions"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:29
+msgid "Add Your First Supplier"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:40
+msgid "Active"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:42
+msgid "Inactive"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:48
+msgid "Lead Time:"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:49
+msgid "days"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:54
+msgid "Email:"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:61
+msgid "Phone:"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:75
+msgid "Edit"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:78
+msgid "View Products"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:81
+msgid "Delete"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:90
+msgid "Add New Supplier"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:100
+msgid "Supplier Name"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:107
+msgid "Lead Time (Days)"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:114
+msgid "Email Address"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:121
+msgid "Phone Number"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:128
+msgid "Address"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:135
+msgid "Notes"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:142
+msgid "Active Supplier"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:149
+msgid "Cancel"
+msgstr ""
+
+#: inc/templates/admin/suppliers.php:153
+msgid "Save Supplier"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:12
+msgid "Lead Time (Days)"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:17
+msgid "Average time needed to restock products from this supplier"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:22
+msgid "Email Address"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:27
+msgid "Primary contact email for this supplier"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:32
+msgid "Phone Number"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:37
+msgid "Contact phone number for this supplier"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:42
+msgid "Active Supplier"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:45
+msgid "Uncheck to disable this supplier without deleting"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:50
+msgid "Address"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:55
+msgid "Physical address or shipping information"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:60
+msgid "Notes"
+msgstr ""
+
+#: inc/templates/admin/supplier-meta-box.php:65
+msgid "Additional notes about this supplier (minimum order quantities, special terms, etc.)"
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:12
+msgid "Smart Replenishment Reminders"
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:18
+msgid "Never run out of your favorite products! Set up smart reminders and we'll notify you when it's time to reorder."
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:40
+msgid "Quantity: %d"
+msgid_plural "Quantity: %d"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/templates/frontend/reminder-form.php:50
+msgid "Enable Reminder"
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:58
+msgid "You can manage your reminders anytime from your account page."
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:70
+msgid "Setting..."
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:90
+msgid "Reminder Set!"
+msgstr ""
+
+#: inc/templates/frontend/reminder-form.php:95
+msgid "Enable Reminder"
+msgstr ""
+
+#: inc/templates/email/reminder.php:25
+msgid "Time to reorder: %s"
+msgstr ""
+
+#: inc/templates/email/reminder.php:30
+msgid "Hello!"
+msgstr ""
+
+#: inc/templates/email/reminder.php:32
+msgid "Based on your previous purchase patterns, it looks like you might be running low on one of your favorite products. We thought you'd like to know!"
+msgstr ""
+
+#: inc/templates/email/reminder.php:45
+msgid "Price:"
+msgstr ""
+
+#: inc/templates/email/reminder.php:46
+msgid "This product is predicted to run out of stock soon based on your purchase history."
+msgstr ""
+
+#: inc/templates/email/reminder.php:52
+msgid "Order Now"
+msgstr ""
+
+#: inc/templates/email/reminder.php:56
+msgid "Don't worry if you're not ready to order yet - we'll send you another reminder if needed. You can also manage your reminders anytime from your account page."
+msgstr ""
+
+#: inc/templates/email/reminder.php:58
+msgid "Thanks for being a valued customer!"
+msgstr ""
+
+#: inc/templates/email/reminder.php:60
+msgid "Best regards,"
+msgstr ""
+
+#: inc/templates/email/reminder.php:67
+msgid "This email was sent because you requested a replenishment reminder for this product."
+msgstr ""
+
+#: inc/templates/email/reminder.php:71
+msgid "Manage your reminders"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:8
+msgid "Customer Reminders"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:12
+msgid "Manage customer replenishment reminders and track their effectiveness"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:18
+msgid "Refresh"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:25
+msgid "Status:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:27
+msgid "All Reminders"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:29
+msgid "Active"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:31
+msgid "Inactive"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:36
+msgid "Search:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:37
+msgid "Search by email or product name..."
+msgstr ""
+
+#: inc/templates/admin/reminders.php:45
+msgid "No Reminders Found"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:47
+msgid "Customer reminders will appear here once customers start setting them up"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:60
+msgid "Active"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:62
+msgid "Inactive"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:68
+msgid "Customer:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:75
+msgid "Order:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:82
+msgid "Created:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:89
+msgid "Last Reminder:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:96
+msgid "Reminders Sent:"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:108
+msgid "View Product"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:112
+msgid "Deactivate"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:116
+msgid "Activate"
+msgstr ""
+
+#: inc/templates/admin/reminders.php:120
+msgid "Delete"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:8
+msgid "Stock Predictions"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:12
+msgid "AI-powered predictions for when products will run out of stock"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:18
+msgid "Refresh Predictions"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:25
+msgid "Urgency:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:27
+msgid "All Predictions"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:29
+msgid "Urgent (≤7 days)"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:31
+msgid "Warning (8-14 days)"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:33
+msgid "Normal (>14 days)"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:40
+msgid "Search:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:41
+msgid "Search by product name..."
+msgstr ""
+
+#: inc/templates/admin/predictions.php:49
+msgid "No Predictions Found"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:51
+msgid "All products are well-stocked! Predictions will appear here when products need attention."
+msgstr ""
+
+#: inc/templates/admin/predictions.php:70
+msgid "Out of Stock"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:72
+msgid "Urgent"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:74
+msgid "Warning"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:76
+msgid "Normal"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:85
+msgid "Current Stock:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:86
+msgid "units"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:91
+msgid "Predicted Runout:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:96
+msgid "Days Until Runout:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:99
+msgid "Already out of stock"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:103
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/templates/admin/predictions.php:108
+msgid "Last Calculated:"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:117
+msgid "View Product"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:121
+msgid "Create Purchase Draft"
+msgstr ""
+
+#: inc/templates/admin/predictions.php:125
+msgid "Dismiss"
+msgstr ""
+
+#: inc/functions.php:25
+msgid "Never"
+msgstr ""
+
+#: inc/functions.php:30
+msgid "ago"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:25
+msgid "StockMind Settings"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:45
+msgid "Enable Customer Reminders"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:48
+msgid "Allow customers to set up replenishment reminders for this product"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:53
+msgid "Supplier"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:60
+msgid "Select Supplier"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:67
+msgid "days"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:70
+msgid "Select the supplier for this product to calculate accurate lead times"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:75
+msgid "Manage Suppliers"
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:95
+msgid "Invalid prediction ID."
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:101
+msgid "Prediction dismissed successfully."
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:103
+msgid "Failed to dismiss prediction."
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:115
+msgid "Invalid product ID."
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:121
+msgid "Product not found."
+msgstr ""
+
+#: inc/classes/features/class-predictor.php:125
+msgid "Purchase draft created successfully."
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:25
+msgid "Suppliers"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:26
+msgid "Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:27
+msgid "Add New Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:28
+msgid "Add New Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:29
+msgid "Edit Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:30
+msgid "New Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:31
+msgid "View Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:32
+msgid "Search Suppliers"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:33
+msgid "No suppliers found"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:34
+msgid "No suppliers found in trash"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:55
+msgid "Supplier Details"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:65
+msgid "Lead Time (Days)"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:70
+msgid "Average time needed to restock products from this supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:75
+msgid "Email Address"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:80
+msgid "Primary contact email for this supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:85
+msgid "Phone Number"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:90
+msgid "Contact phone number for this supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:95
+msgid "Active Supplier"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:98
+msgid "Uncheck to disable this supplier without deleting"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:103
+msgid "Address"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:108
+msgid "Physical address or shipping information"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:113
+msgid "Notes"
+msgstr ""
+
+#: inc/classes/features/class-supplier-manager.php:118
+msgid "Additional notes about this supplier (minimum order quantities, special terms, etc.)"
+msgstr ""
+
+#: inc/classes/features/class-customer-reminders.php:45
+msgid "Invalid data provided."
+msgstr ""
+
+#: inc/classes/features/class-customer-reminders.php:49
+msgid "Invalid email address."
+msgstr ""
+
+#: inc/classes/features/class-customer-reminders.php:55
+msgid "Reminder set successfully!"
+msgstr ""
+
+#: inc/classes/features/class-customer-reminders.php:57
+msgid "Reminder already exists or failed to set."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:25
+msgid "Insufficient permissions."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:31
+msgid "Invalid prediction ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:37
+msgid "Prediction dismissed successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:39
+msgid "Failed to dismiss prediction."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:51
+msgid "Invalid product ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:57
+msgid "Product not found."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:61
+msgid "Purchase draft created successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:75
+msgid "Supplier name is required."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:87
+msgid "Supplier updated successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:89
+msgid "Failed to update supplier."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:95
+msgid "Supplier created successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:97
+msgid "Failed to create supplier."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:109
+msgid "Invalid supplier ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:115
+msgid "Supplier deleted successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:117
+msgid "Failed to delete supplier."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:131
+msgid "Invalid supplier ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:137
+msgid "Supplier not found."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:151
+msgid "Invalid reminder ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:157
+msgid "Reminder deactivated successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:159
+msgid "Failed to deactivate reminder."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:173
+msgid "Invalid reminder ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:179
+msgid "Reminder activated successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:181
+msgid "Failed to activate reminder."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:195
+msgid "Invalid reminder ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:201
+msgid "Reminder deleted successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:203
+msgid "Failed to delete reminder."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:213
+msgid "Predictions refreshed successfully."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:225
+msgid "Invalid notice ID."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:231
+msgid "Notice dismissed."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:245
+msgid "Invalid data provided."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:249
+msgid "Invalid email address."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:255
+msgid "Reminder set successfully!"
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:257
+msgid "Reminder already exists or failed to set."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:265
+msgid "Security check failed."
+msgstr ""
+
+#: inc/classes/ajax/class-ajax-handler.php:275
+msgid "Insufficient permissions."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:25
+msgid "Loading..."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:26
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:27
+msgid "Operation completed successfully."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:28
+msgid "Are you sure?"
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:29
+msgid "Are you sure you want to delete this item?"
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:30
+msgid "Are you sure you want to deactivate this item?"
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:45
+msgid "Loading..."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:46
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: inc/classes/admin/class-assets.php:47
+msgid "Reminder set successfully!"
+msgstr ""

@@ -1,0 +1,374 @@
+/**
+ * FBS StockMind Frontend Styles
+ * Beautiful, non-intrusive reminder forms
+ *
+ * @package fbs-stockmind
+ * @since 1.0.0
+ * @author Fazle Bari <fazlebarisn@gmail.com>
+ */
+
+/* Reminder Form Styles */
+.fbs-reminder-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.fbs-reminder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.fbs-reminder-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.fbs-reminder-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fbs-reminder-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fbs-reminder-icon {
+    font-size: 24px;
+}
+
+.fbs-reminder-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.fbs-reminder-close:hover {
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+.fbs-reminder-body {
+    padding: 24px;
+}
+
+.fbs-reminder-description {
+    margin: 0 0 20px 0;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.fbs-reminder-products {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.fbs-reminder-product {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.fbs-reminder-product:hover {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fbs-product-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.fbs-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fbs-no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    font-size: 24px;
+}
+
+.fbs-product-details {
+    flex: 1;
+}
+
+.fbs-product-name {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.fbs-product-name a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.fbs-product-name a:hover {
+    color: #667eea;
+}
+
+.fbs-product-quantity {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.fbs-product-actions {
+    flex-shrink: 0;
+}
+
+.fbs-reminder-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.fbs-reminder-note {
+    margin: 0;
+    text-align: center;
+    color: #6c757d;
+}
+
+/* Button Styles */
+.fbs-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+}
+
+.fbs-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fbs-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.fbs-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.fbs-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.fbs-btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.fbs-btn-icon {
+    font-size: 16px;
+}
+
+/* Toast Notifications */
+.fbs-toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fbs-toast {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+.fbs-toast-success {
+    border-left: 4px solid #28a745;
+}
+
+.fbs-toast-error {
+    border-left: 4px solid #dc3545;
+}
+
+.fbs-toast-warning {
+    border-left: 4px solid #ffc107;
+}
+
+.fbs-toast-info {
+    border-left: 4px solid #17a2b8;
+}
+
+.fbs-toast-icon {
+    font-size: 20px;
+}
+
+.fbs-toast-message {
+    flex: 1;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.fbs-toast-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.fbs-toast-close:hover {
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fbs-reminder-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .fbs-reminder-product {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .fbs-product-actions {
+        width: 100%;
+    }
+    
+    .fbs-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .fbs-toast {
+        min-width: 280px;
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .fbs-reminder-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        max-height: none;
+    }
+    
+    .fbs-reminder-header {
+        padding: 20px 16px 12px;
+    }
+    
+    .fbs-reminder-body {
+        padding: 16px;
+    }
+    
+    .fbs-reminder-footer {
+        padding: 12px 16px;
+    }
+}
