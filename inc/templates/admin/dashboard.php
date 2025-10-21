@@ -116,9 +116,6 @@ defined('ABSPATH') or die('Nice Try!');
                                     </div>
                                 </div>
                                 <div class="fbs-prediction-actions">
-                                    <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-primary fbs-create-purchase-draft" data-product-id="<?php echo esc_attr($prediction['product_id']); ?>">
-                                        <?php esc_html_e('Create Purchase Draft', 'fbs-stockmind'); ?>
-                                    </button>
                                     <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction" data-prediction-id="<?php echo esc_attr($prediction['id']); ?>">
                                         <?php esc_html_e('Dismiss', 'fbs-stockmind'); ?>
                                     </button>

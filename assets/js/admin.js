@@ -86,11 +86,6 @@
                 FBSStockMindAdmin.dismissPrediction(predictionId);
             });
 
-            // Create purchase draft
-            $(document).on('click', '.fbs-create-purchase-draft', function() {
-                const productId = $(this).data('product-id');
-                FBSStockMindAdmin.createPurchaseDraft(productId);
-            });
 
             // Delete supplier
             $(document).on('click', '.fbs-delete-supplier', function() {
@@ -328,30 +323,6 @@
             });
         },
 
-        /**
-         * Create purchase draft
-         */
-        createPurchaseDraft: function(productId) {
-            $.ajax({
-                url: fbsStockMind.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'fbs_stockmind_create_purchase_draft',
-                    nonce: fbsStockMind.nonce,
-                    product_id: productId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        FBSStockMindAdmin.showToast('success', response.data);
-                    } else {
-                        FBSStockMindAdmin.showToast('error', response.data);
-                    }
-                },
-                error: function() {
-                    FBSStockMindAdmin.showToast('error', fbsStockMind.strings.error);
-                }
-            });
-        },
 
         /**
          * Deactivate reminder

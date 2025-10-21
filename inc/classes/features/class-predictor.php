@@ -612,33 +612,6 @@ class Predictor
         }
     }
 
-    /**
-     * Handle AJAX create purchase draft
-     *
-     * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
-     */
-    public function handle_create_purchase_draft()
-    {
-        if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(__('Insufficient permissions.', 'fbs-stockmind'));
-        }
-
-        $product_id = absint($_POST['product_id'] ?? 0);
-        
-        if (!$product_id) {
-            wp_send_json_error(__('Invalid product ID.', 'fbs-stockmind'));
-        }
-
-        $product = wc_get_product($product_id);
-        if (!$product) {
-            wp_send_json_error(__('Product not found.', 'fbs-stockmind'));
-        }
-
-        // Create a draft purchase order (this would integrate with your purchase order system)
-        // For now, we'll just return success
-        wp_send_json_success(__('Purchase draft created successfully.', 'fbs-stockmind'));
-    }
 
     /**
      * Get confidence level for display

@@ -167,11 +167,6 @@ defined('ABSPATH') or die('Nice Try!');
                                 <?php esc_html_e('View Product', 'fbs-stockmind'); ?>
                             </a>
                             
-                            <button type="button" 
-                                    class="fbs-btn fbs-btn-sm fbs-btn-primary fbs-create-purchase-draft" 
-                                    data-product-id="<?php echo esc_attr($prediction['product_id']); ?>">
-                                <?php esc_html_e('Create Purchase Draft', 'fbs-stockmind'); ?>
-                            </button>
                             
                             <button type="button" 
                                     class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction" 

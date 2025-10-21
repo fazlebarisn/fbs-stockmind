@@ -38,7 +38,6 @@ class Ajax_Handler
     {
         // Admin AJAX actions
         add_action('wp_ajax_fbs_stockmind_dismiss_prediction', [$this, 'handle_dismiss_prediction']);
-        add_action('wp_ajax_fbs_stockmind_create_purchase_draft', [$this, 'handle_create_purchase_draft']);
         add_action('wp_ajax_fbs_stockmind_save_supplier', [$this, 'handle_save_supplier']);
         add_action('wp_ajax_fbs_stockmind_delete_supplier', [$this, 'handle_delete_supplier']);
         add_action('wp_ajax_fbs_stockmind_get_supplier', [$this, 'handle_get_supplier']);
@@ -80,32 +79,6 @@ class Ajax_Handler
         }
     }
 
-    /**
-     * Handle create purchase draft
-     *
-     * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
-     */
-    public function handle_create_purchase_draft()
-    {
-        $this->verify_nonce();
-        $this->check_admin_permissions();
-
-        $product_id = absint($_POST['product_id'] ?? 0);
-        
-        if (!$product_id) {
-            wp_send_json_error(__('Invalid product ID.', 'fbs-stockmind'));
-        }
-
-        $product = wc_get_product($product_id);
-        if (!$product) {
-            wp_send_json_error(__('Product not found.', 'fbs-stockmind'));
-        }
-
-        // Here you would integrate with your purchase order system
-        // For now, we'll just return success
-        wp_send_json_success(__('Purchase draft created successfully.', 'fbs-stockmind'));
-    }
 
     /**
      * Handle save supplier
