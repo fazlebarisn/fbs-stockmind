@@ -46,6 +46,7 @@ class Ajax_Handler
         add_action('wp_ajax_fbs_stockmind_activate_reminder', [$this, 'handle_activate_reminder']);
         add_action('wp_ajax_fbs_stockmind_delete_reminder', [$this, 'handle_delete_reminder']);
         add_action('wp_ajax_fbs_stockmind_refresh_predictions', [$this, 'handle_refresh_predictions']);
+        add_action('wp_ajax_fbs_stockmind_calculate_predictions', [$this, 'handle_calculate_predictions']);
         add_action('wp_ajax_fbs_stockmind_dismiss_notice', [$this, 'handle_dismiss_notice']);
         
         // Frontend AJAX actions
@@ -308,6 +309,24 @@ class Ajax_Handler
         
         wp_send_json_success(__('Predictions refreshed successfully.', 'fbs-stockmind'));
     }
+
+    /**
+     * Handle calculate predictions
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function handle_calculate_predictions()
+    {
+        $this->verify_nonce();
+        $this->check_admin_permissions();
+
+        $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
+        $predictor->calculate_all_predictions();
+        
+        wp_send_json_success(__('Predictions calculated successfully.', 'fbs-stockmind'));
+    }
+
 
     /**
      * Handle dismiss notice

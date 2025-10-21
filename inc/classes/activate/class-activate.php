@@ -26,6 +26,7 @@ class Activate
     protected function __construct()
     {
         $this->create_database_tables();
+        $this->migrate_database_tables();
         $this->set_default_options();
         $this->create_supplier_post_type();
         $this->flush_rewrite_rules();
@@ -49,6 +50,7 @@ class Activate
             id bigint(20) NOT NULL AUTO_INCREMENT,
             product_id bigint(20) NOT NULL,
             predicted_runout_date date NOT NULL,
+            confidence_score decimal(3,2) DEFAULT 0.00,
             calculated_at datetime NOT NULL,
             is_dismissed tinyint(1) NOT NULL DEFAULT 0,
             dismissed_at datetime NULL,
@@ -56,6 +58,7 @@ class Activate
             PRIMARY KEY (id),
             KEY product_id (product_id),
             KEY predicted_runout_date (predicted_runout_date),
+            KEY confidence_score (confidence_score),
             KEY is_dismissed (is_dismissed)
         ) $charset_collate;";
 
@@ -104,6 +107,35 @@ class Activate
 
         // Store database version
         update_option('fbs_stockmind_db_version', '1.0.0');
+    }
+
+    /**
+     * Migrate existing database tables
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    private function migrate_database_tables()
+    {
+        global $wpdb;
+
+        $predictions_table = fbs_stockmind_get_table_name('predictions');
+        
+        // Check if confidence_score column exists
+        $column_exists = $wpdb->get_results($wpdb->prepare(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+             WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'confidence_score'",
+            DB_NAME,
+            $predictions_table
+        ));
+
+        if (empty($column_exists)) {
+            // Add confidence_score column to existing table
+            $wpdb->query("ALTER TABLE $predictions_table ADD COLUMN confidence_score decimal(3,2) DEFAULT 0.00 AFTER predicted_runout_date");
+            $wpdb->query("ALTER TABLE $predictions_table ADD KEY confidence_score (confidence_score)");
+            
+            fbs_stockmind_log('Added confidence_score column to predictions table');
+        }
     }
 
     /**

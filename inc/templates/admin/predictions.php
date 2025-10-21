@@ -23,6 +23,10 @@ defined('ABSPATH') or die('Nice Try!');
             </p>
         </div>
         <div class="fbs-header-actions">
+            <button type="button" class="fbs-btn fbs-btn-secondary" id="fbs-calculate-predictions">
+                <span class="fbs-btn-icon">⚡</span>
+                <?php esc_html_e('Calculate Now', 'fbs-stockmind'); ?>
+            </button>
             <button type="button" class="fbs-btn fbs-btn-primary" id="fbs-refresh-predictions">
                 <span class="fbs-btn-icon">🔄</span>
                 <?php esc_html_e('Refresh Predictions', 'fbs-stockmind'); ?>
@@ -134,6 +138,15 @@ defined('ABSPATH') or die('Nice Try!');
                                             );
                                         }
                                         ?>
+                                    </span>
+                                </div>
+                                
+                                <div class="fbs-meta-item">
+                                    <span class="fbs-meta-label"><?php esc_html_e('Confidence:', 'fbs-stockmind'); ?></span>
+                                    <span class="fbs-meta-value fbs-confidence-value">
+                                        <span class="fbs-confidence-badge fbs-confidence-<?php echo esc_attr($predictor->get_confidence_level($prediction['confidence_score'])); ?>">
+                                            <?php echo esc_html(number_format($prediction['confidence_score'] * 100, 0)); ?>%
+                                        </span>
                                     </span>
                                 </div>
                                 

@@ -113,6 +113,7 @@ class Menu
             'fbs-stockmind-settings',
             [$this, 'render_settings_page']
         );
+
     }
 
     /**
@@ -196,4 +197,5 @@ class Menu
     {
         Settings::get_instance()->render();
     }
+
 }

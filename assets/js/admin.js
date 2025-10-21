@@ -116,6 +116,11 @@
                 FBSStockMindAdmin.deleteReminder(reminderId);
             });
 
+            // Calculate predictions
+            $('#fbs-calculate-predictions').on('click', function() {
+                FBSStockMindAdmin.calculatePredictions();
+            });
+
             // Refresh predictions
             $('#fbs-refresh-predictions').on('click', function() {
                 FBSStockMindAdmin.refreshPredictions();
@@ -432,6 +437,36 @@
                 },
                 error: function() {
                     FBSStockMindAdmin.showToast('error', fbsStockMind.strings.error);
+                }
+            });
+        },
+
+        /**
+         * Calculate predictions
+         */
+        calculatePredictions: function() {
+            $('#fbs-calculate-predictions').prop('disabled', true).html('<span class="fbs-btn-icon">⏳</span> Calculating...');
+            
+            $.ajax({
+                url: fbsStockMind.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'fbs_stockmind_calculate_predictions',
+                    nonce: fbsStockMind.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        FBSStockMindAdmin.showToast('success', response.data);
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        FBSStockMindAdmin.showToast('error', response.data);
+                    }
+                },
+                error: function() {
+                    FBSStockMindAdmin.showToast('error', fbsStockMind.strings.error);
+                },
+                complete: function() {
+                    $('#fbs-calculate-predictions').prop('disabled', false).html('<span class="fbs-btn-icon">⚡</span> Calculate Now');
                 }
             });
         },
