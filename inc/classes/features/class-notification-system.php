@@ -78,10 +78,11 @@ class Notification_System
         $urgent_count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $predictions_table p
              LEFT JOIN {$wpdb->posts} pr ON p.product_id = pr.ID
-             WHERE p.is_dismissed = 0 
-             AND pr.post_status = 'publish'
-             AND pr.post_type = 'product'
+             WHERE p.is_dismissed = %d 
+             AND pr.post_status = %s
+             AND pr.post_type = %s
              AND p.predicted_runout_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)",
+            0, 'publish', 'product'
         ));
 
         if ($urgent_count > 0) {

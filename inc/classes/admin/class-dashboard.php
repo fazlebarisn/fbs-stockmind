@@ -95,7 +95,7 @@ class Dashboard
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function get_recent_predictions($limit = 5)
+    public function get_recent_predictions($limit = 5)
     {
         global $wpdb;
         
@@ -220,10 +220,7 @@ class Dashboard
      */
     private function calculate_days_until_runout($runout_date)
     {
-        $today = new \DateTime();
-        $runout = new \DateTime($runout_date);
-        $diff = $today->diff($runout);
-        
-        return $diff->days;
+        // Use the same calculation as the predictions page for consistency
+        return (strtotime($runout_date) - time()) / DAY_IN_SECONDS;
     }
 }
