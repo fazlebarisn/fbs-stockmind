@@ -76,6 +76,7 @@ defined('ABSPATH') or die('Nice Try!');
                     ?>
                     <div class="fbs-prediction-item fbs-prediction-<?php echo esc_attr($urgency_class); ?>" 
                          data-product-id="<?php echo esc_attr($prediction['product_id']); ?>"
+                         data-prediction-id="<?php echo esc_attr($prediction['id']); ?>"
                          data-urgency="<?php echo esc_attr($urgency_class); ?>">
                         
                         <div class="fbs-prediction-image">
