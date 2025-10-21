@@ -1102,13 +1102,6 @@
     margin-bottom: 16px;
 }
 
-.fbs-meta-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #2c3e50;
-}
-
 .fbs-meta-input,
 .fbs-meta-select,
 .fbs-meta-textarea {
