@@ -460,6 +460,12 @@ class Predictor
             $prediction_data = $this->calculate_runout_date($product_id);
 
             if (!$prediction_data) {
+                // Remove any existing prediction if no new data
+                $wpdb->delete(
+                    $predictions_table,
+                    ['product_id' => $product_id, 'is_dismissed' => 0],
+                    ['%d', '%d']
+                );
                 continue;
             }
 

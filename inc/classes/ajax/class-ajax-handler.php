@@ -300,7 +300,6 @@ class Ajax_Handler
         wp_send_json_success(__('Predictions calculated successfully.', 'fbs-stockmind'));
     }
 
-
     /**
      * Handle dismiss notice
      *

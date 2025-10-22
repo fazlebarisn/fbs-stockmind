@@ -27,12 +27,9 @@ defined('ABSPATH') or die('Nice Try!');
                 <span class="fbs-btn-icon">⚡</span>
                 <?php esc_html_e('Calculate Now', 'fbs-stockmind'); ?>
             </button>
-            <button type="button" class="fbs-btn fbs-btn-primary" id="fbs-refresh-predictions">
-                <span class="fbs-btn-icon">🔄</span>
-                <?php esc_html_e('Refresh Predictions', 'fbs-stockmind'); ?>
-            </button>
         </div>
     </div>
+
 
     <!-- Filters -->
     <div class="fbs-predictions-filters">

@@ -116,10 +116,6 @@
                 FBSStockMindAdmin.calculatePredictions();
             });
 
-            // Refresh predictions
-            $('#fbs-refresh-predictions').on('click', function() {
-                FBSStockMindAdmin.refreshPredictions();
-            });
 
             // Reset settings
             $('#fbs-reset-settings').on('click', function() {
