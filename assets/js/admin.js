@@ -424,7 +424,7 @@
                 success: function(response) {
                     if (response.success) {
                         FBSStockMindAdmin.showToast('success', response.data);
-                        setTimeout(() => location.reload(), 2000);
+                        setTimeout(() => location.reload(), 500);
                     } else {
                         FBSStockMindAdmin.showToast('error', response.data);
                     }
@@ -454,7 +454,7 @@
                 success: function(response) {
                     if (response.success) {
                         FBSStockMindAdmin.showToast('success', response.data);
-                        setTimeout(() => location.reload(), 1000);
+                        setTimeout(() => location.reload(), 500);
                     } else {
                         FBSStockMindAdmin.showToast('error', response.data);
                     }

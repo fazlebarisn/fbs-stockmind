@@ -144,8 +144,24 @@ class Predictor
 
         // Get current stock
         $current_stock = fbs_stockmind_get_product_stock($product_id);
+        
+        // Handle null stock - don't create predictions for products with null stock
+        if ($current_stock === null) {
+            return false; // Don't create predictions for products with null stock
+        }
+        
+        // Handle out-of-stock products (0 or negative stock)
         if ($current_stock <= 0) {
-            return false;
+            // Create a special prediction for out-of-stock products
+            return [
+                'predicted_date' => date('Y-m-d'), // Today
+                'confidence_score' => 1.0, // 100% confidence - we know it's out of stock
+                'days_until_runout' => 0, // 0 days = already out of stock
+                'average_daily_sales' => 0,
+                'lead_time' => 0,
+                'data_points' => 0,
+                'is_out_of_stock' => true // Flag to identify out-of-stock products
+            ];
         }
 
         // Get sales data for the last 90 days
@@ -179,18 +195,39 @@ class Predictor
 
         // Calculate predicted runout date
         $days_until_runout = $current_stock / $average_daily_sales;
+        
+        // Round to whole days to avoid strtotime issues with decimals
+        $days_until_runout = round($days_until_runout);
+        
+        // Ensure minimum of 1 day
+        if ($days_until_runout < 1) {
+            $days_until_runout = 1;
+        }
+        
+        // Calculate the predicted runout date (from today)
         $predicted_runout_date = date('Y-m-d', strtotime("+{$days_until_runout} days"));
         
-        // Adjust for lead time - but ensure we don't go into the past
-        $adjusted_date = date('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
+        // Adjust for lead time - but don't go into the past
+        // If lead time is greater than days until runout, set to minimum 1 day
+        if ($lead_time >= $days_until_runout) {
+            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $actual_days_until_runout = 1;
+        } else {
+            $adjusted_date = date('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
+            $actual_days_until_runout = (strtotime($adjusted_date) - time()) / DAY_IN_SECONDS;
+        }
         
-        // Calculate the actual days until the adjusted runout date
-        $actual_days_until_runout = (strtotime($adjusted_date) - time()) / DAY_IN_SECONDS;
+        // CRITICAL FIX: Ensure we never have negative days or past dates
+        // If the adjusted date is in the past, it means the product is critical
+        if ($actual_days_until_runout <= 0) {
+            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $actual_days_until_runout = 1; // 1 day until runout
+        }
         
-        // If the adjusted date is in the past, it means the product is already critical
-        // Don't create a prediction for products that are already critical
-        if ($actual_days_until_runout < 0) {
-            return false; // Don't create prediction for products already out of stock
+        // Additional safety check: ensure the date is not in the past
+        if (strtotime($adjusted_date) < time()) {
+            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $actual_days_until_runout = 1; // 1 day until runout
         }
 
         return [
@@ -454,22 +491,29 @@ class Predictor
     {
         global $wpdb;
 
-        // Clean up existing predictions with dates in the past
-        $this->cleanup_expired_predictions();
+        // Clear ALL existing predictions to start fresh
+        $predictions_table = fbs_stockmind_get_table_name('predictions');
+        $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 0");
+        $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 1");
 
-        // Get all published products with stock
+        // Get all published products (we'll check stock individually)
         $products = wc_get_products([
             'limit' => -1,
             'status' => 'publish',
-            'stock_status' => 'instock',
         ]);
 
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         $alert_window = fbs_stockmind_get_option('alert_window', 14);
+        $predictions_created = 0;
 
         foreach ($products as $product) {
             $product_id = $product->get_id();
-            $prediction_data = $this->calculate_runout_date($product_id);
+            
+            try {
+                $prediction_data = $this->calculate_runout_date($product_id);
+            } catch (Exception $e) {
+                continue;
+            }
 
             if (!$prediction_data) {
                 // Remove any existing prediction if no new data
@@ -506,6 +550,7 @@ class Predictor
                         ['%s', '%f', '%s'],
                         ['%d']
                     );
+                    $predictions_created++;
                 } else {
                     $wpdb->insert(
                         $predictions_table,
@@ -518,6 +563,7 @@ class Predictor
                         ],
                         ['%d', '%s', '%f', '%s', '%d']
                     );
+                    $predictions_created++;
                 }
             } else {
                 // Remove prediction if it's outside alert window
@@ -542,11 +588,12 @@ class Predictor
         
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         
-        // Remove predictions where the predicted_runout_date is in the past
+        // Remove predictions that are more than 7 days past their predicted date
+        // This allows for critical products (0 days) to still show
         $wpdb->query(
             "DELETE FROM $predictions_table 
              WHERE is_dismissed = 0 
-             AND predicted_runout_date < CURDATE()"
+             AND predicted_runout_date < DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
         );
     }
 

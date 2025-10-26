@@ -58,6 +58,7 @@ defined('ABSPATH') or die('Nice Try!');
 
     <!-- Predictions List -->
     <div class="fbs-predictions-content">
+        <?php var_dump($predictions); ?>
         <?php if (empty($predictions)): ?>
             <div class="fbs-empty-state">
                 <div class="fbs-empty-icon">✅</div>
@@ -70,7 +71,7 @@ defined('ABSPATH') or die('Nice Try!');
                     <?php
                     // Use the days_until_runout from the prediction data (already calculated correctly)
                     $days_until_runout = $prediction['days_until_runout'];
-                    $urgency_class = $days_until_runout <= 7 ? 'urgent' : ($days_until_runout <= 14 ? 'warning' : 'normal');
+                    $urgency_class = $days_until_runout <= 0 ? 'urgent' : ($days_until_runout <= 7 ? 'urgent' : ($days_until_runout <= 14 ? 'warning' : 'normal'));
                     ?>
                     <div class="fbs-prediction-item fbs-prediction-<?php echo esc_attr($urgency_class); ?>" 
                          data-product-id="<?php echo esc_attr($prediction['product_id']); ?>"
@@ -130,6 +131,8 @@ defined('ABSPATH') or die('Nice Try!');
                                         <?php 
                                         if ($days_until_runout <= 0) {
                                             esc_html_e('Already out of stock', 'fbs-stockmind');
+                                        } elseif ($days_until_runout == 1) {
+                                            esc_html_e('Today', 'fbs-stockmind');
                                         } else {
                                             printf(
                                                 esc_html(_n('%d day', '%d days', $days_until_runout, 'fbs-stockmind')),

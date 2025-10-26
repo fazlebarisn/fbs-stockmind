@@ -119,14 +119,20 @@ function fbs_stockmind_get_product_stock($product_id)
         $total_stock = 0;
         foreach ($product->get_children() as $variation_id) {
             $variation = wc_get_product($variation_id);
-            if ($variation && $variation->managing_stock()) {
-                $total_stock += $variation->get_stock_quantity();
+            if ($variation) {
+                // For variable products, get stock quantity regardless of managing_stock
+                $stock_qty = $variation->get_stock_quantity();
+                if ($stock_qty !== null) {
+                    $total_stock += $stock_qty;
+                }
             }
         }
         return $total_stock;
     }
     
-    return $product->managing_stock() ? $product->get_stock_quantity() : 0;
+    // For simple products, get stock quantity regardless of managing_stock
+    $stock_qty = $product->get_stock_quantity();
+    return $stock_qty !== null ? $stock_qty : 0;
 }
 
 /**
