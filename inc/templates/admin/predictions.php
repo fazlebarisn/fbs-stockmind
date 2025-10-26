@@ -68,7 +68,8 @@ defined('ABSPATH') or die('Nice Try!');
             <div class="fbs-predictions-list">
                 <?php foreach ($predictions as $prediction): ?>
                     <?php
-                    $days_until_runout = (strtotime($prediction['predicted_runout_date']) - time()) / DAY_IN_SECONDS;
+                    // Use the days_until_runout from the prediction data (already calculated correctly)
+                    $days_until_runout = $prediction['days_until_runout'];
                     $urgency_class = $days_until_runout <= 7 ? 'urgent' : ($days_until_runout <= 14 ? 'warning' : 'normal');
                     ?>
                     <div class="fbs-prediction-item fbs-prediction-<?php echo esc_attr($urgency_class); ?>" 

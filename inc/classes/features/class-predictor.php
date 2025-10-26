@@ -181,13 +181,22 @@ class Predictor
         $days_until_runout = $current_stock / $average_daily_sales;
         $predicted_runout_date = date('Y-m-d', strtotime("+{$days_until_runout} days"));
         
-        // Adjust for lead time
+        // Adjust for lead time - but ensure we don't go into the past
         $adjusted_date = date('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
+        
+        // Calculate the actual days until the adjusted runout date
+        $actual_days_until_runout = (strtotime($adjusted_date) - time()) / DAY_IN_SECONDS;
+        
+        // If the adjusted date is in the past, it means the product is already critical
+        // Don't create a prediction for products that are already critical
+        if ($actual_days_until_runout < 0) {
+            return false; // Don't create prediction for products already out of stock
+        }
 
         return [
             'predicted_date' => $adjusted_date,
             'confidence_score' => $confidence_score,
-            'days_until_runout' => $days_until_runout,
+            'days_until_runout' => $actual_days_until_runout,
             'average_daily_sales' => $average_daily_sales,
             'lead_time' => $lead_time,
             'data_points' => $days_with_sales
@@ -445,6 +454,9 @@ class Predictor
     {
         global $wpdb;
 
+        // Clean up existing predictions with dates in the past
+        $this->cleanup_expired_predictions();
+
         // Get all published products with stock
         $products = wc_get_products([
             'limit' => -1,
@@ -519,6 +531,26 @@ class Predictor
     }
 
     /**
+     * Clean up predictions with dates in the past
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    private function cleanup_expired_predictions()
+    {
+        global $wpdb;
+        
+        $predictions_table = fbs_stockmind_get_table_name('predictions');
+        
+        // Remove predictions where the predicted_runout_date is in the past
+        $wpdb->query(
+            "DELETE FROM $predictions_table 
+             WHERE is_dismissed = 0 
+             AND predicted_runout_date < CURDATE()"
+        );
+    }
+
+    /**
      * Get active predictions
      *
      * @param int $limit Number of predictions to retrieve
@@ -549,6 +581,9 @@ class Predictor
                 continue;
             }
 
+            // Calculate days until runout for display
+            $days_until_runout = (strtotime($result->predicted_runout_date) - time()) / DAY_IN_SECONDS;
+            
             $predictions[] = [
                 'id' => $result->id,
                 'product_id' => $result->product_id,
@@ -558,6 +593,7 @@ class Predictor
                 'predicted_runout_date' => $result->predicted_runout_date,
                 'confidence_score' => $result->confidence_score,
                 'calculated_at' => $result->calculated_at,
+                'days_until_runout' => $days_until_runout,
             ];
         }
 
