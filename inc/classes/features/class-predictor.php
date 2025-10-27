@@ -142,8 +142,8 @@ class Predictor
             return false;
         }
 
-        // Get current stock
-        $current_stock = fbs_stockmind_get_product_stock($product_id);
+        // Get current stock - use appropriate method based on stock management
+        $current_stock = $product->managing_stock() ? $product->get_stock_quantity() : fbs_stockmind_get_product_stock($product_id);
         
         // Handle null stock - don't create predictions for products with null stock
         if ($current_stock === null) {
@@ -511,7 +511,7 @@ class Predictor
             
             try {
                 $prediction_data = $this->calculate_runout_date($product_id);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 continue;
             }
 
@@ -527,9 +527,9 @@ class Predictor
 
             $predicted_date = $prediction_data['predicted_date'];
             $confidence_score = $prediction_data['confidence_score'];
+            $days_until_runout = $prediction_data['days_until_runout'];
 
             // Check if prediction is within alert window
-            $days_until_runout = (strtotime($predicted_date) - time()) / DAY_IN_SECONDS;
             
             if ($days_until_runout <= $alert_window) {
                 // Insert or update prediction
@@ -543,11 +543,12 @@ class Predictor
                         $predictions_table,
                         [
                             'predicted_runout_date' => $predicted_date,
+                            'days_until_runout' => $days_until_runout,
                             'confidence_score' => $confidence_score,
                             'calculated_at' => current_time('mysql'),
                         ],
                         ['id' => $existing->id],
-                        ['%s', '%f', '%s'],
+                        ['%s', '%f', '%f', '%s'],
                         ['%d']
                     );
                     $predictions_created++;
@@ -557,11 +558,12 @@ class Predictor
                         [
                             'product_id' => $product_id,
                             'predicted_runout_date' => $predicted_date,
+                            'days_until_runout' => $days_until_runout,
                             'confidence_score' => $confidence_score,
                             'calculated_at' => current_time('mysql'),
                             'is_dismissed' => 0,
                         ],
-                        ['%d', '%s', '%f', '%s', '%d']
+                        ['%d', '%s', '%f', '%f', '%s', '%d']
                     );
                     $predictions_created++;
                 }
@@ -628,19 +630,16 @@ class Predictor
                 continue;
             }
 
-            // Calculate days until runout for display
-            $days_until_runout = (strtotime($result->predicted_runout_date) - time()) / DAY_IN_SECONDS;
-            
             $predictions[] = [
                 'id' => $result->id,
                 'product_id' => $result->product_id,
                 'product_name' => $product->get_name(),
                 'product_image' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-                'current_stock' => $product->get_stock_quantity(),
+                'current_stock' => $product->managing_stock() ? $product->get_stock_quantity() : fbs_stockmind_get_product_stock($result->product_id),
                 'predicted_runout_date' => $result->predicted_runout_date,
                 'confidence_score' => $result->confidence_score,
                 'calculated_at' => $result->calculated_at,
-                'days_until_runout' => $days_until_runout,
+                'days_until_runout' => $result->days_until_runout,
             ];
         }
 

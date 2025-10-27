@@ -58,7 +58,7 @@ defined('ABSPATH') or die('Nice Try!');
 
     <!-- Predictions List -->
     <div class="fbs-predictions-content">
-        <?php var_dump($predictions); ?>
+        
         <?php if (empty($predictions)): ?>
             <div class="fbs-empty-state">
                 <div class="fbs-empty-icon">✅</div>

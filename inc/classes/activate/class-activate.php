@@ -33,6 +33,18 @@ class Activate
     }
 
     /**
+     * Manually trigger database migration (for existing installations)
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public static function trigger_migration()
+    {
+        $instance = self::get_instance();
+        $instance->migrate_database_tables();
+    }
+
+    /**
      * Create custom database tables
      *
      * @since 1.0.0
@@ -50,6 +62,7 @@ class Activate
             id bigint(20) NOT NULL AUTO_INCREMENT,
             product_id bigint(20) NOT NULL,
             predicted_runout_date date NOT NULL,
+            days_until_runout decimal(10,2) NOT NULL DEFAULT 0.00,
             confidence_score decimal(3,2) DEFAULT 0.00,
             calculated_at datetime NOT NULL,
             is_dismissed tinyint(1) NOT NULL DEFAULT 0,
@@ -58,6 +71,7 @@ class Activate
             PRIMARY KEY (id),
             KEY product_id (product_id),
             KEY predicted_runout_date (predicted_runout_date),
+            KEY days_until_runout (days_until_runout),
             KEY confidence_score (confidence_score),
             KEY is_dismissed (is_dismissed)
         ) $charset_collate;";
@@ -115,7 +129,7 @@ class Activate
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function migrate_database_tables()
+    public function migrate_database_tables()
     {
         global $wpdb;
 
@@ -135,6 +149,22 @@ class Activate
             $wpdb->query("ALTER TABLE $predictions_table ADD KEY confidence_score (confidence_score)");
             
             fbs_stockmind_log('Added confidence_score column to predictions table');
+        }
+
+        // Check if days_until_runout column exists
+        $days_column_exists = $wpdb->get_results($wpdb->prepare(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+             WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'days_until_runout'",
+            DB_NAME,
+            $predictions_table
+        ));
+
+        if (empty($days_column_exists)) {
+            // Add days_until_runout column to existing table
+            $wpdb->query("ALTER TABLE $predictions_table ADD COLUMN days_until_runout decimal(10,2) NOT NULL DEFAULT 0.00 AFTER predicted_runout_date");
+            $wpdb->query("ALTER TABLE $predictions_table ADD KEY days_until_runout (days_until_runout)");
+            
+            fbs_stockmind_log('Added days_until_runout column to predictions table');
         }
     }
 

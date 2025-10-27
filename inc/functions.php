@@ -226,6 +226,17 @@ function fbs_stockmind_time_ago($date)
 }
 
 /**
+ * Trigger database migration for existing installations
+ *
+ * @since 1.0.0
+ * @author Fazle Bari <fazlebarisn@gmail.com>
+ */
+function fbs_stockmind_trigger_migration()
+{
+    \FBS_StockMind\Inc\Activate::trigger_migration();
+}
+
+/**
  * Log debug message
  *
  * @param string $message The debug message
