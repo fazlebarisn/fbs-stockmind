@@ -545,11 +545,12 @@
          */
         updateEmptyState: function() {
             const visibleItems = $('.fbs-prediction-item:visible').length;
-            const $emptyState = $('.fbs-empty-state');
+            const totalItems = $('.fbs-prediction-item').length;
+            const $originalEmptyState = $('.fbs-empty-state:not(.fbs-filtered-empty)');
             
-            if (visibleItems === 0 && $('.fbs-prediction-item').length > 0) {
-                // Show filtered empty state
-                if ($emptyState.length === 0) {
+            if (visibleItems === 0 && totalItems > 0) {
+                // Show filtered empty state (when filters hide all items)
+                if ($('.fbs-filtered-empty').length === 0) {
                     $('.fbs-predictions-list').after(`
                         <div class="fbs-empty-state fbs-filtered-empty">
                             <div class="fbs-empty-icon">🔍</div>
@@ -563,11 +564,13 @@
                 }
                 $('.fbs-predictions-list').hide();
                 $('.fbs-filtered-empty').show();
-            } else {
+            } else if (visibleItems > 0) {
                 // Hide filtered empty state and show predictions
                 $('.fbs-filtered-empty').remove();
                 $('.fbs-predictions-list').show();
             }
+            // Note: We don't handle the case where totalItems === 0 here
+            // That's handled by the original empty state in the template
         },
 
         /**
@@ -576,6 +579,12 @@
         clearFilters: function() {
             $('#fbs-urgency-filter').val('');
             $('#fbs-search-filter').val('');
+            
+            // First, ensure the predictions list is visible
+            $('.fbs-predictions-list').show();
+            $('.fbs-filtered-empty').remove();
+            
+            // Then apply the filter (which will show all items)
             FBSStockMindAdmin.filterPredictions();
         },
 
