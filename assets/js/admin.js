@@ -121,20 +121,35 @@
             $('#fbs-reset-settings').on('click', function() {
                 FBSStockMindAdmin.resetSettings();
             });
+
+            // Clear filters
+            $('#fbs-clear-filters').on('click', function() {
+                FBSStockMindAdmin.clearFilters();
+            });
         },
 
         /**
          * Initialize filters
          */
         initFilters: function() {
-            // Status filter
+            // Reminders status filter
             $('#fbs-status-filter').on('change', function() {
                 FBSStockMindAdmin.filterReminders();
             });
 
-            // Search filter
+            // Predictions urgency filter
+            $('#fbs-urgency-filter').on('change', function() {
+                FBSStockMindAdmin.filterPredictions();
+            });
+
+            // Search filter (works for both reminders and predictions)
             $('#fbs-search-filter').on('input', function() {
-                FBSStockMindAdmin.filterReminders();
+                // Check if we're on predictions page or reminders page
+                if ($('.fbs-prediction-item').length > 0) {
+                    FBSStockMindAdmin.filterPredictions();
+                } else if ($('.fbs-reminder-item').length > 0) {
+                    FBSStockMindAdmin.filterReminders();
+                }
             });
         },
 
@@ -488,6 +503,80 @@
             $('#enable_admin_alerts').prop('checked', true);
             
             FBSStockMindAdmin.showToast('info', 'Settings reset to default values. Click Save to apply changes.');
+        },
+
+        /**
+         * Filter predictions
+         */
+        filterPredictions: function() {
+            const urgencyFilter = $('#fbs-urgency-filter').val();
+            const searchFilter = $('#fbs-search-filter').val().toLowerCase();
+            
+            $('.fbs-prediction-item').each(function() {
+                const $item = $(this);
+                const urgency = $item.data('urgency');
+                const productName = $item.find('.fbs-prediction-name').text().toLowerCase();
+                
+                let show = true;
+                
+                // Urgency filter
+                if (urgencyFilter && urgency !== urgencyFilter) {
+                    show = false;
+                }
+                
+                // Search filter
+                if (searchFilter && !productName.includes(searchFilter)) {
+                    show = false;
+                }
+                
+                if (show) {
+                    $item.show();
+                } else {
+                    $item.hide();
+                }
+            });
+            
+            // Update empty state visibility
+            FBSStockMindAdmin.updateEmptyState();
+        },
+
+        /**
+         * Update empty state visibility based on filtered results
+         */
+        updateEmptyState: function() {
+            const visibleItems = $('.fbs-prediction-item:visible').length;
+            const $emptyState = $('.fbs-empty-state');
+            
+            if (visibleItems === 0 && $('.fbs-prediction-item').length > 0) {
+                // Show filtered empty state
+                if ($emptyState.length === 0) {
+                    $('.fbs-predictions-list').after(`
+                        <div class="fbs-empty-state fbs-filtered-empty">
+                            <div class="fbs-empty-icon">🔍</div>
+                            <h3 class="fbs-empty-title">No predictions match your filters</h3>
+                            <p class="fbs-empty-text">Try adjusting your search criteria or clearing the filters.</p>
+                            <button type="button" class="fbs-btn fbs-btn-secondary" onclick="FBSStockMindAdmin.clearFilters()">
+                                Clear Filters
+                            </button>
+                        </div>
+                    `);
+                }
+                $('.fbs-predictions-list').hide();
+                $('.fbs-filtered-empty').show();
+            } else {
+                // Hide filtered empty state and show predictions
+                $('.fbs-filtered-empty').remove();
+                $('.fbs-predictions-list').show();
+            }
+        },
+
+        /**
+         * Clear all filters
+         */
+        clearFilters: function() {
+            $('#fbs-urgency-filter').val('');
+            $('#fbs-search-filter').val('');
+            FBSStockMindAdmin.filterPredictions();
         },
 
         /**

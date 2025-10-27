@@ -54,6 +54,12 @@ defined('ABSPATH') or die('Nice Try!');
                    placeholder="<?php esc_attr_e('Search by product name...', 'fbs-stockmind'); ?>" 
                    class="fbs-filter-input" />
         </div>
+        
+        <div class="fbs-filter-group">
+            <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-secondary" id="fbs-clear-filters">
+                <?php esc_html_e('Clear Filters', 'fbs-stockmind'); ?>
+            </button>
+        </div>
     </div>
 
     <!-- Predictions List -->
