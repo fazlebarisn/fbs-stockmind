@@ -167,8 +167,18 @@ class Customer_Reminders
         global $wpdb;
         
         $reminders_table = fbs_stockmind_get_table_name('reminders');
-        $max_attempts = fbs_stockmind_get_option('max_reminder_attempts', 3);
-        $advance_days = fbs_stockmind_get_option('reminder_advance_days', 5);
+        // Allow pro to override max attempts (free version: 1 attempt)
+        $default_max_attempts = apply_filters('fbs_stockmind_default_max_reminder_attempts', 1);
+        $max_attempts = apply_filters(
+            'fbs_stockmind_max_reminder_attempts',
+            fbs_stockmind_get_option('max_reminder_attempts', $default_max_attempts)
+        );
+        // Allow pro to override advance days (free version: fixed 5 days)
+        $default_advance_days = apply_filters('fbs_stockmind_default_reminder_advance_days', 5);
+        $advance_days = apply_filters(
+            'fbs_stockmind_reminder_advance_days',
+            fbs_stockmind_get_option('reminder_advance_days', $default_advance_days)
+        );
         
         // Get active reminders that haven't exceeded max attempts
         $reminders = $wpdb->get_results($wpdb->prepare(
@@ -259,6 +269,13 @@ class Customer_Reminders
      */
     private function send_reminder_email($reminder)
     {
+        // Allow pro to override email template
+        $email_template = apply_filters('fbs_stockmind_reminder_email_template', null, $reminder);
+        
+        if ($email_template !== null) {
+            return $this->send_custom_reminder_email($reminder, $email_template);
+        }
+        
         $product = wc_get_product($reminder->product_id);
         if (!$product) {
             return false;
@@ -436,5 +453,37 @@ class Customer_Reminders
         );
 
         return $result !== false;
+    }
+
+    /**
+     * Send custom reminder email (for pro to override)
+     *
+     * @param object $reminder The reminder object
+     * @param string $template Custom email template
+     * @return bool
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    private function send_custom_reminder_email($reminder, $template)
+    {
+        $product = wc_get_product($reminder->product_id);
+        if (!$product) {
+            return false;
+        }
+
+        $customer_email = $reminder->customer_email;
+        $product_name = $reminder->product_name;
+        
+        $subject = sprintf(
+            __('Time to reorder: %s', 'fbs-stockmind'),
+            $product_name
+        );
+
+        $headers = [
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . fbs_stockmind_get_option('email_from_name', get_bloginfo('name')) . ' <' . fbs_stockmind_get_option('email_from_address', get_option('admin_email')) . '>',
+        ];
+
+        return wp_mail($customer_email, $subject, $template, $headers);
     }
 }

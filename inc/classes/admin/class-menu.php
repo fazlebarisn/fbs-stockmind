@@ -114,6 +114,8 @@ class Menu
             [$this, 'render_settings_page']
         );
 
+        // Allow pro to add additional menu items
+        do_action('fbs_stockmind_admin_menu', 'fbs-stockmind');
     }
 
     /**

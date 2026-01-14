@@ -164,8 +164,9 @@ class Predictor
             ];
         }
 
-        // Get sales data for the last 90 days
-        $sales_data = $this->get_product_sales_data($product_id, 90);
+        // Get sales data period - allow pro to extend (default 30 days for free)
+        $sales_data_period = apply_filters('fbs_stockmind_sales_data_period', 30, $product_id);
+        $sales_data = $this->get_product_sales_data($product_id, $sales_data_period);
         if (empty($sales_data)) {
             return false;
         }
@@ -179,11 +180,21 @@ class Predictor
             return false;
         }
 
-        // Calculate prediction confidence
-        $confidence_score = $this->calculate_prediction_confidence($product_id, $sales_data);
+        // Calculate prediction confidence - allow pro to override with advanced algorithm
+        $confidence_score = apply_filters(
+            'fbs_stockmind_calculate_confidence',
+            $this->calculate_prediction_confidence($product_id, $sales_data),
+            $product_id,
+            $sales_data
+        );
         
-        // Get accuracy threshold setting
-        $accuracy_threshold = fbs_stockmind_get_option('prediction_accuracy_threshold', 0.8);
+        // Get accuracy threshold setting - allow pro to override
+        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.6);
+        $accuracy_threshold = apply_filters(
+            'fbs_stockmind_prediction_accuracy_threshold',
+            fbs_stockmind_get_option('prediction_accuracy_threshold', $default_threshold),
+            $product_id
+        );
         
         // Check if confidence meets threshold
         if ($confidence_score < $accuracy_threshold) {
@@ -249,7 +260,7 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function calculate_prediction_confidence($product_id, $sales_data)
+    public function calculate_prediction_confidence($product_id, $sales_data)
     {
         // Data Volume Score (0-1)
         $data_volume_score = $this->get_data_volume_score($sales_data);
@@ -280,7 +291,7 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function get_data_volume_score($sales_data)
+    public function get_data_volume_score($sales_data)
     {
         $days_with_data = count(array_filter($sales_data));
         
@@ -302,7 +313,7 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function get_consistency_score($sales_data)
+    public function get_consistency_score($sales_data)
     {
         $sales_values = array_filter($sales_data);
         
@@ -337,7 +348,7 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function get_recency_score($sales_data)
+    public function get_recency_score($sales_data)
     {
         $recent_days = 30;
         $recent_sales = 0;
@@ -370,7 +381,7 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
-    private function get_product_type_score($product_id)
+    public function get_product_type_score($product_id)
     {
         $product = wc_get_product($product_id);
         if (!$product) return 0.5;

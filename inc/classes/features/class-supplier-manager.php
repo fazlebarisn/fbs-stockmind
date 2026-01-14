@@ -262,7 +262,15 @@ class Supplier_Manager
             "SELECT * FROM $suppliers_table $where_clause ORDER BY name ASC"
         );
 
-        return $results;
+        // Allow pro to remove supplier limit (free version limited to 3)
+        $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
+        
+        // If pro is active, max_suppliers will be -1 (unlimited)
+        if ($max_suppliers > 0 && count($results) > $max_suppliers) {
+            $results = array_slice($results, 0, $max_suppliers);
+        }
+
+        return apply_filters('fbs_stockmind_suppliers_list', $results, $active_only);
     }
 
     /**
@@ -297,6 +305,28 @@ class Supplier_Manager
      */
     public function create_supplier($data)
     {
+        // Check supplier limit - allow pro to override
+        $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
+        
+        if ($max_suppliers > 0) {
+            global $wpdb;
+            $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+            $current_count = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
+            
+            if ($current_count >= $max_suppliers) {
+                return new \WP_Error(
+                    'supplier_limit_reached',
+                    sprintf(
+                        __('Maximum %d suppliers allowed in free version. Upgrade to Pro for unlimited suppliers.', 'fbs-stockmind'),
+                        $max_suppliers
+                    )
+                );
+            }
+        }
+        
+        // Allow pro to modify supplier data before creation
+        $data = apply_filters('fbs_stockmind_before_create_supplier', $data);
+        
         $post_data = [
             'post_title' => sanitize_text_field($data['name']),
             'post_content' => sanitize_textarea_field($data['notes'] ?? ''),
