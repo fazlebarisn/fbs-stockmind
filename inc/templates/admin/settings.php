@@ -104,6 +104,31 @@ defined('ABSPATH') or die('Nice Try!');
                 <div class="fbs-settings-section">
                     <h2 class="fbs-section-title"><?php esc_html_e('Prediction Settings', 'fbs-stockmind'); ?></h2>
                     
+                    <?php
+                    $settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
+                    $prediction_editable = $settings_class->is_prediction_settings_editable();
+                    ?>
+                    
+                    <div class="fbs-form-group">
+                        <label for="sales_data_period" class="fbs-form-label">
+                            <?php esc_html_e('Sales Data Analysis Period (Days)', 'fbs-stockmind'); ?>
+                            <?php if (!$prediction_editable): ?>
+                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
+                            <?php endif; ?>
+                        </label>
+                        <input type="number" 
+                               id="sales_data_period" 
+                               name="sales_data_period" 
+                               value="<?php echo esc_attr($settings['sales_data_period']); ?>" 
+                               min="7" 
+                               max="365" 
+                               <?php echo $prediction_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
+                        <p class="fbs-form-description">
+                            <?php esc_html_e('Number of days of sales data to analyze for predictions', 'fbs-stockmind'); ?>
+                        </p>
+                    </div>
+                    
                     <div class="fbs-form-group">
                         <label for="prediction_accuracy_threshold" class="fbs-form-label">
                             <?php esc_html_e('Prediction Accuracy Threshold', 'fbs-stockmind'); ?>
@@ -115,7 +140,8 @@ defined('ABSPATH') or die('Nice Try!');
                                min="0.1" 
                                max="1.0" 
                                step="0.1" 
-                               class="fbs-form-input" />
+                               <?php echo $prediction_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Minimum confidence level for predictions (0.1 = 10%, 1.0 = 100%)', 'fbs-stockmind'); ?>
                         </p>
@@ -124,7 +150,21 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-info-box">
                         <h3 class="fbs-info-title"><?php esc_html_e('How Predictions Work', 'fbs-stockmind'); ?></h3>
                         <ul class="fbs-info-list">
-                            <li><?php esc_html_e('Analyzes sales data from the last 90 days', 'fbs-stockmind'); ?></li>
+                            <?php
+                            // Get actual sales data period being used
+                            $saved_period = fbs_stockmind_get_option('sales_data_period', 0);
+                            if ($saved_period > 0) {
+                                $sales_period = $saved_period;
+                            } else {
+                                $sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
+                            }
+                            ?>
+                            <li><?php 
+                                printf(
+                                    esc_html__('Analyzes sales data from the last %d days', 'fbs-stockmind'),
+                                    $sales_period
+                                ); 
+                            ?></li>
                             <li><?php esc_html_e('Calculates average daily sales rate', 'fbs-stockmind'); ?></li>
                             <li><?php esc_html_e('Factors in supplier lead times', 'fbs-stockmind'); ?></li>
                             <li><?php esc_html_e('Updates predictions daily via cron job', 'fbs-stockmind'); ?></li>
@@ -171,16 +211,22 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-form-group">
                         <label for="max_reminder_attempts" class="fbs-form-label">
                             <?php esc_html_e('Maximum Reminder Attempts', 'fbs-stockmind'); ?>
+                            <?php if (!defined('FBS_STOCKMIND_PRO_VERSION')): ?>
+                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Free: Max 1', 'fbs-stockmind'); ?>)</span>
+                            <?php endif; ?>
                         </label>
                         <input type="number" 
                                id="max_reminder_attempts" 
                                name="max_reminder_attempts" 
                                value="<?php echo esc_attr($settings['max_reminder_attempts']); ?>" 
                                min="1" 
-                               max="10" 
+                               max="<?php echo defined('FBS_STOCKMIND_PRO_VERSION') ? '10' : '1'; ?>" 
                                class="fbs-form-input" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Maximum number of reminder emails to send per customer', 'fbs-stockmind'); ?>
+                            <?php if (!defined('FBS_STOCKMIND_PRO_VERSION')): ?>
+                                <br><em style="color: #d63638;"><?php esc_html_e('Free version limited to 1 attempt. Upgrade to Pro for multiple attempts (up to 10).', 'fbs-stockmind'); ?></em>
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>

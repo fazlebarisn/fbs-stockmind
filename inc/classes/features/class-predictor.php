@@ -164,8 +164,15 @@ class Predictor
             ];
         }
 
-        // Get sales data period - allow pro to extend (default 30 days for free)
-        $sales_data_period = apply_filters('fbs_stockmind_sales_data_period', 30, $product_id);
+        // Get sales data period - check saved option first, then use filter (default 30 days for free)
+        $saved_period = fbs_stockmind_get_option('sales_data_period', 0);
+        if ($saved_period > 0) {
+            // Use saved value if it exists and is valid
+            $sales_data_period = $saved_period;
+        } else {
+            // Otherwise use filter (allows pro to override default)
+            $sales_data_period = apply_filters('fbs_stockmind_sales_data_period', 30, $product_id);
+        }
         $sales_data = $this->get_product_sales_data($product_id, $sales_data_period);
         if (empty($sales_data)) {
             return false;
