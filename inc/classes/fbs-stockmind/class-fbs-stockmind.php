@@ -106,17 +106,18 @@ class FBS_StockMind
 
     /**
      * Load plugin text domain
+     * 
+     * Note: load_plugin_textdomain() is no longer needed for WordPress.org plugins
+     * as WordPress automatically loads translations since version 4.6.
+     * This method is kept for backward compatibility but does nothing.
      *
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
     public function load_textdomain()
     {
-        load_plugin_textdomain(
-            'fbs-stockmind',
-            false,
-            dirname(plugin_basename(FBS_STOCKMIND_FILE)) . '/languages'
-        );
+        // WordPress automatically loads plugin translations since 4.6
+        // No action needed for WordPress.org hosted plugins
     }
 
     /**
@@ -214,11 +215,12 @@ class FBS_StockMind
     public function handle_ajax_request()
     {
         // Verify nonce
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'fbs_stockmind_nonce')) {
+        $nonce = isset($_POST['nonce']) ? wp_unslash($_POST['nonce']) : '';
+        if (!wp_verify_nonce($nonce, 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
 
-        $action = sanitize_text_field($_POST['action_type'] ?? '');
+        $action = isset($_POST['action_type']) ? sanitize_text_field(wp_unslash($_POST['action_type'])) : '';
         
         // Route to appropriate handler
         switch ($action) {

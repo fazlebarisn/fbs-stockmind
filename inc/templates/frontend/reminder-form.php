@@ -54,8 +54,8 @@ defined('ABSPATH') or die('Nice Try!');
                                 <?php 
                                 printf(
                                     /* translators: %d: Product quantity */
-                                    esc_html(_n('Quantity: %d', 'Quantity: %d', $product_data['quantity'], 'fbs-stockmind')),
-                                    $product_data['quantity']
+                                    esc_html(_n('Quantity: %d', 'Quantity: %d', absint($product_data['quantity']), 'fbs-stockmind')),
+                                    absint($product_data['quantity'])
                                 ); ?>
                             </p>
                         </div>

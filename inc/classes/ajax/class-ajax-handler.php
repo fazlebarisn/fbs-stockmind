@@ -360,7 +360,8 @@ class Ajax_Handler
      */
     private function verify_nonce()
     {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'fbs_stockmind_nonce')) {
+        $nonce = isset($_POST['nonce']) ? wp_unslash($_POST['nonce']) : '';
+        if (!wp_verify_nonce($nonce, 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
     }

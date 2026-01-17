@@ -142,8 +142,8 @@ defined('ABSPATH') or die('Nice Try!');
                                         } else {
                                             printf(
                                                 /* translators: %d: Number of days */
-                                                esc_html(_n('%d day', '%d days', $days_until_runout, 'fbs-stockmind')),
-                                                $days_until_runout
+                                                esc_html(_n('%d day', '%d days', absint($days_until_runout), 'fbs-stockmind')),
+                                                absint($days_until_runout)
                                             );
                                         }
                                         ?>

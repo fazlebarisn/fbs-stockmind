@@ -108,8 +108,8 @@ defined('ABSPATH') or die('Nice Try!');
                                             } else {
                                                 printf(
                                                     /* translators: %d: Number of days */
-                                                    esc_html(_n('%d day until runout', '%d days until runout', $prediction['days_until_runout'], 'fbs-stockmind')),
-                                                    $prediction['days_until_runout']
+                                                    esc_html(_n('%d day until runout', '%d days until runout', absint($prediction['days_until_runout']), 'fbs-stockmind')),
+                                                    absint($prediction['days_until_runout'])
                                                 );
                                             }
                                             ?>
@@ -167,8 +167,8 @@ defined('ABSPATH') or die('Nice Try!');
                                             if ($replenishment['reminder_count'] > 0) {
                                                 printf(
                                                     /* translators: %d: Number of reminders */
-                                                    esc_html(_n('%d reminder sent', '%d reminders sent', $replenishment['reminder_count'], 'fbs-stockmind')),
-                                                    $replenishment['reminder_count']
+                                                    esc_html(_n('%d reminder sent', '%d reminders sent', absint($replenishment['reminder_count']), 'fbs-stockmind')),
+                                                    absint($replenishment['reminder_count'])
                                                 );
                                             } else {
                                                 esc_html_e('No reminders sent yet', 'fbs-stockmind');

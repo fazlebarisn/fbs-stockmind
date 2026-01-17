@@ -163,7 +163,7 @@ defined('ABSPATH') or die('Nice Try!');
                                 printf(
                                     /* translators: %d: Number of days */
                                     esc_html__('Analyzes sales data from the last %d days', 'fbs-stockmind'),
-                                    $sales_period
+                                    absint($sales_period)
                                 ); 
                             ?></li>
                             <li><?php esc_html_e('Calculates average daily sales rate', 'fbs-stockmind'); ?></li>

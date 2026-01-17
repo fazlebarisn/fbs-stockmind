@@ -152,9 +152,8 @@ class Notification_System
         }
 
         $class = 'notice notice-' . $type . ' is-dismissible fbs-stockmind-notice';
-        $data_attr = 'data-notice-id="' . esc_attr($notice_id) . '"';
         
-        echo '<div class="' . esc_attr($class) . '" ' . $data_attr . '>';
+        echo '<div class="' . esc_attr($class) . '" data-notice-id="' . esc_attr($notice_id) . '">';
         echo '<p>' . wp_kses_post($message) . '</p>';
         
         if ($url && $button) {
