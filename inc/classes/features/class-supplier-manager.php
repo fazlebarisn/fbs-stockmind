@@ -208,12 +208,12 @@ class Supplier_Manager
         $is_active = get_post_meta($post_id, '_fbs_supplier_is_active', true) ?: 1;
 
         // Check if supplier exists in table
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time check needed
         $existing = $wpdb->get_row($wpdb->prepare(
             "SELECT id FROM $suppliers_table WHERE id = %d",
             $post_id
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $data = [
             'name' => $post->post_title,
@@ -228,6 +228,7 @@ class Supplier_Manager
 
         if ($existing) {
             // Update existing record
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for updating supplier data, real-time operation
             $wpdb->update(
                 $suppliers_table,
                 $data,
@@ -240,6 +241,7 @@ class Supplier_Manager
             $data['id'] = $post_id;
             $data['created_at'] = current_time('mysql');
             
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for inserting supplier data, real-time operation
             $wpdb->insert(
                 $suppliers_table,
                 $data,
@@ -264,11 +266,11 @@ class Supplier_Manager
         
         $where_clause = $active_only ? 'WHERE is_active = 1' : '';
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and where clause are from trusted sources
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name and where clause are from trusted sources, supplier list needs real-time data
         $results = $wpdb->get_results(
             "SELECT * FROM $suppliers_table $where_clause ORDER BY name ASC"
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         // Allow pro to remove supplier limit (free version limited to 3)
         $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
@@ -295,12 +297,12 @@ class Supplier_Manager
 
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time supplier data needed
         $result = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $suppliers_table WHERE id = %d",
             $supplier_id
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $result;
     }
@@ -321,7 +323,7 @@ class Supplier_Manager
         if ($max_suppliers > 0) {
             global $wpdb;
             $suppliers_table = fbs_stockmind_get_table_name('suppliers');
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time count needed for validation
             $current_count = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
             
             if ($current_count >= $max_suppliers) {
@@ -428,6 +430,7 @@ class Supplier_Manager
         // Delete from custom table
         global $wpdb;
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for deleting supplier, real-time operation
         $wpdb->delete($suppliers_table, ['id' => $supplier_id], ['%d']);
 
         // Delete post
@@ -447,6 +450,7 @@ class Supplier_Manager
         $products = get_posts([
             'post_type' => 'product',
             'post_status' => 'publish',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary for finding products by supplier, meta_query is required for supplier filtering
             'meta_query' => [
                 [
                     'key' => '_fbs_stockmind_supplier_id',

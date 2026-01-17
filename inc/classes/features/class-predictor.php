@@ -494,12 +494,12 @@ class Predictor
         if ($supplier_id) {
             global $wpdb;
             $suppliers_table = fbs_stockmind_get_table_name('suppliers');
-            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time supplier data needed
             $lead_time = $wpdb->get_var($wpdb->prepare(
                 "SELECT lead_time FROM $suppliers_table WHERE id = %d AND is_active = 1",
                 $supplier_id
             ));
-            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
             
             if ($lead_time) {
                 return (int) $lead_time;
@@ -521,9 +521,9 @@ class Predictor
 
         // Clear ALL existing predictions to start fresh
         $predictions_table = fbs_stockmind_get_table_name('predictions');
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, batch operation during prediction refresh
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 0");
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, batch operation during prediction refresh
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 1");
 
         // Get all published products
@@ -544,6 +544,7 @@ class Predictor
             // Double check stock tracking is enabled (for variable products, check variations)
             if (!fbs_stockmind_is_product_stock_tracked($product)) {
                 // Remove any existing prediction if stock tracking is disabled
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for cleaning up predictions, real-time operation
                 $wpdb->delete(
                     $predictions_table,
                     ['product_id' => $product_id, 'is_dismissed' => 0],
@@ -560,6 +561,7 @@ class Predictor
 
             if (!$prediction_data) {
                 // Remove any existing prediction if no new data
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for cleaning up predictions, real-time operation
                 $wpdb->delete(
                     $predictions_table,
                     ['product_id' => $product_id, 'is_dismissed' => 0],
@@ -576,14 +578,15 @@ class Predictor
             
             if ($days_until_runout <= $alert_window) {
                 // Insert or update prediction
-                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time prediction check needed
                 $existing = $wpdb->get_row($wpdb->prepare(
                     "SELECT id FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0",
                     $product_id
                 ));
-                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
                 if ($existing) {
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for updating prediction, real-time operation
                     $wpdb->update(
                         $predictions_table,
                         [
@@ -598,6 +601,7 @@ class Predictor
                     );
                     $predictions_created++;
                 } else {
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for inserting prediction, real-time operation
                     $wpdb->insert(
                         $predictions_table,
                         [
@@ -614,6 +618,7 @@ class Predictor
                 }
             } else {
                 // Remove prediction if it's outside alert window
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for cleaning up predictions, real-time operation
                 $wpdb->delete(
                     $predictions_table,
                     ['product_id' => $product_id, 'is_dismissed' => 0],
@@ -637,13 +642,13 @@ class Predictor
         
         // Remove predictions that are more than 7 days past their predicted date
         // This allows for critical products (0 days) to still show
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, batch cleanup operation
         $wpdb->query(
             "DELETE FROM $predictions_table 
              WHERE is_dismissed = 0 
              AND predicted_runout_date < DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     /**
@@ -662,7 +667,7 @@ class Predictor
         
         $limit_clause = $limit > 0 ? $wpdb->prepare("LIMIT %d", $limit) : '';
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and limit clause are from trusted sources
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name and limit clause are from trusted sources, admin list needs real-time data
         $results = $wpdb->get_results(
             "SELECT p.*
              FROM $predictions_table p
@@ -670,7 +675,7 @@ class Predictor
              ORDER BY p.confidence_score DESC, p.predicted_runout_date ASC
              $limit_clause"
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $predictions = [];
         foreach ($results as $result) {
@@ -682,6 +687,7 @@ class Predictor
             // Skip products that don't have stock tracking enabled
             if (!fbs_stockmind_is_product_stock_tracked($product)) {
                 // Remove prediction if stock tracking is disabled
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for cleaning up predictions, real-time operation
                 $wpdb->delete(
                     $predictions_table,
                     ['id' => $result->id],
@@ -721,6 +727,7 @@ class Predictor
 
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for dismissing prediction, real-time operation
         $result = $wpdb->update(
             $predictions_table,
             [
@@ -803,11 +810,11 @@ class Predictor
         
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, supplier list needs real-time data
         $results = $wpdb->get_results(
             "SELECT * FROM $suppliers_table WHERE is_active = 1 ORDER BY name ASC"
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $results;
     }

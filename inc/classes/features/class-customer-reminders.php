@@ -97,14 +97,14 @@ class Customer_Reminders
         $reminders_table = fbs_stockmind_get_table_name('reminders');
         
         // Check if reminder already exists
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, real-time check needed
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time check needed
         $existing = $wpdb->get_row($wpdb->prepare(
             "SELECT id FROM $reminders_table 
              WHERE customer_email = %s AND product_id = %d AND is_active = 1",
             $customer_email,
             $product_id
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         if ($existing) {
             return false; // Reminder already exists
@@ -195,7 +195,7 @@ class Customer_Reminders
         );
         
         // Get active reminders that haven't exceeded max attempts
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, real-time processing needed
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time processing needed
         $reminders = $wpdb->get_results($wpdb->prepare(
             "SELECT r.*, pr.post_title as product_name
              FROM $reminders_table r
@@ -207,7 +207,7 @@ class Customer_Reminders
              ORDER BY r.created_at ASC",
             $max_attempts
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         foreach ($reminders as $reminder) {
             $this->process_single_reminder($reminder, $advance_days);
@@ -266,13 +266,13 @@ class Customer_Reminders
         
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, real-time data needed
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time data needed
         $result = $wpdb->get_var($wpdb->prepare(
             "SELECT predicted_runout_date FROM $predictions_table 
              WHERE product_id = %d AND is_dismissed = 0",
             $product_id
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         return $result;
     }
@@ -366,12 +366,12 @@ class Customer_Reminders
             $reminders_table,
             [
                 'last_reminder_sent' => current_time('mysql'),
-                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
+                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source
                 'reminder_count' => $wpdb->get_var($wpdb->prepare(
                     "SELECT reminder_count FROM $reminders_table WHERE id = %d",
                     $reminder_id
                 )) + 1,
-                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
             ],
             ['id' => $reminder_id],
             ['%s', '%d'],
@@ -395,7 +395,7 @@ class Customer_Reminders
         
         $limit_clause = $limit > 0 ? $wpdb->prepare("LIMIT %d", $limit) : '';
         
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name and limit clause are from trusted sources, admin list needs real-time data
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name and limit clause are from trusted sources, admin list needs real-time data
         $results = $wpdb->get_results(
             "SELECT r.*, pr.post_title as product_name
              FROM $reminders_table r
@@ -405,7 +405,7 @@ class Customer_Reminders
              ORDER BY r.created_at DESC
              $limit_clause"
         );
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $reminders = [];
         foreach ($results as $result) {

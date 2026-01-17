@@ -146,9 +146,9 @@ class Activate
 
         if (empty($column_exists)) {
             // Add confidence_score column to existing table
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is from trusted source, necessary for migration during activation
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, necessary for migration during activation
             $wpdb->query("ALTER TABLE $predictions_table ADD COLUMN confidence_score decimal(3,2) DEFAULT 0.00 AFTER predicted_runout_date");
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is from trusted source, necessary for migration during activation
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, necessary for migration during activation
             $wpdb->query("ALTER TABLE $predictions_table ADD KEY confidence_score (confidence_score)");
             
             fbs_stockmind_log('Added confidence_score column to predictions table');
@@ -165,9 +165,9 @@ class Activate
 
         if (empty($days_column_exists)) {
             // Add days_until_runout column to existing table
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is from trusted source, necessary for migration during activation
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, necessary for migration during activation
             $wpdb->query("ALTER TABLE $predictions_table ADD COLUMN days_until_runout decimal(10,2) NOT NULL DEFAULT 0.00 AFTER predicted_runout_date");
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Table name is from trusted source, necessary for migration during activation
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, necessary for migration during activation
             $wpdb->query("ALTER TABLE $predictions_table ADD KEY days_until_runout (days_until_runout)");
             
             fbs_stockmind_log('Added days_until_runout column to predictions table');
