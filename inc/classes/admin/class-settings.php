@@ -141,8 +141,12 @@ class Settings
     public function render()
     {
         // Handle form submission
-        if (isset($_POST['submit']) && wp_verify_nonce($_POST['_wpnonce'], 'fbs_stockmind_settings')) {
-            $this->save_settings();
+        if (isset($_POST['submit']) && isset($_POST['_wpnonce'])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+            $nonce = wp_unslash($_POST['_wpnonce']);
+            if (wp_verify_nonce($nonce, 'fbs_stockmind_settings')) {
+                $this->save_settings();
+            }
         }
 
         $settings = $this->get_all_settings();
@@ -158,6 +162,15 @@ class Settings
      */
     public function save_settings()
     {
+        // Verify nonce (additional check for plugin checker)
+        if (!isset($_POST['_wpnonce'])) {
+            return;
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['_wpnonce']), 'fbs_stockmind_settings')) {
+            return;
+        }
+        
         // Check if prediction settings are editable (free: read-only, pro: editable)
         $prediction_editable = $this->is_prediction_settings_editable();
         
@@ -170,11 +183,11 @@ class Settings
         
         // Only save prediction settings if editable (pro version)
         $prediction_threshold = $prediction_editable 
-            ? floatval($_POST['prediction_accuracy_threshold'] ?? $current_settings['prediction_accuracy_threshold'])
+            ? floatval(isset($_POST['prediction_accuracy_threshold']) ? $_POST['prediction_accuracy_threshold'] : $current_settings['prediction_accuracy_threshold'])
             : $current_settings['prediction_accuracy_threshold'];
         
         $sales_data_period = $prediction_editable
-            ? absint($_POST['sales_data_period'] ?? $current_settings['sales_data_period'])
+            ? absint(isset($_POST['sales_data_period']) ? $_POST['sales_data_period'] : $current_settings['sales_data_period'])
             : $current_settings['sales_data_period'];
         
         // Check if reminder settings are editable (free: read-only, pro: editable)
@@ -185,24 +198,24 @@ class Settings
         
         // Only save reminder attempts if editable (pro version)
         $reminder_attempts = $reminder_editable
-            ? absint($_POST['max_reminder_attempts'] ?? $current_settings['max_reminder_attempts'])
+            ? absint(isset($_POST['max_reminder_attempts']) ? $_POST['max_reminder_attempts'] : $current_settings['max_reminder_attempts'])
             : $current_settings['max_reminder_attempts'];
         
         // Only save reminder advance days if editable (pro version)
         $reminder_advance_days = $reminder_editable
-            ? absint($_POST['reminder_advance_days'] ?? $current_settings['reminder_advance_days'])
+            ? absint(isset($_POST['reminder_advance_days']) ? $_POST['reminder_advance_days'] : $current_settings['reminder_advance_days'])
             : $current_settings['reminder_advance_days'];
         
         $settings_to_save = [
-            'alert_window' => absint($_POST['alert_window'] ?? 14),
-            'default_lead_time' => absint($_POST['default_lead_time'] ?? 7),
+            'alert_window' => absint(isset($_POST['alert_window']) ? $_POST['alert_window'] : 14),
+            'default_lead_time' => absint(isset($_POST['default_lead_time']) ? $_POST['default_lead_time'] : 7),
             'prediction_accuracy_threshold' => $prediction_threshold,
             'sales_data_period' => $sales_data_period,
             'reminder_advance_days' => $reminder_advance_days,
             'max_reminder_attempts' => $reminder_attempts,
             'enable_customer_reminders' => isset($_POST['enable_customer_reminders']),
-            'email_from_name' => sanitize_text_field($_POST['email_from_name'] ?? ''),
-            'email_from_address' => sanitize_email($_POST['email_from_address'] ?? ''),
+            'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field(wp_unslash($_POST['email_from_name'])) : '',
+            'email_from_address' => isset($_POST['email_from_address']) ? sanitize_email(wp_unslash($_POST['email_from_address'])) : '',
             'enable_admin_alerts' => isset($_POST['enable_admin_alerts']),
         ];
 
@@ -225,11 +238,24 @@ class Settings
      */
     public function handle_save_settings()
     {
+        // Verify nonce
+        if (!isset($_POST['nonce'])) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+            return;
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+            return;
+        }
+
         if (!current_user_can('manage_options')) {
             wp_send_json_error(__('Insufficient permissions.', 'fbs-stockmind'));
         }
 
-        $settings_data = $_POST['settings'] ?? [];
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized below
+        $settings_data = isset($_POST['settings']) ? wp_unslash($_POST['settings']) : [];
+        $settings_data = is_array($settings_data) ? array_map('sanitize_text_field', $settings_data) : [];
         
         if (empty($settings_data)) {
             wp_send_json_error(__('No settings data provided.', 'fbs-stockmind'));

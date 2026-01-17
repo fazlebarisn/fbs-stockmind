@@ -215,6 +215,7 @@ class FBS_StockMind
     public function handle_ajax_request()
     {
         // Verify nonce
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
         $nonce = isset($_POST['nonce']) ? wp_unslash($_POST['nonce']) : '';
         if (!wp_verify_nonce($nonce, 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));

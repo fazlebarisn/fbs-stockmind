@@ -147,8 +147,11 @@ class Supplier_Manager
         }
 
         // Check nonce
-        if (!isset($_POST['fbs_supplier_meta_nonce']) || 
-            !wp_verify_nonce($_POST['fbs_supplier_meta_nonce'], 'fbs_supplier_meta')) {
+        if (!isset($_POST['fbs_supplier_meta_nonce'])) {
+            return;
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['fbs_supplier_meta_nonce']), 'fbs_supplier_meta')) {
             return;
         }
 
@@ -169,7 +172,8 @@ class Supplier_Manager
 
         foreach ($fields as $field => $sanitize_function) {
             if (isset($_POST[$field])) {
-                $value = call_user_func($sanitize_function, $_POST[$field]);
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Will be sanitized by sanitize_function
+                $value = call_user_func($sanitize_function, wp_unslash($_POST[$field]));
                 update_post_meta($post_id, $field, $value);
             }
         }
@@ -204,10 +208,12 @@ class Supplier_Manager
         $is_active = get_post_meta($post_id, '_fbs_supplier_is_active', true) ?: 1;
 
         // Check if supplier exists in table
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $existing = $wpdb->get_row($wpdb->prepare(
             "SELECT id FROM $suppliers_table WHERE id = %d",
             $post_id
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         $data = [
             'name' => $post->post_title,
@@ -258,9 +264,11 @@ class Supplier_Manager
         
         $where_clause = $active_only ? 'WHERE is_active = 1' : '';
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and where clause are from trusted sources
         $results = $wpdb->get_results(
             "SELECT * FROM $suppliers_table $where_clause ORDER BY name ASC"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Allow pro to remove supplier limit (free version limited to 3)
         $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
@@ -287,10 +295,12 @@ class Supplier_Manager
 
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $result = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM $suppliers_table WHERE id = %d",
             $supplier_id
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $result;
     }
@@ -311,6 +321,7 @@ class Supplier_Manager
         if ($max_suppliers > 0) {
             global $wpdb;
             $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
             $current_count = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
             
             if ($current_count >= $max_suppliers) {

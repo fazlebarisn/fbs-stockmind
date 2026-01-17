@@ -75,6 +75,7 @@ class Notification_System
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         $alert_window = fbs_stockmind_get_option('alert_window', 14);
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, notification count needs real-time data
         $urgent_count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $predictions_table p
              LEFT JOIN {$wpdb->posts} pr ON p.product_id = pr.ID
@@ -84,6 +85,7 @@ class Notification_System
              AND p.predicted_runout_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)",
             0, 'publish', 'product'
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 
         if ($urgent_count > 0) {
             $this->display_notice(
@@ -110,6 +112,7 @@ class Notification_System
         // Check if suppliers are set up
         global $wpdb;
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, notification count needs real-time data
         $supplier_count = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
 
         if ($supplier_count == 0) {
@@ -175,7 +178,16 @@ class Notification_System
             wp_die(esc_html__('Insufficient permissions.', 'fbs-stockmind'));
         }
 
-        $notice_id = sanitize_text_field($_POST['notice_id'] ?? '');
+        // Verify nonce
+        if (!isset($_POST['nonce'])) {
+            wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+            wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
+        }
+
+        $notice_id = isset($_POST['notice_id']) ? sanitize_text_field(wp_unslash($_POST['notice_id'])) : '';
         
         if (!$notice_id) {
             wp_send_json_error(__('Invalid notice ID.', 'fbs-stockmind'));

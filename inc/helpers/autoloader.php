@@ -25,6 +25,7 @@ function fbs_stockmind_autoloader($class_name)
 
     // Debug logging
     if (defined('WP_DEBUG') && WP_DEBUG) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
         error_log('[FBS StockMind Autoloader] Looking for class: ' . $class_name);
     }
 
@@ -42,12 +43,14 @@ function fbs_stockmind_autoloader($class_name)
     
     // Debug logging
     if (defined('WP_DEBUG') && WP_DEBUG) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
         error_log('[FBS StockMind Autoloader] Trying path: ' . $file_path);
     }
     
     // Check if file exists and include it
     if (file_exists($file_path)) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
             error_log('[FBS StockMind Autoloader] Found file: ' . $file_path);
         }
         require_once $file_path;
@@ -59,6 +62,7 @@ function fbs_stockmind_autoloader($class_name)
     $alternative_path = FBS_STOCKMIND_DIR_PATH . '/inc/classes/' . $class_name_clean . '/' . $file_name;
     if (file_exists($alternative_path)) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
             error_log('[FBS StockMind Autoloader] Found alternative file: ' . $alternative_path);
         }
         require_once $alternative_path;
@@ -69,6 +73,7 @@ function fbs_stockmind_autoloader($class_name)
     $direct_path = FBS_STOCKMIND_DIR_PATH . '/inc/classes/' . $file_name;
     if (file_exists($direct_path)) {
         if (defined('WP_DEBUG') && WP_DEBUG) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
             error_log('[FBS StockMind Autoloader] Found direct file: ' . $direct_path);
         }
         require_once $direct_path;
@@ -77,6 +82,7 @@ function fbs_stockmind_autoloader($class_name)
     
     // Debug logging for not found
     if (defined('WP_DEBUG') && WP_DEBUG) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
         error_log('[FBS StockMind Autoloader] Class not found: ' . $class_name . ' (tried: ' . $file_path . ', ' . $alternative_path . ', ' . $direct_path . ')');
     }
 }

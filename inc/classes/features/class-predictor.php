@@ -102,8 +102,11 @@ class Predictor
         }
 
         // Check nonce
-        if (!isset($_POST['fbs_stockmind_product_meta_nonce']) || 
-            !wp_verify_nonce($_POST['fbs_stockmind_product_meta_nonce'], 'fbs_stockmind_product_meta')) {
+        if (!isset($_POST['fbs_stockmind_product_meta_nonce'])) {
+            return;
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['fbs_stockmind_product_meta_nonce']), 'fbs_stockmind_product_meta')) {
             return;
         }
 
@@ -491,10 +494,12 @@ class Predictor
         if ($supplier_id) {
             global $wpdb;
             $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
             $lead_time = $wpdb->get_var($wpdb->prepare(
                 "SELECT lead_time FROM $suppliers_table WHERE id = %d AND is_active = 1",
                 $supplier_id
             ));
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             
             if ($lead_time) {
                 return (int) $lead_time;
@@ -516,7 +521,9 @@ class Predictor
 
         // Clear ALL existing predictions to start fresh
         $predictions_table = fbs_stockmind_get_table_name('predictions');
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 0");
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 1");
 
         // Get all published products
@@ -569,10 +576,12 @@ class Predictor
             
             if ($days_until_runout <= $alert_window) {
                 // Insert or update prediction
+                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
                 $existing = $wpdb->get_row($wpdb->prepare(
                     "SELECT id FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0",
                     $product_id
                 ));
+                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
                 if ($existing) {
                     $wpdb->update(
@@ -628,11 +637,13 @@ class Predictor
         
         // Remove predictions that are more than 7 days past their predicted date
         // This allows for critical products (0 days) to still show
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $wpdb->query(
             "DELETE FROM $predictions_table 
              WHERE is_dismissed = 0 
              AND predicted_runout_date < DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**
@@ -651,6 +662,7 @@ class Predictor
         
         $limit_clause = $limit > 0 ? $wpdb->prepare("LIMIT %d", $limit) : '';
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and limit clause are from trusted sources
         $results = $wpdb->get_results(
             "SELECT p.*
              FROM $predictions_table p
@@ -658,6 +670,7 @@ class Predictor
              ORDER BY p.confidence_score DESC, p.predicted_runout_date ASC
              $limit_clause"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         $predictions = [];
         foreach ($results as $result) {
@@ -731,11 +744,23 @@ class Predictor
      */
     public function handle_dismiss_prediction()
     {
+        // Verify nonce
+        if (!isset($_POST['nonce'])) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+            return;
+        }
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
+        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+            return;
+        }
+
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error(__('Insufficient permissions.', 'fbs-stockmind'));
         }
 
-        $prediction_id = absint($_POST['prediction_id'] ?? 0);
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above
+        $prediction_id = isset($_POST['prediction_id']) ? absint($_POST['prediction_id']) : 0;
         
         if (!$prediction_id) {
             wp_send_json_error(__('Invalid prediction ID.', 'fbs-stockmind'));
@@ -778,9 +803,11 @@ class Predictor
         
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $results = $wpdb->get_results(
             "SELECT * FROM $suppliers_table WHERE is_active = 1 ORDER BY name ASC"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         return $results;
     }

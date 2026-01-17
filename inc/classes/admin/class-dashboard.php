@@ -60,21 +60,27 @@ class Dashboard
         $suppliers_table = fbs_stockmind_get_table_name('suppliers');
         
         // Get total products needing attention
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, dashboard stats need real-time data
         $products_needing_attention = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(DISTINCT product_id) FROM $predictions_table 
              WHERE is_dismissed = 0 AND predicted_runout_date <= DATE_ADD(CURDATE(), INTERVAL %d DAY)",
             fbs_stockmind_get_option('alert_window', 14)
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         
         // Get total active reminders
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, dashboard stats need real-time data
         $active_reminders = $wpdb->get_var(
             "SELECT COUNT(*) FROM $reminders_table WHERE is_active = 1"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         
         // Get total suppliers
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, dashboard stats need real-time data
         $total_suppliers = $wpdb->get_var(
             "SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1"
         );
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         
         // Get products with low stock
         $low_stock_products = $this->get_low_stock_products_count();
@@ -101,6 +107,7 @@ class Dashboard
         
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, dashboard stats need real-time data
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT p.*, pr.post_title as product_name, pr.post_status
              FROM $predictions_table p
@@ -112,6 +119,7 @@ class Dashboard
              LIMIT %d",
             $limit
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         
         $predictions = [];
         $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
@@ -156,6 +164,7 @@ class Dashboard
         
         $reminders_table = fbs_stockmind_get_table_name('reminders');
         
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Table name is from trusted source, dashboard stats need real-time data
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT r.*, pr.post_title as product_name
              FROM $reminders_table r
@@ -167,6 +176,7 @@ class Dashboard
              LIMIT %d",
             $limit
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         
         $replenishments = [];
         foreach ($results as $result) {

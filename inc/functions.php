@@ -247,6 +247,7 @@ function fbs_stockmind_trigger_migration()
 function fbs_stockmind_log($message, $level = 'info')
 {
     if (defined('WP_DEBUG') && WP_DEBUG) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Only runs when WP_DEBUG is enabled
         error_log('[FBS StockMind] ' . $level . ': ' . $message);
     }
 }
