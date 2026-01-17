@@ -159,7 +159,7 @@ class Predictor
         if ($current_stock <= 0) {
             // Create a special prediction for out-of-stock products
             return [
-                'predicted_date' => date('Y-m-d'), // Today
+                'predicted_date' => gmdate('Y-m-d'), // Today
                 'confidence_score' => 1.0, // 100% confidence - we know it's out of stock
                 'days_until_runout' => 0, // 0 days = already out of stock
                 'average_daily_sales' => 0,
@@ -228,28 +228,28 @@ class Predictor
         }
         
         // Calculate the predicted runout date (from today)
-        $predicted_runout_date = date('Y-m-d', strtotime("+{$days_until_runout} days"));
+        $predicted_runout_date = gmdate('Y-m-d', strtotime("+{$days_until_runout} days"));
         
         // Adjust for lead time - but don't go into the past
         // If lead time is greater than days until runout, set to minimum 1 day
         if ($lead_time >= $days_until_runout) {
-            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
             $actual_days_until_runout = 1;
         } else {
-            $adjusted_date = date('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
+            $adjusted_date = gmdate('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
             $actual_days_until_runout = (strtotime($adjusted_date) - time()) / DAY_IN_SECONDS;
         }
         
         // CRITICAL FIX: Ensure we never have negative days or past dates
         // If the adjusted date is in the past, it means the product is critical
         if ($actual_days_until_runout <= 0) {
-            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
             $actual_days_until_runout = 1; // 1 day until runout
         }
         
         // Additional safety check: ensure the date is not in the past
         if (strtotime($adjusted_date) < time()) {
-            $adjusted_date = date('Y-m-d', strtotime('+1 day')); // Tomorrow
+            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
             $actual_days_until_runout = 1; // 1 day until runout
         }
 
@@ -436,7 +436,7 @@ class Predictor
      */
     private function get_product_sales_data($product_id, $days = 90)
     {
-        $start_date = date('Y-m-d', strtotime("-{$days} days"));
+        $start_date = gmdate('Y-m-d', strtotime("-{$days} days"));
         
         // Get all completed orders from the start date
         $orders = wc_get_orders(array(

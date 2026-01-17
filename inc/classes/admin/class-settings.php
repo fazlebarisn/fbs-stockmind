@@ -48,22 +48,88 @@ class Settings
     public function register_settings()
     {
         // General settings
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_alert_window');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_default_lead_time');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_prediction_accuracy_threshold');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_sales_data_period');
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_alert_window', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 14,
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_default_lead_time', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 7,
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_prediction_accuracy_threshold', [
+            'type' => 'number',
+            'sanitize_callback' => [$this, 'sanitize_float'],
+            'default' => 0.6,
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_sales_data_period', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 30,
+        ]);
         
         // Reminder settings
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_reminder_advance_days');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_max_reminder_attempts');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_enable_customer_reminders');
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_reminder_advance_days', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 5,
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_max_reminder_attempts', [
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 1,
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_enable_customer_reminders', [
+            'type' => 'boolean',
+            'sanitize_callback' => [$this, 'sanitize_boolean'],
+            'default' => false,
+        ]);
         
         // Email settings
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_email_from_name');
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_email_from_address');
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_email_from_name', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => '',
+        ]);
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_email_from_address', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_email',
+            'default' => '',
+        ]);
         
         // Feature toggles
-        register_setting('fbs_stockmind_settings', 'fbs_stockmind_enable_admin_alerts');
+        register_setting('fbs_stockmind_settings', 'fbs_stockmind_enable_admin_alerts', [
+            'type' => 'boolean',
+            'sanitize_callback' => [$this, 'sanitize_boolean'],
+            'default' => false,
+        ]);
+    }
+    
+    /**
+     * Sanitize float value
+     *
+     * @param mixed $value The value to sanitize
+     * @return float
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function sanitize_float($value)
+    {
+        return floatval($value);
+    }
+    
+    /**
+     * Sanitize boolean value
+     *
+     * @param mixed $value The value to sanitize
+     * @return bool
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function sanitize_boolean($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**

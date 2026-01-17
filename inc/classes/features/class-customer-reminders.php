@@ -97,6 +97,7 @@ class Customer_Reminders
         $reminders_table = fbs_stockmind_get_table_name('reminders');
         
         // Check if reminder already exists
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $existing = $wpdb->get_row($wpdb->prepare(
             "SELECT id FROM $reminders_table 
              WHERE customer_email = %s AND product_id = %d AND is_active = 1",
@@ -133,7 +134,13 @@ class Customer_Reminders
      */
     public function handle_set_reminder()
     {
-        $customer_email = sanitize_email($_POST['customer_email'] ?? '');
+        // Verify nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+            return;
+        }
+
+        $customer_email = isset($_POST['customer_email']) ? sanitize_email(wp_unslash($_POST['customer_email'])) : '';
         $product_id = absint($_POST['product_id'] ?? 0);
         $order_id = absint($_POST['order_id'] ?? 0);
 
@@ -181,6 +188,7 @@ class Customer_Reminders
         );
         
         // Get active reminders that haven't exceeded max attempts
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $reminders = $wpdb->get_results($wpdb->prepare(
             "SELECT r.*, pr.post_title as product_name
              FROM $reminders_table r
@@ -218,8 +226,8 @@ class Customer_Reminders
         }
 
         // Calculate when to send reminder
-        $reminder_date = date('Y-m-d', strtotime("{$predicted_date} -{$advance_days} days"));
-        $today = date('Y-m-d');
+        $reminder_date = gmdate('Y-m-d', strtotime("{$predicted_date} -{$advance_days} days"));
+        $today = gmdate('Y-m-d');
 
         // Check if it's time to send reminder
         if ($reminder_date <= $today) {
@@ -250,6 +258,7 @@ class Customer_Reminders
         
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is from trusted source
         $result = $wpdb->get_var($wpdb->prepare(
             "SELECT predicted_runout_date FROM $predictions_table 
              WHERE product_id = %d AND is_dismissed = 0",
