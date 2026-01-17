@@ -141,6 +141,7 @@ defined('ABSPATH') or die('Nice Try!');
                                             esc_html_e('Today', 'fbs-stockmind');
                                         } else {
                                             printf(
+                                                /* translators: %d: Number of days */
                                                 esc_html(_n('%d day', '%d days', $days_until_runout, 'fbs-stockmind')),
                                                 $days_until_runout
                                             );

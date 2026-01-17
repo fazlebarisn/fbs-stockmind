@@ -317,6 +317,7 @@ class Supplier_Manager
                 return new \WP_Error(
                     'supplier_limit_reached',
                     sprintf(
+                        /* translators: %d: Maximum number of suppliers */
                         __('Maximum %d suppliers allowed in free version. Upgrade to Pro for unlimited suppliers.', 'fbs-stockmind'),
                         $max_suppliers
                     )

@@ -132,7 +132,7 @@ class Menu
         }
 
         if (!fbs_stockmind_can_manage()) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'fbs-stockmind'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'fbs-stockmind'));
         }
     }
 

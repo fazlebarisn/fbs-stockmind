@@ -51,7 +51,9 @@ defined('ABSPATH') or die('Nice Try!');
                                 </a>
                             </h4>
                             <p class="fbs-product-quantity">
-                                <?php printf(
+                                <?php 
+                                printf(
+                                    /* translators: %d: Product quantity */
                                     esc_html(_n('Quantity: %d', 'Quantity: %d', $product_data['quantity'], 'fbs-stockmind')),
                                     $product_data['quantity']
                                 ); ?>

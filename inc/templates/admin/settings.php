@@ -161,6 +161,7 @@ defined('ABSPATH') or die('Nice Try!');
                             ?>
                             <li><?php 
                                 printf(
+                                    /* translators: %d: Number of days */
                                     esc_html__('Analyzes sales data from the last %d days', 'fbs-stockmind'),
                                     $sales_period
                                 ); 

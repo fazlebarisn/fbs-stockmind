@@ -89,6 +89,7 @@ class Notification_System
             $this->display_notice(
                 'warning',
                 sprintf(
+                    /* translators: %d: Number of products */
                     __('⚠️ %d products are predicted to run out of stock within 7 days!', 'fbs-stockmind'),
                     $urgent_count
                 ),
@@ -172,7 +173,7 @@ class Notification_System
     public function dismiss_admin_notice()
     {
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Insufficient permissions.', 'fbs-stockmind'));
+            wp_die(esc_html__('Insufficient permissions.', 'fbs-stockmind'));
         }
 
         $notice_id = sanitize_text_field($_POST['notice_id'] ?? '');

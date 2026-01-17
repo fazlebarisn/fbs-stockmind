@@ -361,7 +361,7 @@ class Ajax_Handler
     private function verify_nonce()
     {
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'fbs_stockmind_nonce')) {
-            wp_die(__('Security check failed.', 'fbs-stockmind'));
+            wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
     }
 
@@ -374,7 +374,7 @@ class Ajax_Handler
     private function check_admin_permissions()
     {
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Insufficient permissions.', 'fbs-stockmind'));
+            wp_die(esc_html__('Insufficient permissions.', 'fbs-stockmind'));
         }
     }
 }

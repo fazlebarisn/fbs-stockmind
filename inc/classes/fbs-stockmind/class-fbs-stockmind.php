@@ -215,7 +215,7 @@ class FBS_StockMind
     {
         // Verify nonce
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'fbs_stockmind_nonce')) {
-            wp_die(__('Security check failed.', 'fbs-stockmind'));
+            wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
 
         $action = sanitize_text_field($_POST['action_type'] ?? '');

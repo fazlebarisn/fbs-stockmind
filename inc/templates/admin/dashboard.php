@@ -107,6 +107,7 @@ defined('ABSPATH') or die('Nice Try!');
                                                 esc_html_e('Out of stock predicted', 'fbs-stockmind');
                                             } else {
                                                 printf(
+                                                    /* translators: %d: Number of days */
                                                     esc_html(_n('%d day until runout', '%d days until runout', $prediction['days_until_runout'], 'fbs-stockmind')),
                                                     $prediction['days_until_runout']
                                                 );
@@ -165,6 +166,7 @@ defined('ABSPATH') or die('Nice Try!');
                                             <?php 
                                             if ($replenishment['reminder_count'] > 0) {
                                                 printf(
+                                                    /* translators: %d: Number of reminders */
                                                     esc_html(_n('%d reminder sent', '%d reminders sent', $replenishment['reminder_count'], 'fbs-stockmind')),
                                                     $replenishment['reminder_count']
                                                 );

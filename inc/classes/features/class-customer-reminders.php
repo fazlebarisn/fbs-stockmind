@@ -286,6 +286,7 @@ class Customer_Reminders
         $product_url = get_permalink($reminder->product_id);
         
         $subject = sprintf(
+            /* translators: %s: Product name */
             __('Time to reorder: %s', 'fbs-stockmind'),
             $product_name
         );
@@ -475,6 +476,7 @@ class Customer_Reminders
         $product_name = $reminder->product_name;
         
         $subject = sprintf(
+            /* translators: %s: Product name */
             __('Time to reorder: %s', 'fbs-stockmind'),
             $product_name
         );
