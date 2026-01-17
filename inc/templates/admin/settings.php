@@ -178,6 +178,11 @@ defined('ABSPATH') or die('Nice Try!');
                 <div class="fbs-settings-section">
                     <h2 class="fbs-section-title"><?php esc_html_e('Customer Reminder Settings', 'fbs-stockmind'); ?></h2>
                     
+                    <?php
+                    $settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
+                    $reminder_editable = $settings_class->is_reminder_settings_editable();
+                    ?>
+                    
                     <div class="fbs-form-group">
                         <label class="fbs-form-label">
                             <input type="checkbox" 
@@ -195,6 +200,9 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-form-group">
                         <label for="reminder_advance_days" class="fbs-form-label">
                             <?php esc_html_e('Reminder Advance Days', 'fbs-stockmind'); ?>
+                            <?php if (!$reminder_editable): ?>
+                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
+                            <?php endif; ?>
                         </label>
                         <input type="number" 
                                id="reminder_advance_days" 
@@ -202,7 +210,8 @@ defined('ABSPATH') or die('Nice Try!');
                                value="<?php echo esc_attr($settings['reminder_advance_days']); ?>" 
                                min="1" 
                                max="30" 
-                               class="fbs-form-input" />
+                               <?php echo $reminder_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('How many days before predicted runout to send reminders', 'fbs-stockmind'); ?>
                         </p>
@@ -211,8 +220,8 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-form-group">
                         <label for="max_reminder_attempts" class="fbs-form-label">
                             <?php esc_html_e('Maximum Reminder Attempts', 'fbs-stockmind'); ?>
-                            <?php if (!defined('FBS_STOCKMIND_PRO_VERSION')): ?>
-                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Free: Max 1', 'fbs-stockmind'); ?>)</span>
+                            <?php if (!$reminder_editable): ?>
+                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
                             <?php endif; ?>
                         </label>
                         <input type="number" 
@@ -220,13 +229,11 @@ defined('ABSPATH') or die('Nice Try!');
                                name="max_reminder_attempts" 
                                value="<?php echo esc_attr($settings['max_reminder_attempts']); ?>" 
                                min="1" 
-                               max="<?php echo defined('FBS_STOCKMIND_PRO_VERSION') ? '10' : '1'; ?>" 
-                               class="fbs-form-input" />
+                               max="10" 
+                               <?php echo $reminder_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Maximum number of reminder emails to send per customer', 'fbs-stockmind'); ?>
-                            <?php if (!defined('FBS_STOCKMIND_PRO_VERSION')): ?>
-                                <br><em style="color: #d63638;"><?php esc_html_e('Free version limited to 1 attempt. Upgrade to Pro for multiple attempts (up to 10).', 'fbs-stockmind'); ?></em>
-                            <?php endif; ?>
                         </p>
                     </div>
                 </div>

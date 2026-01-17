@@ -142,8 +142,13 @@ class Predictor
             return false;
         }
 
-        // Get current stock - use appropriate method based on stock management
-        $current_stock = $product->managing_stock() ? $product->get_stock_quantity() : fbs_stockmind_get_product_stock($product_id);
+        // Skip products that don't have stock tracking enabled
+        if (!fbs_stockmind_is_product_stock_tracked($product)) {
+            return false;
+        }
+
+        // Get current stock - product must have stock tracking enabled at this point
+        $current_stock = $product->get_stock_quantity();
         
         // Handle null stock - don't create predictions for products with null stock
         if ($current_stock === null) {
@@ -514,7 +519,9 @@ class Predictor
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 0");
         $wpdb->query("DELETE FROM $predictions_table WHERE is_dismissed = 1");
 
-        // Get all published products (we'll check stock individually)
+        // Get all published products
+        // Note: We can't filter by manage_stock in wc_get_products for variable products,
+        // so we'll check each product individually
         $products = wc_get_products([
             'limit' => -1,
             'status' => 'publish',
@@ -526,6 +533,17 @@ class Predictor
 
         foreach ($products as $product) {
             $product_id = $product->get_id();
+            
+            // Double check stock tracking is enabled (for variable products, check variations)
+            if (!fbs_stockmind_is_product_stock_tracked($product)) {
+                // Remove any existing prediction if stock tracking is disabled
+                $wpdb->delete(
+                    $predictions_table,
+                    ['product_id' => $product_id, 'is_dismissed' => 0],
+                    ['%d', '%d']
+                );
+                continue;
+            }
             
             try {
                 $prediction_data = $this->calculate_runout_date($product_id);
@@ -648,12 +666,23 @@ class Predictor
                 continue;
             }
 
+            // Skip products that don't have stock tracking enabled
+            if (!fbs_stockmind_is_product_stock_tracked($product)) {
+                // Remove prediction if stock tracking is disabled
+                $wpdb->delete(
+                    $predictions_table,
+                    ['id' => $result->id],
+                    ['%d']
+                );
+                continue;
+            }
+
             $predictions[] = [
                 'id' => $result->id,
                 'product_id' => $result->product_id,
                 'product_name' => $product->get_name(),
                 'product_image' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-                'current_stock' => $product->managing_stock() ? $product->get_stock_quantity() : fbs_stockmind_get_product_stock($result->product_id),
+                'current_stock' => $product->get_stock_quantity(),
                 'predicted_runout_date' => $result->predicted_runout_date,
                 'confidence_score' => $result->confidence_score,
                 'calculated_at' => $result->calculated_at,
@@ -663,6 +692,7 @@ class Predictor
 
         return $predictions;
     }
+    
 
     /**
      * Dismiss a prediction

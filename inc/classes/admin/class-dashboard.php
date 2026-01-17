@@ -114,9 +114,16 @@ class Dashboard
         ));
         
         $predictions = [];
+        $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
+        
         foreach ($results as $result) {
             $product = wc_get_product($result->product_id);
             if (!$product) {
+                continue;
+            }
+            
+            // Skip products that don't have stock tracking enabled
+            if (!fbs_stockmind_is_product_stock_tracked($product)) {
                 continue;
             }
             
@@ -125,7 +132,7 @@ class Dashboard
                 'product_id' => $result->product_id,
                 'product_name' => $result->product_name,
                 'product_image' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-                'current_stock' => fbs_stockmind_get_product_stock($result->product_id),
+                'current_stock' => $product->get_stock_quantity(),
                 'predicted_runout_date' => $result->predicted_runout_date,
                 'days_until_runout' => $this->calculate_days_until_runout($result->predicted_runout_date),
                 'calculated_at' => $result->calculated_at,

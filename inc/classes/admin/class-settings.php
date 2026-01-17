@@ -111,21 +111,29 @@ class Settings
             ? absint($_POST['sales_data_period'] ?? $current_settings['sales_data_period'])
             : $current_settings['sales_data_period'];
         
-        // Get max reminder attempts (1 for free, 10 for pro)
-        $max_attempts = defined('FBS_STOCKMIND_PRO_VERSION') ? 10 : 1;
-        $reminder_attempts = absint($_POST['max_reminder_attempts'] ?? 1);
-        // Enforce max attempts for free version
-        if (!defined('FBS_STOCKMIND_PRO_VERSION') && $reminder_attempts > 1) {
-            $reminder_attempts = 1;
-        }
+        // Check if reminder settings are editable (free: read-only, pro: editable)
+        $reminder_editable = $this->is_reminder_settings_editable();
+        
+        // Get current values
+        $current_settings = $this->get_all_settings();
+        
+        // Only save reminder attempts if editable (pro version)
+        $reminder_attempts = $reminder_editable
+            ? absint($_POST['max_reminder_attempts'] ?? $current_settings['max_reminder_attempts'])
+            : $current_settings['max_reminder_attempts'];
+        
+        // Only save reminder advance days if editable (pro version)
+        $reminder_advance_days = $reminder_editable
+            ? absint($_POST['reminder_advance_days'] ?? $current_settings['reminder_advance_days'])
+            : $current_settings['reminder_advance_days'];
         
         $settings_to_save = [
             'alert_window' => absint($_POST['alert_window'] ?? 14),
             'default_lead_time' => absint($_POST['default_lead_time'] ?? 7),
             'prediction_accuracy_threshold' => $prediction_threshold,
             'sales_data_period' => $sales_data_period,
-            'reminder_advance_days' => absint($_POST['reminder_advance_days'] ?? 5),
-            'max_reminder_attempts' => min($reminder_attempts, $max_attempts),
+            'reminder_advance_days' => $reminder_advance_days,
+            'max_reminder_attempts' => $reminder_attempts,
             'enable_customer_reminders' => isset($_POST['enable_customer_reminders']),
             'email_from_name' => sanitize_text_field($_POST['email_from_name'] ?? ''),
             'email_from_address' => sanitize_email($_POST['email_from_address'] ?? ''),
@@ -233,5 +241,19 @@ class Settings
     {
         // Free version: read-only, Pro can enable via filter
         return apply_filters('fbs_stockmind_prediction_settings_editable', false);
+    }
+    
+    /**
+     * Check if reminder settings are editable
+     * Allow pro to override via filter
+     *
+     * @return bool
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function is_reminder_settings_editable()
+    {
+        // Free version: read-only, Pro can enable via filter
+        return apply_filters('fbs_stockmind_reminder_settings_editable', false);
     }
 }

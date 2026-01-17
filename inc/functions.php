@@ -250,3 +250,43 @@ function fbs_stockmind_log($message, $level = 'info')
         error_log('[FBS StockMind] ' . $level . ': ' . $message);
     }
 }
+
+/**
+ * Check if product has stock tracking enabled
+ *
+ * @param WC_Product|int $product The product object or product ID
+ * @return bool
+ * @since 1.0.0
+ * @author Fazle Bari <fazlebarisn@gmail.com>
+ */
+function fbs_stockmind_is_product_stock_tracked($product)
+{
+    // If product ID is passed, get the product object
+    if (is_numeric($product)) {
+        $product = wc_get_product($product);
+    }
+    
+    if (!$product) {
+        return false;
+    }
+
+    // For simple products, check if stock management is enabled
+    if ($product->is_type('simple')) {
+        return $product->managing_stock();
+    }
+
+    // For variable products, check if any variation has stock management enabled
+    if ($product->is_type('variable')) {
+        $variations = $product->get_children();
+        foreach ($variations as $variation_id) {
+            $variation = wc_get_product($variation_id);
+            if ($variation && $variation->managing_stock()) {
+                return true; // At least one variation has stock tracking
+            }
+        }
+        return false; // No variations have stock tracking
+    }
+
+    // For other product types, check if stock management is enabled
+    return $product->managing_stock();
+}
