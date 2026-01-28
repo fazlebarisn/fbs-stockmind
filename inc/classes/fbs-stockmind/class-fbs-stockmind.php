@@ -202,8 +202,78 @@ class FBS_StockMind
                 'loading' => __('Loading...', 'fbs-stockmind'),
                 'error' => __('An error occurred. Please try again.', 'fbs-stockmind'),
                 'success' => __('Reminder set successfully!', 'fbs-stockmind'),
+                'setting' => __('Setting...', 'fbs-stockmind'),
+                'reminderSet' => __('Reminder Set!', 'fbs-stockmind'),
+                'enableReminder' => __('Enable Reminder', 'fbs-stockmind'),
             ],
         ]);
+
+        // Add inline script for reminder form functionality
+        $inline_script = "
+jQuery(document).ready(function($) {
+    // Show reminder form after a short delay
+    setTimeout(function() {
+        $('#fbs-reminder-form').fadeIn(300);
+    }, 2000);
+    
+    // Close form handlers
+    $('.fbs-reminder-close, .fbs-reminder-overlay').on('click', function() {
+        $('#fbs-reminder-form').fadeOut(300);
+    });
+    
+    // Set reminder handler
+    $('.fbs-set-reminder').on('click', function() {
+        var \$button = $(this);
+        var productId = \$button.data('product-id');
+        var orderId = \$button.data('order-id');
+        var customerEmail = \$button.data('customer-email');
+        
+        // Disable button and show loading
+        \$button.prop('disabled', true).html('<span class=\"fbs-btn-icon\">⏳</span> ' + fbsStockMind.strings.setting);
+        
+        // Make AJAX request
+        $.ajax({
+            url: fbsStockMind.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'fbs_stockmind_ajax',
+                action_type: 'set_reminder',
+                nonce: fbsStockMind.nonce,
+                customer_email: customerEmail,
+                product_id: productId,
+                order_id: orderId
+            },
+            success: function(response) {
+                if (response.success) {
+                    \$button.html('<span class=\"fbs-btn-icon\">✅</span> ' + fbsStockMind.strings.reminderSet);
+                    \$button.removeClass('fbs-btn-primary').addClass('fbs-btn-success');
+                    
+                    // Show success message
+                    if (typeof fbsStockMind.showToast === 'function') {
+                        fbsStockMind.showToast('success', response.data);
+                    }
+                } else {
+                    \$button.prop('disabled', false).html('<span class=\"fbs-btn-icon\">🔔</span> ' + fbsStockMind.strings.enableReminder);
+                    
+                    // Show error message
+                    if (typeof fbsStockMind.showToast === 'function') {
+                        fbsStockMind.showToast('error', response.data);
+                    }
+                }
+            },
+            error: function() {
+                \$button.prop('disabled', false).html('<span class=\"fbs-btn-icon\">🔔</span> ' + fbsStockMind.strings.enableReminder);
+                
+                // Show error message
+                if (typeof fbsStockMind.showToast === 'function') {
+                    fbsStockMind.showToast('error', fbsStockMind.strings.error);
+                }
+            }
+        });
+    });
+});
+";
+        wp_add_inline_script('fbs-stockmind-frontend', $inline_script);
     }
 
     /**
@@ -216,7 +286,7 @@ class FBS_StockMind
     {
         // Verify nonce
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        $nonce = isset($_POST['nonce']) ? wp_unslash($_POST['nonce']) : '';
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }

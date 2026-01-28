@@ -378,7 +378,7 @@ class Ajax_Handler
     private function verify_nonce()
     {
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        $nonce = isset($_POST['nonce']) ? wp_unslash($_POST['nonce']) : '';
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
         if (!wp_verify_nonce($nonce, 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }

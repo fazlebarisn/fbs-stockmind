@@ -183,7 +183,7 @@ class Notification_System
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'fbs_stockmind_nonce')) {
             wp_die(esc_html__('Security check failed.', 'fbs-stockmind'));
         }
 
@@ -223,6 +223,57 @@ class Notification_System
     }
 
     /**
+     * Get email template CSS
+     *
+     * @param string $color Header background color
+     * @return string
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    private function get_email_template_css($color)
+    {
+        $css = '
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f8f9fa;
+            }
+            .email-container {
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+            .email-header {
+                background-color: ' . esc_attr($color) . ';
+                color: white;
+                padding: 30px;
+                text-align: center;
+            }
+            .email-header h1 {
+                margin: 0;
+                font-size: 24px;
+                font-weight: 600;
+            }
+            .email-body {
+                padding: 30px;
+            }
+            .email-footer {
+                background-color: #f8f9fa;
+                padding: 20px;
+                text-align: center;
+                color: #6c757d;
+                font-size: 14px;
+            }
+        ';
+        return $css;
+    }
+
+    /**
      * Get email template
      *
      * @param string $subject Email subject
@@ -242,6 +293,7 @@ class Notification_System
         ];
         
         $color = $type_colors[$type] ?? '#17a2b8';
+        $css = $this->get_email_template_css($color);
         
         ob_start();
         ?>
@@ -251,44 +303,7 @@ class Notification_System
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title><?php echo esc_html($subject); ?></title>
-            <style>
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    background-color: #f8f9fa;
-                }
-                .email-container {
-                    background-color: #ffffff;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    overflow: hidden;
-                }
-                .email-header {
-                    background-color: <?php echo esc_attr($color); ?>;
-                    color: white;
-                    padding: 30px;
-                    text-align: center;
-                }
-                .email-header h1 {
-                    margin: 0;
-                    font-size: 24px;
-                    font-weight: 600;
-                }
-                .email-body {
-                    padding: 30px;
-                }
-                .email-footer {
-                    background-color: #f8f9fa;
-                    padding: 20px;
-                    text-align: center;
-                    color: #6c757d;
-                    font-size: 14px;
-                }
-            </style>
+            <style><?php echo wp_strip_all_tags($css); ?></style>
         </head>
         <body>
             <div class="email-container">

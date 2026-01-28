@@ -1,7 +1,7 @@
 === FBS StockMind ===
 Contributors: fazlebari
 Tags: woocommerce, inventory, stock management, predictions, reminders
-Requires at least: 6.4.2
+Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 1.0.0
@@ -37,7 +37,7 @@ Yes, FBS StockMind requires WooCommerce to be installed and active.
 
 = What version of WordPress is required? =
 
-WordPress 6.4.2 or higher is required.
+WordPress 6.4 or higher is required.
 
 = What version of PHP is required? =
 

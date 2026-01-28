@@ -142,7 +142,7 @@ class Customer_Reminders
             return;
         }
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'fbs_stockmind_nonce')) {
             wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
             return;
         }

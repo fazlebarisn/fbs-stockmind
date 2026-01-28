@@ -151,7 +151,7 @@ class Supplier_Manager
             return;
         }
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        if (!wp_verify_nonce(wp_unslash($_POST['fbs_supplier_meta_nonce']), 'fbs_supplier_meta')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['fbs_supplier_meta_nonce'])), 'fbs_supplier_meta')) {
             return;
         }
 
@@ -331,7 +331,7 @@ class Supplier_Manager
                     'supplier_limit_reached',
                     sprintf(
                         /* translators: %d: Maximum number of suppliers */
-                        __('Maximum %d suppliers allowed in free version. Upgrade to Pro for unlimited suppliers.', 'fbs-stockmind'),
+                        __('Maximum %d suppliers allowed.', 'fbs-stockmind'),
                         $max_suppliers
                     )
                 );

@@ -116,7 +116,24 @@ class Settings
      */
     public function sanitize_float($value)
     {
-        return floatval($value);
+        // Convert to float
+        $float_value = floatval($value);
+        
+        // Check for NaN or INF
+        if (!is_finite($float_value)) {
+            return 0.6; // Default threshold value
+        }
+        
+        // Clamp to reasonable range (0-1 for accuracy threshold)
+        // This ensures the value is between 0 and 1
+        if ($float_value < 0) {
+            return 0.0;
+        }
+        if ($float_value > 1) {
+            return 1.0;
+        }
+        
+        return $float_value;
     }
     
     /**
@@ -143,7 +160,7 @@ class Settings
         // Handle form submission
         if (isset($_POST['submit']) && isset($_POST['_wpnonce'])) {
             // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-            $nonce = wp_unslash($_POST['_wpnonce']);
+            $nonce = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
             if (wp_verify_nonce($nonce, 'fbs_stockmind_settings')) {
                 $this->save_settings();
             }
@@ -167,7 +184,7 @@ class Settings
             return;
         }
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        if (!wp_verify_nonce(wp_unslash($_POST['_wpnonce']), 'fbs_stockmind_settings')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'fbs_stockmind_settings')) {
             return;
         }
         
@@ -244,7 +261,7 @@ class Settings
             return;
         }
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified, not sanitized
-        if (!wp_verify_nonce(wp_unslash($_POST['nonce']), 'fbs_stockmind_nonce')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'fbs_stockmind_nonce')) {
             wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
             return;
         }
