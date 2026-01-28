@@ -6,7 +6,7 @@
  * Requires PHP:      7.4
  * Version:           1.0.0
  * Author:            Fazle Bari
- * Author URI:        https://www.cansoft.com/
+ * Author URI:        https://github.com/fazlebarisn/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       fbs-stockmind
