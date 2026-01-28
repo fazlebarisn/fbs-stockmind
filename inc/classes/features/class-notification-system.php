@@ -303,7 +303,7 @@ class Notification_System
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title><?php echo esc_html($subject); ?></title>
-            <style><?php echo wp_strip_all_tags($css); ?></style>
+            <style><?php echo esc_html($css); ?></style>
         </head>
         <body>
             <div class="email-container">
