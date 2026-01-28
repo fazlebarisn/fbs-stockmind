@@ -121,7 +121,7 @@ class Predictor
 
         // Save supplier
         if (isset($_POST['fbs_stockmind_supplier_id'])) {
-            $supplier_id = absint($_POST['fbs_stockmind_supplier_id']);
+            $supplier_id = absint(wp_unslash($_POST['fbs_stockmind_supplier_id']));
             if ($supplier_id > 0) {
                 fbs_stockmind_set_product_supplier($post_id, $supplier_id);
             } else {
@@ -767,7 +767,7 @@ class Predictor
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above
-        $prediction_id = isset($_POST['prediction_id']) ? absint($_POST['prediction_id']) : 0;
+        $prediction_id = isset($_POST['prediction_id']) ? absint(wp_unslash($_POST['prediction_id'])) : 0;
         
         if (!$prediction_id) {
             wp_send_json_error(__('Invalid prediction ID.', 'fbs-stockmind'));

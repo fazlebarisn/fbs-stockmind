@@ -148,8 +148,8 @@ class Customer_Reminders
         }
 
         $customer_email = isset($_POST['customer_email']) ? sanitize_email(wp_unslash($_POST['customer_email'])) : '';
-        $product_id = absint($_POST['product_id'] ?? 0);
-        $order_id = absint($_POST['order_id'] ?? 0);
+        $product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
+        $order_id = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
 
         if (empty($customer_email) || !$product_id || !$order_id) {
             wp_send_json_error(__('Invalid data provided.', 'fbs-stockmind'));

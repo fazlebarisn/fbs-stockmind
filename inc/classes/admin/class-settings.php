@@ -200,11 +200,11 @@ class Settings
         
         // Only save prediction settings if editable (pro version)
         $prediction_threshold = $prediction_editable 
-            ? floatval(isset($_POST['prediction_accuracy_threshold']) ? $_POST['prediction_accuracy_threshold'] : $current_settings['prediction_accuracy_threshold'])
+            ? floatval(isset($_POST['prediction_accuracy_threshold']) ? wp_unslash($_POST['prediction_accuracy_threshold']) : $current_settings['prediction_accuracy_threshold'])
             : $current_settings['prediction_accuracy_threshold'];
         
         $sales_data_period = $prediction_editable
-            ? absint(isset($_POST['sales_data_period']) ? $_POST['sales_data_period'] : $current_settings['sales_data_period'])
+            ? absint(isset($_POST['sales_data_period']) ? wp_unslash($_POST['sales_data_period']) : $current_settings['sales_data_period'])
             : $current_settings['sales_data_period'];
         
         // Check if reminder settings are editable (free: read-only, pro: editable)
@@ -215,17 +215,17 @@ class Settings
         
         // Only save reminder attempts if editable (pro version)
         $reminder_attempts = $reminder_editable
-            ? absint(isset($_POST['max_reminder_attempts']) ? $_POST['max_reminder_attempts'] : $current_settings['max_reminder_attempts'])
+            ? absint(isset($_POST['max_reminder_attempts']) ? wp_unslash($_POST['max_reminder_attempts']) : $current_settings['max_reminder_attempts'])
             : $current_settings['max_reminder_attempts'];
         
         // Only save reminder advance days if editable (pro version)
         $reminder_advance_days = $reminder_editable
-            ? absint(isset($_POST['reminder_advance_days']) ? $_POST['reminder_advance_days'] : $current_settings['reminder_advance_days'])
+            ? absint(isset($_POST['reminder_advance_days']) ? wp_unslash($_POST['reminder_advance_days']) : $current_settings['reminder_advance_days'])
             : $current_settings['reminder_advance_days'];
         
         $settings_to_save = [
-            'alert_window' => absint(isset($_POST['alert_window']) ? $_POST['alert_window'] : 14),
-            'default_lead_time' => absint(isset($_POST['default_lead_time']) ? $_POST['default_lead_time'] : 7),
+            'alert_window' => absint(isset($_POST['alert_window']) ? wp_unslash($_POST['alert_window']) : 14),
+            'default_lead_time' => absint(isset($_POST['default_lead_time']) ? wp_unslash($_POST['default_lead_time']) : 7),
             'prediction_accuracy_threshold' => $prediction_threshold,
             'sales_data_period' => $sales_data_period,
             'reminder_advance_days' => $reminder_advance_days,

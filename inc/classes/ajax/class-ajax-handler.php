@@ -66,7 +66,7 @@ class Ajax_Handler
 
         // Nonce verified above via verify_nonce(), now safely process POST data
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $prediction_id = isset($_POST['prediction_id']) ? absint($_POST['prediction_id']) : 0;
+        $prediction_id = isset($_POST['prediction_id']) ? absint(wp_unslash($_POST['prediction_id'])) : 0;
         
         if (!$prediction_id) {
             wp_send_json_error(__('Invalid prediction ID.', 'fbs-stockmind'));
@@ -97,7 +97,7 @@ class Ajax_Handler
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
         $supplier_data = [
             'name' => isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '',
-            'lead_time' => isset($_POST['lead_time']) ? absint($_POST['lead_time']) : 7,
+            'lead_time' => isset($_POST['lead_time']) ? absint(wp_unslash($_POST['lead_time'])) : 7,
             'email' => isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '',
             'phone' => isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '',
             'address' => isset($_POST['address']) ? sanitize_textarea_field(wp_unslash($_POST['address'])) : '',
@@ -112,7 +112,7 @@ class Ajax_Handler
 
         $supplier_manager = \FBS_StockMind\Inc\Features\Supplier_Manager::get_instance();
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $supplier_id = isset($_POST['supplier_id']) ? absint($_POST['supplier_id']) : 0;
+        $supplier_id = isset($_POST['supplier_id']) ? absint(wp_unslash($_POST['supplier_id'])) : 0;
 
         if ($supplier_id) {
             // Update existing supplier
@@ -144,7 +144,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $supplier_id = isset($_POST['supplier_id']) ? absint($_POST['supplier_id']) : 0;
+        $supplier_id = isset($_POST['supplier_id']) ? absint(wp_unslash($_POST['supplier_id'])) : 0;
         
         if (!$supplier_id) {
             wp_send_json_error(__('Invalid supplier ID.', 'fbs-stockmind'));
@@ -171,7 +171,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $supplier_id = isset($_POST['supplier_id']) ? absint($_POST['supplier_id']) : 0;
+        $supplier_id = isset($_POST['supplier_id']) ? absint(wp_unslash($_POST['supplier_id'])) : 0;
         
         if (!$supplier_id) {
             wp_send_json_error(__('Invalid supplier ID.', 'fbs-stockmind'));
@@ -199,7 +199,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $reminder_id = isset($_POST['reminder_id']) ? absint($_POST['reminder_id']) : 0;
+        $reminder_id = isset($_POST['reminder_id']) ? absint(wp_unslash($_POST['reminder_id'])) : 0;
         
         if (!$reminder_id) {
             wp_send_json_error(__('Invalid reminder ID.', 'fbs-stockmind'));
@@ -226,7 +226,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $reminder_id = isset($_POST['reminder_id']) ? absint($_POST['reminder_id']) : 0;
+        $reminder_id = isset($_POST['reminder_id']) ? absint(wp_unslash($_POST['reminder_id'])) : 0;
         
         if (!$reminder_id) {
             wp_send_json_error(__('Invalid reminder ID.', 'fbs-stockmind'));
@@ -263,7 +263,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        $reminder_id = isset($_POST['reminder_id']) ? absint($_POST['reminder_id']) : 0;
+        $reminder_id = isset($_POST['reminder_id']) ? absint(wp_unslash($_POST['reminder_id'])) : 0;
         
         if (!$reminder_id) {
             wp_send_json_error(__('Invalid reminder ID.', 'fbs-stockmind'));
@@ -348,8 +348,8 @@ class Ajax_Handler
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Will be unslashed
         $customer_email = isset($_POST['customer_email']) ? sanitize_email(wp_unslash($_POST['customer_email'])) : '';
-        $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
-        $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
+        $product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
+        $order_id = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
         // phpcs:enable WordPress.Security.NonceVerification.Missing
 
         if (empty($customer_email) || !$product_id || !$order_id) {
