@@ -64,21 +64,21 @@ defined('ABSPATH') or die('Nice Try!');
             </div>
         <?php else: ?>
             <div class="fbs-reminders-list">
-                <?php foreach ($reminders as $reminder): ?>
+                <?php foreach ($reminders as $fbs_stockmind_reminder): ?>
                     <div class="fbs-reminder-item" 
-                         data-reminder-id="<?php echo esc_attr($reminder['id']); ?>"
-                         data-status="<?php echo esc_attr($reminder['is_active'] ? 'active' : 'inactive'); ?>">
+                         data-reminder-id="<?php echo esc_attr($fbs_stockmind_reminder['id']); ?>"
+                         data-status="<?php echo esc_attr($fbs_stockmind_reminder['is_active'] ? 'active' : 'inactive'); ?>">
                         
                         <div class="fbs-reminder-details">
                             <div class="fbs-reminder-header">
                                 <h3 class="fbs-reminder-product-name">
-                                    <a href="<?php echo esc_url(get_permalink($reminder['product_id'])); ?>" target="_blank">
-                                        <?php echo esc_html($reminder['product_name']); ?>
+                                    <a href="<?php echo esc_url(get_permalink($fbs_stockmind_reminder['product_id'])); ?>" target="_blank">
+                                        <?php echo esc_html($fbs_stockmind_reminder['product_name']); ?>
                                     </a>
                                 </h3>
                                 <div class="fbs-reminder-status">
-                                    <span class="fbs-status-badge fbs-status-<?php echo esc_attr($reminder['is_active'] ? 'active' : 'inactive'); ?>">
-                                        <?php echo esc_html($reminder['is_active'] ? __('Active', 'fbs-stockmind') : __('Inactive', 'fbs-stockmind')); ?>
+                                    <span class="fbs-status-badge fbs-status-<?php echo esc_attr($fbs_stockmind_reminder['is_active'] ? 'active' : 'inactive'); ?>">
+                                        <?php echo esc_html($fbs_stockmind_reminder['is_active'] ? __('Active', 'fbs-stockmind') : __('Inactive', 'fbs-stockmind')); ?>
                                     </span>
                                 </div>
                             </div>
@@ -87,8 +87,8 @@ defined('ABSPATH') or die('Nice Try!');
                                 <div class="fbs-meta-item">
                                     <span class="fbs-meta-label"><?php esc_html_e('Customer:', 'fbs-stockmind'); ?></span>
                                     <span class="fbs-meta-value">
-                                        <a href="mailto:<?php echo esc_attr($reminder['customer_email']); ?>">
-                                            <?php echo esc_html($reminder['customer_email']); ?>
+                                        <a href="mailto:<?php echo esc_attr($fbs_stockmind_reminder['customer_email']); ?>">
+                                            <?php echo esc_html($fbs_stockmind_reminder['customer_email']); ?>
                                         </a>
                                     </span>
                                 </div>
@@ -96,8 +96,8 @@ defined('ABSPATH') or die('Nice Try!');
                                 <div class="fbs-meta-item">
                                     <span class="fbs-meta-label"><?php esc_html_e('Order:', 'fbs-stockmind'); ?></span>
                                     <span class="fbs-meta-value">
-                                        <a href="<?php echo esc_url(admin_url('post.php?post=' . $reminder['order_id'] . '&action=edit')); ?>" target="_blank">
-                                            #<?php echo esc_html($reminder['order_id']); ?>
+                                        <a href="<?php echo esc_url(admin_url('post.php?post=' . $fbs_stockmind_reminder['order_id'] . '&action=edit')); ?>" target="_blank">
+                                            #<?php echo esc_html($fbs_stockmind_reminder['order_id']); ?>
                                         </a>
                                     </span>
                                 </div>
@@ -105,15 +105,15 @@ defined('ABSPATH') or die('Nice Try!');
                                 <div class="fbs-meta-item">
                                     <span class="fbs-meta-label"><?php esc_html_e('Created:', 'fbs-stockmind'); ?></span>
                                     <span class="fbs-meta-value">
-                                        <?php echo esc_html(fbs_stockmind_format_date($reminder['created_at'])); ?>
+                                        <?php echo esc_html(fbs_stockmind_format_date($fbs_stockmind_reminder['created_at'])); ?>
                                     </span>
                                 </div>
                                 
-                                <?php if ($reminder['last_reminder_sent']): ?>
+                                <?php if ($fbs_stockmind_reminder['last_reminder_sent']): ?>
                                     <div class="fbs-meta-item">
                                         <span class="fbs-meta-label"><?php esc_html_e('Last Reminder:', 'fbs-stockmind'); ?></span>
                                         <span class="fbs-meta-value">
-                                            <?php echo esc_html(fbs_stockmind_format_date($reminder['last_reminder_sent'])); ?>
+                                            <?php echo esc_html(fbs_stockmind_format_date($fbs_stockmind_reminder['last_reminder_sent'])); ?>
                                         </span>
                                     </div>
                                 <?php endif; ?>
@@ -121,30 +121,30 @@ defined('ABSPATH') or die('Nice Try!');
                                 <div class="fbs-meta-item">
                                     <span class="fbs-meta-label"><?php esc_html_e('Reminders Sent:', 'fbs-stockmind'); ?></span>
                                     <span class="fbs-meta-value">
-                                        <?php echo esc_html($reminder['reminder_count']); ?>
+                                        <?php echo esc_html($fbs_stockmind_reminder['reminder_count']); ?>
                                     </span>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="fbs-reminder-actions">
-                            <?php if ($reminder['is_active']): ?>
+                            <?php if ($fbs_stockmind_reminder['is_active']): ?>
                                 <button type="button" 
                                         class="fbs-btn fbs-btn-sm fbs-btn-warning fbs-deactivate-reminder" 
-                                        data-reminder-id="<?php echo esc_attr($reminder['id']); ?>">
+                                        data-reminder-id="<?php echo esc_attr($fbs_stockmind_reminder['id']); ?>">
                                     <?php esc_html_e('Deactivate', 'fbs-stockmind'); ?>
                                 </button>
                             <?php else: ?>
                                 <button type="button" 
                                         class="fbs-btn fbs-btn-sm fbs-btn-success fbs-activate-reminder" 
-                                        data-reminder-id="<?php echo esc_attr($reminder['id']); ?>">
+                                        data-reminder-id="<?php echo esc_attr($fbs_stockmind_reminder['id']); ?>">
                                     <?php esc_html_e('Activate', 'fbs-stockmind'); ?>
                                 </button>
                             <?php endif; ?>
                             
                             <button type="button" 
                                     class="fbs-btn fbs-btn-sm fbs-btn-danger fbs-delete-reminder" 
-                                    data-reminder-id="<?php echo esc_attr($reminder['id']); ?>">
+                                    data-reminder-id="<?php echo esc_attr($fbs_stockmind_reminder['id']); ?>">
                                 <?php esc_html_e('Delete', 'fbs-stockmind'); ?>
                             </button>
                         </div>

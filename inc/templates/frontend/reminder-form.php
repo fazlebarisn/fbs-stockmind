@@ -27,18 +27,18 @@ defined('ABSPATH') or die('Nice Try!');
             </p>
             
             <div class="fbs-reminder-products">
-                <?php foreach ($replenishable_products as $product_data): ?>
+                <?php foreach ($replenishable_products as $fbs_stockmind_product_data): ?>
                     <?php
-                    $product = wc_get_product($product_data['id']);
-                    if (!$product) continue;
+                    $fbs_stockmind_product = wc_get_product($fbs_stockmind_product_data['id']);
+                    if (!$fbs_stockmind_product) continue;
                     
-                    $product_image = wp_get_attachment_image_url($product->get_image_id(), 'thumbnail');
-                    $product_url = get_permalink($product_data['id']);
+                    $fbs_stockmind_product_image = wp_get_attachment_image_url($fbs_stockmind_product->get_image_id(), 'thumbnail');
+                    $fbs_stockmind_product_url = get_permalink($fbs_stockmind_product_data['id']);
                     ?>
-                    <div class="fbs-reminder-product" data-product-id="<?php echo esc_attr($product_data['id']); ?>">
+                    <div class="fbs-reminder-product" data-product-id="<?php echo esc_attr($fbs_stockmind_product_data['id']); ?>">
                         <div class="fbs-product-image">
-                            <?php if ($product_image): ?>
-                                <img src="<?php echo esc_url($product_image); ?>" alt="<?php echo esc_attr($product_data['name']); ?>" />
+                            <?php if ($fbs_stockmind_product_image): ?>
+                                <img src="<?php echo esc_url($fbs_stockmind_product_image); ?>" alt="<?php echo esc_attr($fbs_stockmind_product_data['name']); ?>" />
                             <?php else: ?>
                                 <div class="fbs-no-image">📦</div>
                             <?php endif; ?>
@@ -46,16 +46,16 @@ defined('ABSPATH') or die('Nice Try!');
                         
                         <div class="fbs-product-details">
                             <h4 class="fbs-product-name">
-                                <a href="<?php echo esc_url($product_url); ?>" target="_blank">
-                                    <?php echo esc_html($product_data['name']); ?>
+                                <a href="<?php echo esc_url($fbs_stockmind_product_url); ?>" target="_blank">
+                                    <?php echo esc_html($fbs_stockmind_product_data['name']); ?>
                                 </a>
                             </h4>
                             <p class="fbs-product-quantity">
                                 <?php 
                                 printf(
                                     /* translators: %d: Product quantity */
-                                    esc_html(_n('Quantity: %d', 'Quantity: %d', absint($product_data['quantity']), 'fbs-stockmind')),
-                                    absint($product_data['quantity'])
+                                    esc_html(_n('Quantity: %d', 'Quantity: %d', absint($fbs_stockmind_product_data['quantity']), 'fbs-stockmind')),
+                                    absint($fbs_stockmind_product_data['quantity'])
                                 ); ?>
                             </p>
                         </div>
@@ -63,7 +63,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <div class="fbs-product-actions">
                             <button type="button" 
                                     class="fbs-btn fbs-btn-primary fbs-set-reminder" 
-                                    data-product-id="<?php echo esc_attr($product_data['id']); ?>"
+                                    data-product-id="<?php echo esc_attr($fbs_stockmind_product_data['id']); ?>"
                                     data-order-id="<?php echo esc_attr($order_id); ?>"
                                     data-customer-email="<?php echo esc_attr($customer_email); ?>">
                                 <span class="fbs-btn-icon">🔔</span>

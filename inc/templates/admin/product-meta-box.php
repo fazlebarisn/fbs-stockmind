@@ -34,11 +34,11 @@ defined('ABSPATH') or die('Nice Try!');
                 name="fbs_stockmind_supplier_id" 
                 class="fbs-meta-select">
             <option value=""><?php esc_html_e('Select Supplier', 'fbs-stockmind'); ?></option>
-            <?php foreach ($suppliers as $supplier): ?>
-                <option value="<?php echo esc_attr($supplier->id); ?>" 
-                        <?php selected($supplier_id, $supplier->id); ?>>
-                    <?php echo esc_html($supplier->name); ?>
-                    (<?php echo esc_html($supplier->lead_time); ?> <?php esc_html_e('days', 'fbs-stockmind'); ?>)
+            <?php foreach ($suppliers as $fbs_stockmind_supplier): ?>
+                <option value="<?php echo esc_attr($fbs_stockmind_supplier->id); ?>" 
+                        <?php selected($supplier_id, $fbs_stockmind_supplier->id); ?>>
+                    <?php echo esc_html($fbs_stockmind_supplier->name); ?>
+                    (<?php echo esc_html($fbs_stockmind_supplier->lead_time); ?> <?php esc_html_e('days', 'fbs-stockmind'); ?>)
                 </option>
             <?php endforeach; ?>
         </select>

@@ -43,13 +43,13 @@ defined('ABSPATH') or die('Nice Try!');
             </div>
         <?php else: ?>
             <div class="fbs-suppliers-grid">
-                <?php foreach ($suppliers as $supplier): ?>
-                    <div class="fbs-supplier-card" data-supplier-id="<?php echo esc_attr($supplier->id); ?>">
+                <?php foreach ($suppliers as $fbs_stockmind_supplier): ?>
+                    <div class="fbs-supplier-card" data-supplier-id="<?php echo esc_attr($fbs_stockmind_supplier->id); ?>">
                         <div class="fbs-supplier-header">
-                            <h3 class="fbs-supplier-name"><?php echo esc_html($supplier->name); ?></h3>
+                            <h3 class="fbs-supplier-name"><?php echo esc_html($fbs_stockmind_supplier->name); ?></h3>
                             <div class="fbs-supplier-status">
-                                <span class="fbs-status-badge fbs-status-<?php echo esc_attr($supplier->is_active ? 'active' : 'inactive'); ?>">
-                                    <?php echo esc_html($supplier->is_active ? __('Active', 'fbs-stockmind') : __('Inactive', 'fbs-stockmind')); ?>
+                                <span class="fbs-status-badge fbs-status-<?php echo esc_attr($fbs_stockmind_supplier->is_active ? 'active' : 'inactive'); ?>">
+                                    <?php echo esc_html($fbs_stockmind_supplier->is_active ? __('Active', 'fbs-stockmind') : __('Inactive', 'fbs-stockmind')); ?>
                                 </span>
                             </div>
                         </div>
@@ -58,50 +58,50 @@ defined('ABSPATH') or die('Nice Try!');
                             <div class="fbs-supplier-meta">
                                 <div class="fbs-meta-item">
                                     <span class="fbs-meta-label"><?php esc_html_e('Lead Time:', 'fbs-stockmind'); ?></span>
-                                    <span class="fbs-meta-value"><?php echo esc_html($supplier->lead_time); ?> <?php esc_html_e('days', 'fbs-stockmind'); ?></span>
+                                    <span class="fbs-meta-value"><?php echo esc_html($fbs_stockmind_supplier->lead_time); ?> <?php esc_html_e('days', 'fbs-stockmind'); ?></span>
                                 </div>
                                 
-                                <?php if ($supplier->email): ?>
+                                <?php if ($fbs_stockmind_supplier->email): ?>
                                     <div class="fbs-meta-item">
                                         <span class="fbs-meta-label"><?php esc_html_e('Email:', 'fbs-stockmind'); ?></span>
                                         <span class="fbs-meta-value">
-                                            <a href="mailto:<?php echo esc_attr($supplier->email); ?>">
-                                                <?php echo esc_html($supplier->email); ?>
+                                            <a href="mailto:<?php echo esc_attr($fbs_stockmind_supplier->email); ?>">
+                                                <?php echo esc_html($fbs_stockmind_supplier->email); ?>
                                             </a>
                                         </span>
                                     </div>
                                 <?php endif; ?>
                                 
-                                <?php if ($supplier->phone): ?>
+                                <?php if ($fbs_stockmind_supplier->phone): ?>
                                     <div class="fbs-meta-item">
                                         <span class="fbs-meta-label"><?php esc_html_e('Phone:', 'fbs-stockmind'); ?></span>
                                         <span class="fbs-meta-value">
-                                            <a href="tel:<?php echo esc_attr($supplier->phone); ?>">
-                                                <?php echo esc_html($supplier->phone); ?>
+                                            <a href="tel:<?php echo esc_attr($fbs_stockmind_supplier->phone); ?>">
+                                                <?php echo esc_html($fbs_stockmind_supplier->phone); ?>
                                             </a>
                                         </span>
                                     </div>
                                 <?php endif; ?>
                             </div>
                             
-                            <?php if ($supplier->notes): ?>
+                            <?php if ($fbs_stockmind_supplier->notes): ?>
                                 <div class="fbs-supplier-notes">
-                                    <p><?php echo esc_html(wp_trim_words($supplier->notes, 20)); ?></p>
+                                    <p><?php echo esc_html(wp_trim_words($fbs_stockmind_supplier->notes, 20)); ?></p>
                                 </div>
                             <?php endif; ?>
                         </div>
                         
                         <div class="fbs-supplier-actions">
                             <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-primary fbs-edit-supplier" 
-                                    data-supplier-id="<?php echo esc_attr($supplier->id); ?>">
+                                    data-supplier-id="<?php echo esc_attr($fbs_stockmind_supplier->id); ?>">
                                 <?php esc_html_e('Edit', 'fbs-stockmind'); ?>
                             </button>
                             <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-view-products" 
-                                    data-supplier-id="<?php echo esc_attr($supplier->id); ?>">
+                                    data-supplier-id="<?php echo esc_attr($fbs_stockmind_supplier->id); ?>">
                                 <?php esc_html_e('View Products', 'fbs-stockmind'); ?>
                             </button>
                             <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-danger fbs-delete-supplier" 
-                                    data-supplier-id="<?php echo esc_attr($supplier->id); ?>">
+                                    data-supplier-id="<?php echo esc_attr($fbs_stockmind_supplier->id); ?>">
                                 <?php esc_html_e('Delete', 'fbs-stockmind'); ?>
                             </button>
                         </div>

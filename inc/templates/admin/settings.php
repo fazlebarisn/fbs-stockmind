@@ -105,14 +105,14 @@ defined('ABSPATH') or die('Nice Try!');
                     <h2 class="fbs-section-title"><?php esc_html_e('Prediction Settings', 'fbs-stockmind'); ?></h2>
                     
                     <?php
-                    $settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
-                    $prediction_editable = $settings_class->is_prediction_settings_editable();
+                    $fbs_stockmind_settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
+                    $fbs_stockmind_prediction_editable = $fbs_stockmind_settings_class->is_prediction_settings_editable();
                     ?>
                     
                     <div class="fbs-form-group">
                         <label for="sales_data_period" class="fbs-form-label">
                             <?php esc_html_e('Sales Data Analysis Period (Days)', 'fbs-stockmind'); ?>
-                            <?php if (!$prediction_editable): ?>
+                            <?php if (!$fbs_stockmind_prediction_editable): ?>
                                 <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
                             <?php endif; ?>
                         </label>
@@ -122,8 +122,8 @@ defined('ABSPATH') or die('Nice Try!');
                                value="<?php echo esc_attr($settings['sales_data_period']); ?>" 
                                min="7" 
                                max="365" 
-                               <?php echo $prediction_editable ? '' : 'readonly'; ?>
-                               class="fbs-form-input <?php echo $prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
+                               <?php echo $fbs_stockmind_prediction_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $fbs_stockmind_prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Number of days of sales data to analyze for predictions', 'fbs-stockmind'); ?>
                         </p>
@@ -140,8 +140,8 @@ defined('ABSPATH') or die('Nice Try!');
                                min="0.1" 
                                max="1.0" 
                                step="0.1" 
-                               <?php echo $prediction_editable ? '' : 'readonly'; ?>
-                               class="fbs-form-input <?php echo $prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
+                               <?php echo $fbs_stockmind_prediction_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $fbs_stockmind_prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Minimum confidence level for predictions (0.1 = 10%, 1.0 = 100%)', 'fbs-stockmind'); ?>
                         </p>
@@ -152,18 +152,18 @@ defined('ABSPATH') or die('Nice Try!');
                         <ul class="fbs-info-list">
                             <?php
                             // Get actual sales data period being used
-                            $saved_period = fbs_stockmind_get_option('sales_data_period', 0);
-                            if ($saved_period > 0) {
-                                $sales_period = $saved_period;
+                            $fbs_stockmind_saved_period = fbs_stockmind_get_option('sales_data_period', 0);
+                            if ($fbs_stockmind_saved_period > 0) {
+                                $fbs_stockmind_sales_period = $fbs_stockmind_saved_period;
                             } else {
-                                $sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
+                                $fbs_stockmind_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
                             }
                             ?>
                             <li><?php 
                                 printf(
                                     /* translators: %d: Number of days */
                                     esc_html__('Analyzes sales data from the last %d days', 'fbs-stockmind'),
-                                    absint($sales_period)
+                                    absint($fbs_stockmind_sales_period)
                                 ); 
                             ?></li>
                             <li><?php esc_html_e('Calculates average daily sales rate', 'fbs-stockmind'); ?></li>
@@ -180,8 +180,8 @@ defined('ABSPATH') or die('Nice Try!');
                     <h2 class="fbs-section-title"><?php esc_html_e('Customer Reminder Settings', 'fbs-stockmind'); ?></h2>
                     
                     <?php
-                    $settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
-                    $reminder_editable = $settings_class->is_reminder_settings_editable();
+                    $fbs_stockmind_settings_class = \FBS_StockMind\Inc\Admin\Settings::get_instance();
+                    $fbs_stockmind_reminder_editable = $fbs_stockmind_settings_class->is_reminder_settings_editable();
                     ?>
                     
                     <div class="fbs-form-group">
@@ -201,7 +201,7 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-form-group">
                         <label for="reminder_advance_days" class="fbs-form-label">
                             <?php esc_html_e('Reminder Advance Days', 'fbs-stockmind'); ?>
-                            <?php if (!$reminder_editable): ?>
+                            <?php if (!$fbs_stockmind_reminder_editable): ?>
                                 <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
                             <?php endif; ?>
                         </label>
@@ -211,8 +211,8 @@ defined('ABSPATH') or die('Nice Try!');
                                value="<?php echo esc_attr($settings['reminder_advance_days']); ?>" 
                                min="1" 
                                max="30" 
-                               <?php echo $reminder_editable ? '' : 'readonly'; ?>
-                               class="fbs-form-input <?php echo $reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
+                               <?php echo $fbs_stockmind_reminder_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $fbs_stockmind_reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('How many days before predicted runout to send reminders', 'fbs-stockmind'); ?>
                         </p>
@@ -221,7 +221,7 @@ defined('ABSPATH') or die('Nice Try!');
                     <div class="fbs-form-group">
                         <label for="max_reminder_attempts" class="fbs-form-label">
                             <?php esc_html_e('Maximum Reminder Attempts', 'fbs-stockmind'); ?>
-                            <?php if (!$reminder_editable): ?>
+                            <?php if (!$fbs_stockmind_reminder_editable): ?>
                                 <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
                             <?php endif; ?>
                         </label>
@@ -231,8 +231,8 @@ defined('ABSPATH') or die('Nice Try!');
                                value="<?php echo esc_attr($settings['max_reminder_attempts']); ?>" 
                                min="1" 
                                max="10" 
-                               <?php echo $reminder_editable ? '' : 'readonly'; ?>
-                               class="fbs-form-input <?php echo $reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
+                               <?php echo $fbs_stockmind_reminder_editable ? '' : 'readonly'; ?>
+                               class="fbs-form-input <?php echo $fbs_stockmind_reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
                             <?php esc_html_e('Maximum number of reminder emails to send per customer', 'fbs-stockmind'); ?>
                         </p>
