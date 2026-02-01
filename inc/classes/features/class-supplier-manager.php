@@ -80,7 +80,7 @@ class Supplier_Manager
             'show_in_rest' => false,
         ];
 
-        register_post_type('fbs_supplier', $args);
+        register_post_type( 'fbs_stockmind_supplier', $args );
     }
 
     /**
@@ -95,7 +95,7 @@ class Supplier_Manager
             'fbs_supplier_details',
             __('Supplier Details', 'fbs-stockmind'),
             [$this, 'render_supplier_meta_box'],
-            'fbs_supplier',
+            'fbs_stockmind_supplier',
             'normal',
             'high'
         );
@@ -142,7 +142,7 @@ class Supplier_Manager
         }
 
         // Check if this is the correct post type
-        if (get_post_type($post_id) !== 'fbs_supplier') {
+        if (get_post_type($post_id) !== 'fbs_stockmind_supplier') {
             return;
         }
 
@@ -194,7 +194,7 @@ class Supplier_Manager
         global $wpdb;
 
         $post = get_post($post_id);
-        if (!$post || $post->post_type !== 'fbs_supplier') {
+        if (!$post || $post->post_type !== 'fbs_stockmind_supplier') {
             return;
         }
 
@@ -345,7 +345,7 @@ class Supplier_Manager
             'post_title' => sanitize_text_field($data['name']),
             'post_content' => sanitize_textarea_field($data['notes'] ?? ''),
             'post_status' => 'publish',
-            'post_type' => 'fbs_supplier',
+            'post_type' => 'fbs_stockmind_supplier',
         ];
 
         $post_id = wp_insert_post($post_data);

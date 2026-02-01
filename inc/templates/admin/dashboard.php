@@ -86,30 +86,30 @@ defined('ABSPATH') or die('Nice Try!');
                     </div>
                 <?php else: ?>
                     <div class="fbs-predictions-list">
-                        <?php foreach ($recent_predictions as $prediction): ?>
-                            <div class="fbs-prediction-item" data-product-id="<?php echo esc_attr($prediction['product_id']); ?>">
+                        <?php foreach ($recent_predictions as $fbs_stockmind_prediction): ?>
+                            <div class="fbs-prediction-item" data-product-id="<?php echo esc_attr($fbs_stockmind_prediction['product_id']); ?>">
                                 <div class="fbs-prediction-image">
-                                    <?php if ($prediction['product_image']): ?>
-                                        <img src="<?php echo esc_url($prediction['product_image']); ?>" alt="<?php echo esc_attr($prediction['product_name']); ?>" />
+                                    <?php if ($fbs_stockmind_prediction['product_image']): ?>
+                                        <img src="<?php echo esc_url($fbs_stockmind_prediction['product_image']); ?>" alt="<?php echo esc_attr($fbs_stockmind_prediction['product_name']); ?>" />
                                     <?php else: ?>
                                         <div class="fbs-no-image">📦</div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="fbs-prediction-details">
-                                    <h4 class="fbs-prediction-name"><?php echo esc_html($prediction['product_name']); ?></h4>
+                                    <h4 class="fbs-prediction-name"><?php echo esc_html($fbs_stockmind_prediction['product_name']); ?></h4>
                                     <div class="fbs-prediction-meta">
                                         <span class="fbs-stock-info">
-                                            <strong><?php echo esc_html($prediction['current_stock']); ?></strong> <?php esc_html_e('in stock', 'fbs-stockmind'); ?>
+                                            <strong><?php echo esc_html($fbs_stockmind_prediction['current_stock']); ?></strong> <?php esc_html_e('in stock', 'fbs-stockmind'); ?>
                                         </span>
-                                        <span class="fbs-runout-info fbs-runout-<?php echo esc_attr($prediction['days_until_runout'] <= 7 ? 'urgent' : ($prediction['days_until_runout'] <= 14 ? 'warning' : 'normal')); ?>">
+                                        <span class="fbs-runout-info fbs-runout-<?php echo esc_attr($fbs_stockmind_prediction['days_until_runout'] <= 7 ? 'urgent' : ($fbs_stockmind_prediction['days_until_runout'] <= 14 ? 'warning' : 'normal')); ?>">
                                             <?php 
-                                            if ($prediction['days_until_runout'] <= 0) {
+                                            if ($fbs_stockmind_prediction['days_until_runout'] <= 0) {
                                                 esc_html_e('Out of stock predicted', 'fbs-stockmind');
                                             } else {
                                                 printf(
                                                     /* translators: %d: Number of days */
-                                                    esc_html(_n('%d day until runout', '%d days until runout', absint($prediction['days_until_runout']), 'fbs-stockmind')),
-                                                    absint($prediction['days_until_runout'])
+                                                    esc_html(_n('%d day until runout', '%d days until runout', absint($fbs_stockmind_prediction['days_until_runout']), 'fbs-stockmind')),
+                                                    absint($fbs_stockmind_prediction['days_until_runout'])
                                                 );
                                             }
                                             ?>
@@ -117,7 +117,7 @@ defined('ABSPATH') or die('Nice Try!');
                                     </div>
                                 </div>
                                 <div class="fbs-prediction-actions">
-                                    <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction" data-prediction-id="<?php echo esc_attr($prediction['id']); ?>">
+                                    <button type="button" class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction" data-prediction-id="<?php echo esc_attr($fbs_stockmind_prediction['id']); ?>">
                                         <?php esc_html_e('Dismiss', 'fbs-stockmind'); ?>
                                     </button>
                                 </div>
@@ -147,28 +147,28 @@ defined('ABSPATH') or die('Nice Try!');
                     </div>
                 <?php else: ?>
                     <div class="fbs-replenishments-list">
-                        <?php foreach ($upcoming_replenishments as $replenishment): ?>
+                        <?php foreach ($upcoming_replenishments as $fbs_stockmind_replenishment): ?>
                             <div class="fbs-replenishment-item">
                                 <div class="fbs-replenishment-image">
-                                    <?php if ($replenishment['product_image']): ?>
-                                        <img src="<?php echo esc_url($replenishment['product_image']); ?>" alt="<?php echo esc_attr($replenishment['product_name']); ?>" />
+                                    <?php if ($fbs_stockmind_replenishment['product_image']): ?>
+                                        <img src="<?php echo esc_url($fbs_stockmind_replenishment['product_image']); ?>" alt="<?php echo esc_attr($fbs_stockmind_replenishment['product_name']); ?>" />
                                     <?php else: ?>
                                         <div class="fbs-no-image">📦</div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="fbs-replenishment-details">
-                                    <h4 class="fbs-replenishment-name"><?php echo esc_html($replenishment['product_name']); ?></h4>
+                                    <h4 class="fbs-replenishment-name"><?php echo esc_html($fbs_stockmind_replenishment['product_name']); ?></h4>
                                     <div class="fbs-replenishment-meta">
                                         <span class="fbs-customer-info">
-                                            <?php echo esc_html($replenishment['customer_email']); ?>
+                                            <?php echo esc_html($fbs_stockmind_replenishment['customer_email']); ?>
                                         </span>
                                         <span class="fbs-reminder-info">
                                             <?php 
-                                            if ($replenishment['reminder_count'] > 0) {
+                                            if ($fbs_stockmind_replenishment['reminder_count'] > 0) {
                                                 printf(
                                                     /* translators: %d: Number of reminders */
-                                                    esc_html(_n('%d reminder sent', '%d reminders sent', absint($replenishment['reminder_count']), 'fbs-stockmind')),
-                                                    absint($replenishment['reminder_count'])
+                                                    esc_html(_n('%d reminder sent', '%d reminders sent', absint($fbs_stockmind_replenishment['reminder_count']), 'fbs-stockmind')),
+                                                    absint($fbs_stockmind_replenishment['reminder_count'])
                                                 );
                                             } else {
                                                 esc_html_e('No reminders sent yet', 'fbs-stockmind');
@@ -178,7 +178,7 @@ defined('ABSPATH') or die('Nice Try!');
                                     </div>
                                 </div>
                                 <div class="fbs-replenishment-actions">
-                                    <a href="<?php echo esc_url(admin_url('post.php?post=' . $replenishment['order_id'] . '&action=edit')); ?>" class="fbs-btn fbs-btn-sm fbs-btn-secondary">
+                                    <a href="<?php echo esc_url(admin_url('post.php?post=' . $fbs_stockmind_replenishment['order_id'] . '&action=edit')); ?>" class="fbs-btn fbs-btn-sm fbs-btn-secondary">
                                         <?php esc_html_e('View Order', 'fbs-stockmind'); ?>
                                     </a>
                                 </div>

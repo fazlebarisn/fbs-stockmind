@@ -9,11 +9,6 @@
 
 defined('ABSPATH') or die('Nice Try!');
 
-// Ensure WordPress time constants are available
-if (!defined('DAY_IN_SECONDS')) {
-    define('DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS);
-}
-
 /**
  * Get plugin option with default value
  *

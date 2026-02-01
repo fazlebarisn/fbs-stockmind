@@ -29,7 +29,8 @@ define('FBS_STOCKMIND_URL', plugins_url('', FBS_STOCKMIND_FILE));
 define('FBS_STOCKMIND_BASENAME', plugin_basename(__FILE__));
 define('FBS_STOCKMIND_VERSION', '1.0.0');
 
-// Check if WooCommerce is active
+// Check if WooCommerce is active (active_plugins is a WordPress core filter - do not prefix)
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     add_action('admin_notices', 'fbs_stockmind_woocommerce_missing_notice');
     return;
@@ -70,11 +71,11 @@ require_once FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-supplier-mana
  * @since 1.0.0
  * @author Fazle Bari <fazlebarisn@gmail.com>
  */
-function activate_fbs_stockmind()
+function fbs_stockmind_activate()
 {
     FBS_StockMind\Inc\Activate::get_instance();
 }
-register_activation_hook(__FILE__, 'activate_fbs_stockmind');
+register_activation_hook(__FILE__, 'fbs_stockmind_activate');
 
 /**
  * Plugin deactivation hook
@@ -82,11 +83,11 @@ register_activation_hook(__FILE__, 'activate_fbs_stockmind');
  * @since 1.0.0
  * @author Fazle Bari <fazlebarisn@gmail.com>
  */
-function deactivate_fbs_stockmind()
+function fbs_stockmind_deactivate()
 {
     FBS_StockMind\Inc\Deactivate::get_instance();
 }
-register_deactivation_hook(__FILE__, 'deactivate_fbs_stockmind');
+register_deactivation_hook(__FILE__, 'fbs_stockmind_deactivate');
 
 /**
  * Initialize the plugin

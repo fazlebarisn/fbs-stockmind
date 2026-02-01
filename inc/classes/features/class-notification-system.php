@@ -223,58 +223,10 @@ class Notification_System
     }
 
     /**
-     * Get email template CSS
-     *
-     * @param string $color Header background color
-     * @return string
-     * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
-     */
-    private function get_email_template_css($color)
-    {
-        $css = '
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                max-width: 600px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #f8f9fa;
-            }
-            .email-container {
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                overflow: hidden;
-            }
-            .email-header {
-                background-color: ' . esc_attr($color) . ';
-                color: white;
-                padding: 30px;
-                text-align: center;
-            }
-            .email-header h1 {
-                margin: 0;
-                font-size: 24px;
-                font-weight: 600;
-            }
-            .email-body {
-                padding: 30px;
-            }
-            .email-footer {
-                background-color: #f8f9fa;
-                padding: 20px;
-                text-align: center;
-                color: #6c757d;
-                font-size: 14px;
-            }
-        ';
-        return $css;
-    }
-
-    /**
      * Get email template
+     *
+     * Uses inline styles only (no style tag) for email client compatibility
+     * and to comply with WordPress.org plugin guidelines on script/style output.
      *
      * @param string $subject Email subject
      * @param string $message Email message
@@ -292,8 +244,12 @@ class Notification_System
             'info' => '#17a2b8',
         ];
         
-        $color = $type_colors[$type] ?? '#17a2b8';
-        $css = $this->get_email_template_css($color);
+        $header_color = $type_colors[ $type ] ?? '#17a2b8';
+        $header_style = 'background-color:' . esc_attr( $header_color ) . ';color:white;padding:30px;text-align:center;margin:0;';
+        $body_style   = 'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;background-color:#f8f9fa;';
+        $container_style = 'background-color:#ffffff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;';
+        $body_block_style = 'padding:30px;';
+        $footer_style = 'background-color:#f8f9fa;padding:20px;text-align:center;color:#6c757d;font-size:14px;';
         
         ob_start();
         ?>
@@ -302,22 +258,21 @@ class Notification_System
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title><?php echo esc_html($subject); ?></title>
-            <style><?php echo esc_html($css); ?></style>
+            <title><?php echo esc_html( $subject ); ?></title>
         </head>
-        <body>
-            <div class="email-container">
-                <div class="email-header">
-                    <h1>🧠 <?php echo esc_html(get_bloginfo('name')); ?> - StockMind</h1>
+        <body style="<?php echo esc_attr( $body_style ); ?>">
+            <div style="<?php echo esc_attr( $container_style ); ?>">
+                <div style="<?php echo esc_attr( $header_style ); ?>">
+                    <h1 style="margin:0;font-size:24px;font-weight:600;">🧠 <?php echo esc_html( get_bloginfo( 'name' ) ); ?> - StockMind</h1>
                 </div>
                 
-                <div class="email-body">
-                    <h2><?php echo esc_html($subject); ?></h2>
-                    <div><?php echo wp_kses_post($message); ?></div>
+                <div style="<?php echo esc_attr( $body_block_style ); ?>">
+                    <h2><?php echo esc_html( $subject ); ?></h2>
+                    <div><?php echo wp_kses_post( $message ); ?></div>
                 </div>
                 
-                <div class="email-footer">
-                    <p><?php esc_html_e('This is an automated notification from StockMind.', 'fbs-stockmind'); ?></p>
+                <div style="<?php echo esc_attr( $footer_style ); ?>">
+                    <p><?php esc_html_e( 'This is an automated notification from StockMind.', 'fbs-stockmind' ); ?></p>
                 </div>
             </div>
         </body>

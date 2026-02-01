@@ -245,7 +245,7 @@ class Activate
             'show_in_rest' => false,
         ];
 
-        register_post_type('fbs_supplier', $args);
+        register_post_type( 'fbs_stockmind_supplier', $args );
     }
 
     /**
