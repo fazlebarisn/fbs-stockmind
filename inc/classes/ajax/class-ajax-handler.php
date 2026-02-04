@@ -41,6 +41,7 @@ class Ajax_Handler
         add_action('wp_ajax_fbs_stockmind_save_supplier', [$this, 'handle_save_supplier']);
         add_action('wp_ajax_fbs_stockmind_delete_supplier', [$this, 'handle_delete_supplier']);
         add_action('wp_ajax_fbs_stockmind_get_supplier', [$this, 'handle_get_supplier']);
+        add_action('wp_ajax_fbs_stockmind_get_supplier_products', [$this, 'handle_get_supplier_products']);
         add_action('wp_ajax_fbs_stockmind_deactivate_reminder', [$this, 'handle_deactivate_reminder']);
         add_action('wp_ajax_fbs_stockmind_activate_reminder', [$this, 'handle_activate_reminder']);
         add_action('wp_ajax_fbs_stockmind_delete_reminder', [$this, 'handle_delete_reminder']);
@@ -187,6 +188,46 @@ class Ajax_Handler
         } else {
             wp_send_json_error(__('Supplier not found.', 'fbs-stockmind'));
         }
+    }
+
+    /**
+     * Handle get supplier products
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function handle_get_supplier_products()
+    {
+        $this->verify_nonce();
+        $this->check_admin_permissions();
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
+        $supplier_id = isset($_POST['supplier_id']) ? absint(wp_unslash($_POST['supplier_id'])) : 0;
+
+        if (!$supplier_id) {
+            wp_send_json_error(__('Invalid supplier ID.', 'fbs-stockmind'));
+        }
+
+        $supplier_manager = \FBS_StockMind\Inc\Features\Supplier_Manager::get_instance();
+        $supplier = $supplier_manager->get_supplier($supplier_id);
+        if (!$supplier) {
+            wp_send_json_error(__('Supplier not found.', 'fbs-stockmind'));
+        }
+
+        $posts = $supplier_manager->get_supplier_products($supplier_id);
+        $products = [];
+        foreach ($posts as $post) {
+            $products[] = [
+                'id' => $post->ID,
+                'title' => $post->post_title,
+                'edit_url' => admin_url('post.php?post=' . $post->ID . '&action=edit'),
+            ];
+        }
+
+        wp_send_json_success([
+            'supplier_name' => $supplier->name,
+            'products' => $products,
+        ]);
     }
 
     /**

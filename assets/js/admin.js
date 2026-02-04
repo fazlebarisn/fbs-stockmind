@@ -93,6 +93,12 @@
                 FBSStockMindAdmin.deleteSupplier(supplierId);
             });
 
+            // View supplier products
+            $(document).on('click', '.fbs-view-products', function() {
+                const supplierId = $(this).data('supplier-id');
+                FBSStockMindAdmin.viewSupplierProducts(supplierId);
+            });
+
             // Deactivate reminder
             $(document).on('click', '.fbs-deactivate-reminder', function() {
                 const reminderId = $(this).data('reminder-id');
@@ -314,6 +320,54 @@
                 },
                 error: function() {
                     FBSStockMindAdmin.showToast('error', fbsStockMind.strings.error);
+                }
+            });
+        },
+
+        /**
+         * View products assigned to a supplier
+         */
+        viewSupplierProducts: function(supplierId) {
+            const $modal = $('#fbs-supplier-products-modal');
+            const $title = $('#fbs-supplier-products-modal-title');
+            const $list = $('#fbs-supplier-products-list');
+            $title.text(fbsStockMind.strings.loading || 'Loading...');
+            $list.html('<p class="fbs-loading">' + (fbsStockMind.strings.loading || 'Loading...') + '</p>');
+            $modal.show();
+
+            $.ajax({
+                url: fbsStockMind.ajaxUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'fbs_stockmind_get_supplier_products',
+                    nonce: fbsStockMind.nonce,
+                    supplier_id: supplierId
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        $title.text('Products by ' + (response.data.supplier_name || ''));
+                        var products = response.data.products || [];
+                        if (products.length === 0) {
+                            $list.html('<p class="fbs-empty-text">No products assigned to this supplier.</p>');
+                        } else {
+                            var html = '<ul class="fbs-supplier-products-list">';
+                            products.forEach(function(p) {
+                                html += '<li><a href="' + (p.edit_url || '#') + '" target="_blank">' + (p.title || '#' + p.id) + '</a></li>';
+                            });
+                            html += '</ul>';
+                            $list.html(html);
+                        }
+                    } else {
+                        $list.html('<p class="fbs-error">' + (response.data || fbsStockMind.strings.error) + '</p>');
+                    }
+                },
+                error: function(xhr) {
+                    var msg = fbsStockMind.strings.error;
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.data) {
+                        msg = xhr.responseJSON.data;
+                    }
+                    $list.html('<p class="fbs-error">' + msg + '</p>');
                 }
             });
         },

@@ -218,5 +218,26 @@ defined('ABSPATH') or die('Nice Try!');
     </div>
 </div>
 
+<!-- View Products Modal -->
+<div id="fbs-supplier-products-modal" class="fbs-modal" style="display: none;">
+    <div class="fbs-modal-overlay"></div>
+    <div class="fbs-modal-content">
+        <div class="fbs-modal-header">
+            <h2 class="fbs-modal-title" id="fbs-supplier-products-modal-title">
+                <?php esc_html_e('Products', 'fbs-stockmind'); ?>
+            </h2>
+            <button type="button" class="fbs-modal-close">&times;</button>
+        </div>
+        <div class="fbs-modal-body" id="fbs-supplier-products-list">
+            <p class="fbs-loading"><?php esc_html_e('Loading...', 'fbs-stockmind'); ?></p>
+        </div>
+        <div class="fbs-modal-footer">
+            <button type="button" class="fbs-btn fbs-btn-secondary fbs-modal-close">
+                <?php esc_html_e('Close', 'fbs-stockmind'); ?>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast Notification Container -->
 <div id="fbs-toast-container" class="fbs-toast-container"></div>

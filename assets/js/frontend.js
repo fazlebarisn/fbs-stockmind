@@ -129,16 +129,6 @@
                     'error_message': errorMessage || null
                 });
             }
-            
-            // Log to console in development
-            if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
-                console.log('FBS StockMind Reminder Set:', {
-                    productId: productId,
-                    orderId: orderId,
-                    status: status,
-                    errorMessage: errorMessage
-                });
-            }
         },
 
         /**
