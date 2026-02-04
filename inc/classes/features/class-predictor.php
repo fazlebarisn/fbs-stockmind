@@ -125,7 +125,7 @@ class Predictor
             if ($supplier_id > 0) {
                 fbs_stockmind_set_product_supplier($post_id, $supplier_id);
             } else {
-                delete_post_meta($post_id, '_fbs_stockmind_supplier_id');
+                delete_post_meta($post_id, '_fbs_stock_supplier_id');
             }
         }
     }

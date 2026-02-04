@@ -124,7 +124,9 @@ class Ajax_Handler
         } else {
             // Create new supplier
             $new_supplier_id = $supplier_manager->create_supplier($supplier_data);
-            if ($new_supplier_id) {
+            if (is_wp_error($new_supplier_id)) {
+                wp_send_json_error($new_supplier_id->get_error_message());
+            } elseif ($new_supplier_id) {
                 wp_send_json_success(__('Supplier created successfully.', 'fbs-stockmind'));
             } else {
                 wp_send_json_error(__('Failed to create supplier.', 'fbs-stockmind'));

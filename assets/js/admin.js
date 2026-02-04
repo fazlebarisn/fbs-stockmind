@@ -251,22 +251,34 @@
             $.ajax({
                 url: fbsStockMind.ajaxUrl,
                 type: 'POST',
+                dataType: 'json',
                 data: {
                     action: 'fbs_stockmind_save_supplier',
                     nonce: fbsStockMind.nonce,
                     ...Object.fromEntries(new URLSearchParams(formData))
                 },
                 success: function(response) {
-                    if (response.success) {
-                        FBSStockMindAdmin.showToast('success', response.data);
+                    if (response && response.success) {
+                        FBSStockMindAdmin.showToast('success', response.data || '');
                         FBSStockMindAdmin.closeModal();
                         location.reload(); // Reload to show updated data
                     } else {
-                        FBSStockMindAdmin.showToast('error', response.data);
+                        FBSStockMindAdmin.showToast('error', (response && response.data) ? response.data : fbsStockMind.strings.error);
                     }
                 },
-                error: function() {
-                    FBSStockMindAdmin.showToast('error', fbsStockMind.strings.error);
+                error: function(xhr) {
+                    var msg = fbsStockMind.strings.error;
+                    if (xhr && xhr.responseText) {
+                        try {
+                            var parsed = JSON.parse(xhr.responseText);
+                            if (parsed.data) { msg = parsed.data; }
+                        } catch (e) {
+                            if (xhr.status === 403 || xhr.responseText.indexOf('Security check') !== -1) {
+                                msg = 'Security check failed. Please refresh the page and try again.';
+                            }
+                        }
+                    }
+                    FBSStockMindAdmin.showToast('error', msg);
                 },
                 complete: function() {
                     $('#fbs-save-supplier').prop('disabled', false).html('<span class="fbs-btn-icon">💾</span> Save Supplier');

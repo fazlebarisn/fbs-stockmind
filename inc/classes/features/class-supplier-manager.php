@@ -80,7 +80,7 @@ class Supplier_Manager
             'show_in_rest' => false,
         ];
 
-        register_post_type( 'fbs_stockmind_supplier', $args );
+        register_post_type( 'fbs_stock_supplier', $args );
     }
 
     /**
@@ -95,7 +95,7 @@ class Supplier_Manager
             'fbs_supplier_details',
             __('Supplier Details', 'fbs-stockmind'),
             [$this, 'render_supplier_meta_box'],
-            'fbs_stockmind_supplier',
+            'fbs_stock_supplier',
             'normal',
             'high'
         );
@@ -142,7 +142,7 @@ class Supplier_Manager
         }
 
         // Check if this is the correct post type
-        if (get_post_type($post_id) !== 'fbs_stockmind_supplier') {
+        if (get_post_type($post_id) !== 'fbs_stock_supplier') {
             return;
         }
 
@@ -194,7 +194,7 @@ class Supplier_Manager
         global $wpdb;
 
         $post = get_post($post_id);
-        if (!$post || $post->post_type !== 'fbs_stockmind_supplier') {
+        if (!$post || $post->post_type !== 'fbs_stock_supplier') {
             return;
         }
 
@@ -237,15 +237,16 @@ class Supplier_Manager
                 ['%d']
             );
         } else {
-            // Insert new record
+            // Insert new record (column order: name, lead_time, email, phone, address, notes, is_active, updated_at, id, created_at)
             $data['id'] = $post_id;
             $data['created_at'] = current_time('mysql');
+            $format = ['%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s'];
             
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary for inserting supplier data, real-time operation
             $wpdb->insert(
                 $suppliers_table,
                 $data,
-                ['%d', '%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s']
+                $format
             );
         }
     }
@@ -341,17 +342,28 @@ class Supplier_Manager
         // Allow pro to modify supplier data before creation
         $data = apply_filters('fbs_stockmind_before_create_supplier', $data);
         
+        // Ensure post type is registered (e.g. when called early in AJAX)
+        if (!post_type_exists('fbs_stock_supplier')) {
+            $this->register_supplier_post_type();
+        }
+        
+        $post_content = sanitize_textarea_field($data['notes'] ?? '');
         $post_data = [
             'post_title' => sanitize_text_field($data['name']),
-            'post_content' => sanitize_textarea_field($data['notes'] ?? ''),
+            'post_content' => $post_content !== '' ? $post_content : ' ',
             'post_status' => 'publish',
-            'post_type' => 'fbs_stockmind_supplier',
+            'post_type' => 'fbs_stock_supplier',
         ];
 
-        $post_id = wp_insert_post($post_data);
+        $post_id = wp_insert_post($post_data, true);
         
         if (is_wp_error($post_id)) {
-            return false;
+            return $post_id;
+        }
+        if ($post_id === 0) {
+            global $wpdb;
+            $db_error = $wpdb->last_error ? $wpdb->last_error : __('Database or post insert failed.', 'fbs-stockmind');
+            return new \WP_Error('insert_failed', $db_error);
         }
 
         // Save meta fields
@@ -453,7 +465,7 @@ class Supplier_Manager
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary for finding products by supplier, meta_query is required for supplier filtering
             'meta_query' => [
                 [
-                    'key' => '_fbs_stockmind_supplier_id',
+                    'key' => '_fbs_stock_supplier_id',
                     'value' => $supplier_id,
                     'compare' => '=',
                 ],

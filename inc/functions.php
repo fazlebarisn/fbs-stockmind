@@ -167,7 +167,7 @@ function fbs_stockmind_set_product_replenishable($product_id, $replenishable = t
  */
 function fbs_stockmind_get_product_supplier($product_id)
 {
-    $supplier_id = get_post_meta($product_id, '_fbs_stockmind_supplier_id', true);
+    $supplier_id = get_post_meta($product_id, '_fbs_stock_supplier_id', true);
     return $supplier_id ? absint($supplier_id) : false;
 }
 
@@ -182,7 +182,7 @@ function fbs_stockmind_get_product_supplier($product_id)
  */
 function fbs_stockmind_set_product_supplier($product_id, $supplier_id)
 {
-    return update_post_meta($product_id, '_fbs_stockmind_supplier_id', absint($supplier_id));
+    return update_post_meta($product_id, '_fbs_stock_supplier_id', absint($supplier_id));
 }
 
 /**
