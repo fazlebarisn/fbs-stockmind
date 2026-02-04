@@ -54,10 +54,15 @@ Predictions are calculated daily via cron job. The plugin analyzes sales data fr
 == Screenshots ==
 
 1. Dashboard view showing predictions and statistics
-2. Predictions list with confidence scores
-3. Supplier management interface
-4. Settings configuration page
-5. Customer reminder form on order completion page
+2. Recent Predictions and Upcoming Replenishments
+3. Quick Actions
+4. Stock Predictions
+5. Manage suppliers
+6. Manage customer replenishment reminders
+7. StockMind general settings
+8. StockMind Prediction settings
+9. StockMind Customer Reminder settings
+10. StockMind Email settings
 
 == Changelog ==
 
@@ -73,14 +78,3 @@ Predictions are calculated daily via cron job. The plugin analyzes sales data fr
 
 = 1.0.0 =
 Initial release of FBS StockMind.
-
-== Support ==
-
-For support, feature requests, or bug reports, please contact:
-* Author: Fazle Bari
-* Email: fazlebarisn@gmail.com
-* Website: https://www.cansoft.com/
-
-== Credits ==
-
-Built with modern web technologies, follows WordPress coding standards, uses WordPress best practices, responsive design principles, and accessibility considerations.
