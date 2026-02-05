@@ -132,6 +132,11 @@
             $('#fbs-clear-filters').on('click', function() {
                 FBSStockMindAdmin.clearFilters();
             });
+
+            // Refresh reminders (reload page to show latest list)
+            $(document).on('click', '#fbs-refresh-reminders', function() {
+                FBSStockMindAdmin.refreshReminders();
+            });
         },
 
         /**
@@ -517,6 +522,17 @@
                     $('#fbs-calculate-predictions').prop('disabled', false).html('<span class="fbs-btn-icon">⚡</span> Calculate Now');
                 }
             });
+        },
+
+        /**
+         * Refresh reminders list (reload page)
+         */
+        refreshReminders: function() {
+            const $btn = $('#fbs-refresh-reminders');
+            if ($btn.length && !$btn.prop('disabled')) {
+                $btn.prop('disabled', true).html('<span class="fbs-btn-icon">⏳</span> ' + (fbsStockMind.strings.loading || 'Refreshing...'));
+                window.location.reload();
+            }
         },
 
         /**
