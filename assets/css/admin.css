@@ -149,6 +149,22 @@
     margin-left: 2px;
 }
 
+.fbs-supplier-limit-notice {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.fbs-supplier-limit-text {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
 /* Stats Grid */
 .fbs-stats-grid {
     display: grid;

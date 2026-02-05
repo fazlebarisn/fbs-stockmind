@@ -171,7 +171,9 @@ class Menu
     {
         $supplier_manager = \FBS_StockMind\Inc\Features\Supplier_Manager::get_instance();
         $suppliers = $supplier_manager->get_all_suppliers();
-        
+        $supplier_count = $supplier_manager->get_suppliers_count();
+        $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
+
         include FBS_STOCKMIND_DIR_PATH . '/inc/templates/admin/suppliers.php';
     }
 

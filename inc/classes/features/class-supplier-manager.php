@@ -309,6 +309,21 @@ class Supplier_Manager
     }
 
     /**
+     * Get total number of suppliers (all, not limited by active status)
+     *
+     * @return int
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function get_suppliers_count()
+    {
+        global $wpdb;
+        $suppliers_table = fbs_stockmind_get_table_name('suppliers');
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table");
+    }
+
+    /**
      * Create a new supplier
      *
      * @param array $data Supplier data
@@ -322,11 +337,7 @@ class Supplier_Manager
         $max_suppliers = apply_filters('fbs_stockmind_max_suppliers', 3);
         
         if ($max_suppliers > 0) {
-            global $wpdb;
-            $suppliers_table = fbs_stockmind_get_table_name('suppliers');
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is from trusted source, real-time count needed for validation
-            $current_count = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
-            
+            $current_count = $this->get_suppliers_count();
             if ($current_count >= $max_suppliers) {
                 return new \WP_Error(
                     'supplier_limit_reached',
