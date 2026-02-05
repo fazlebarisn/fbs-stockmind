@@ -169,15 +169,31 @@ defined('ABSPATH') or die('Nice Try!');
                         </div>
                         
                         <div class="fbs-prediction-actions">
-                            <a href="<?php echo esc_url(get_permalink($fbs_stockmind_prediction['product_id'])); ?>" 
-                               target="_blank" 
+                            <a href="<?php echo esc_url(get_permalink($fbs_stockmind_prediction['product_id'])); ?>"
+                               target="_blank"
                                class="fbs-btn fbs-btn-sm fbs-btn-secondary">
                                 <?php esc_html_e('View Product', 'fbs-stockmind'); ?>
                             </a>
-                            
-                            
-                            <button type="button" 
-                                    class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction" 
+                            <?php
+                            $fbs_stockmind_supplier_id = fbs_stockmind_get_product_supplier($fbs_stockmind_prediction['product_id']);
+                            $fbs_stockmind_pro_active = function_exists('fbs_stockmind_pro_is_active') && fbs_stockmind_pro_is_active();
+                            $fbs_stockmind_has_supplier = !empty($fbs_stockmind_supplier_id);
+                            $fbs_stockmind_can_create_po = $fbs_stockmind_pro_active && $fbs_stockmind_has_supplier;
+                            ?>
+                            <button type="button"
+                                    class="fbs-btn fbs-btn-sm fbs-btn-primary fbs-create-po fbs-create-po-from-prediction <?php echo $fbs_stockmind_can_create_po ? '' : 'fbs-create-po-disabled'; ?>"
+                                    <?php if ($fbs_stockmind_can_create_po) : ?>
+                                        data-product-id="<?php echo esc_attr($fbs_stockmind_prediction['product_id']); ?>"
+                                        data-supplier-id="<?php echo esc_attr($fbs_stockmind_supplier_id); ?>"
+                                    <?php else : ?>
+                                        disabled
+                                        title="<?php echo $fbs_stockmind_pro_active ? esc_attr__('Assign a supplier to this product to create a purchase order.', 'fbs-stockmind') : esc_attr__('Activate FBS StockMind Pro to create purchase orders.', 'fbs-stockmind'); ?>"
+                                    <?php endif; ?>>
+                                <?php esc_html_e('Create Purchase Order', 'fbs-stockmind'); ?>
+                                <?php if (!$fbs_stockmind_pro_active) : ?> <span class="fbs-pro-badge-inline">PRO</span><?php endif; ?>
+                            </button>
+                            <button type="button"
+                                    class="fbs-btn fbs-btn-sm fbs-btn-secondary fbs-dismiss-prediction"
                                     data-prediction-id="<?php echo esc_attr($fbs_stockmind_prediction['id']); ?>">
                                 <?php esc_html_e('Dismiss', 'fbs-stockmind'); ?>
                             </button>

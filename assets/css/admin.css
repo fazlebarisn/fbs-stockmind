@@ -136,6 +136,19 @@
     font-size: 16px;
 }
 
+.fbs-create-po-disabled {
+    opacity: 0.7;
+}
+
+.fbs-pro-badge-inline {
+    font-size: 10px;
+    padding: 1px 5px;
+    background: #764ba2;
+    color: #fff;
+    border-radius: 4px;
+    margin-left: 2px;
+}
+
 /* Stats Grid */
 .fbs-stats-grid {
     display: grid;

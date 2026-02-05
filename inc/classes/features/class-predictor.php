@@ -780,6 +780,19 @@ class Predictor
         }
     }
 
+    /**
+     * Handle create purchase draft (stub – actual PO creation is in Pro)
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function handle_create_purchase_draft()
+    {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'fbs_stockmind_nonce')) {
+            wp_send_json_error(esc_html__('Security check failed.', 'fbs-stockmind'));
+        }
+        wp_send_json_error(esc_html__('FBS StockMind Pro is required to create purchase orders.', 'fbs-stockmind'));
+    }
 
     /**
      * Get confidence level for display
