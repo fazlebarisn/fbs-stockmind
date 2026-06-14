@@ -1,3 +1,4 @@
+<?php defined('ABSPATH') || exit; ?>
 <div class="wrap fbs-stockmind-wrap">
     <h1><?php esc_html_e('Upgrade to FBS StockMind Pro', 'fbs-stockmind'); ?></h1>
     

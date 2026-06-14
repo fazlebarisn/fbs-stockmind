@@ -276,7 +276,8 @@ class Dashboard
             foreach ($predictions as $prediction) {
                 echo '<li style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">';
                 echo '<strong><a href="' . esc_url(get_edit_post_link($prediction['product_id'])) . '" target="_blank" style="text-decoration: none; color: inherit;">' . esc_html($prediction['product_name']) . '</a></strong><br>';
-                echo '<span style="color: #d63638;">' . sprintf(esc_html__('Runs out in %d days', 'fbs-stockmind'), max(0, ceil($prediction['days_until_runout']))) . '</span>';
+                /* translators: %d: number of days */
+                echo '<span style="color: #d63638;">' . esc_html(sprintf(__('Runs out in %d days', 'fbs-stockmind'), max(0, ceil($prediction['days_until_runout'])))) . '</span>';
                 echo '</li>';
             }
             echo '</ul>';

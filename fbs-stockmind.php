@@ -4,7 +4,7 @@
  * Description:       Premium WooCommerce plugin that provides predictive low-stock alerts for store owners and smart replenishment reminders for customers.
  * Requires at least: 6.4
  * Requires PHP:      7.4
- * Version:           1.0.2
+ * Version:           1.1.0
  * Author:            Fazle Bari
  * Author URI:        https://github.com/fazlebarisn/
  * License:           GPL-2.0-or-later
@@ -27,7 +27,7 @@ if (!defined('FBS_STOCKMIND_DIR_PATH')) {
 define('FBS_STOCKMIND_FILE', __FILE__);
 define('FBS_STOCKMIND_URL', plugins_url('', FBS_STOCKMIND_FILE));
 define('FBS_STOCKMIND_BASENAME', plugin_basename(__FILE__));
-define('FBS_STOCKMIND_VERSION', '1.0.2');
+define('FBS_STOCKMIND_VERSION', '1.1.0');
 
 // Check if WooCommerce is active (active_plugins is a WordPress core filter - do not prefix)
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
