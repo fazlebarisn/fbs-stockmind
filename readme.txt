@@ -71,6 +71,7 @@ Predictions are calculated daily via a WordPress cron job. The plugin analyzes y
 8. StockMind Prediction settings
 9. StockMind Customer Reminder settings
 10. StockMind Email settings
+11. Customer Reminder On Product Page.
 
 == Changelog ==
 
