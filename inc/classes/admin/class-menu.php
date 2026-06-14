@@ -38,6 +38,9 @@ class Menu
     {
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'check_permissions']);
+        add_action('admin_notices', [$this, 'display_onboarding_notice']);
+        add_action('admin_post_fbs_stockmind_onboarding', [$this, 'handle_onboarding_action']);
+        add_action('admin_post_fbs_stockmind_dismiss_onboarding', [$this, 'handle_dismiss_onboarding']);
     }
 
     /**
@@ -112,6 +115,16 @@ class Menu
             'manage_options',
             'fbs-stockmind-settings',
             [$this, 'render_settings_page']
+        );
+
+        // Pro Features submenu
+        add_submenu_page(
+            'fbs-stockmind',
+            __('🚀 Upgrade to Pro', 'fbs-stockmind'),
+            __('🚀 Upgrade to Pro', 'fbs-stockmind'),
+            'manage_options',
+            'fbs-stockmind-pro-features',
+            [$this, 'render_pro_features_page']
         );
 
         // Allow pro to add additional menu items
@@ -202,4 +215,113 @@ class Menu
         Settings::get_instance()->render();
     }
 
+    /**
+     * Render Pro Features page
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function render_pro_features_page()
+    {
+        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/admin/pro-features.php';
+    }
+
+    /**
+     * Display onboarding notice
+     */
+    public function display_onboarding_notice()
+    {
+        // Check if onboarding is dismissed
+        if (isset($_GET['onboarding']) && $_GET['onboarding'] === 'success') {
+            $count = isset($_GET['count']) ? absint($_GET['count']) : 0;
+            ?>
+            <div class="notice notice-success is-dismissible" style="padding: 10px;">
+                <p><strong>Success!</strong> We found and marked <?php echo esc_html($count); ?> products as replenishable.</p>
+            </div>
+            <?php
+            return;
+        }
+
+        if (get_option('fbs_stockmind_onboarding_dismissed')) {
+            return;
+        }
+
+        // Only show to admins
+        if (!current_user_can('manage_woocommerce')) {
+            return;
+        }
+
+        ?>
+        <div class="notice notice-info" style="padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="margin-top: 0;">Welcome to FBS StockMind! 🎉</h3>
+                    <p>Let's get started by automatically finding products that your customers frequently buy. We can mark them as 'replenishable' for you.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button button-primary">Auto-Detect Products</a>
+                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_dismiss_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button">Skip for now</a>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Handle onboarding action
+     */
+    public function handle_onboarding_action()
+    {
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'fbs_onboarding')) {
+            wp_die('Security check failed');
+        }
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die('Permission denied');
+        }
+
+        // Simple logic to find products with more than 3 sales total and mark them as replenishable
+        global $wpdb;
+        $results = $wpdb->get_results("
+            SELECT order_item_meta.meta_value as product_id, SUM(order_item_meta_qty.meta_value) as total_qty
+            FROM {$wpdb->prefix}woocommerce_order_items as order_items
+            LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta ON order_items.order_item_id = order_item_meta.order_item_id
+            LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta_qty ON order_items.order_item_id = order_item_meta_qty.order_item_id
+            WHERE order_items.order_item_type = 'line_item'
+            AND order_item_meta.meta_key = '_product_id'
+            AND order_item_meta_qty.meta_key = '_qty'
+            GROUP BY product_id
+            HAVING total_qty >= 3
+            LIMIT 50
+        ");
+
+        $count = 0;
+        if (!empty($results)) {
+            foreach ($results as $row) {
+                if ($row->product_id) {
+                    update_post_meta($row->product_id, '_fbs_stockmind_replenishable', true);
+                    $count++;
+                }
+            }
+        }
+
+        update_option('fbs_stockmind_onboarding_dismissed', 1);
+
+        wp_redirect(admin_url('admin.php?page=fbs-stockmind&onboarding=success&count=' . $count));
+        exit;
+    }
+
+    /**
+     * Handle dismiss onboarding
+     */
+    public function handle_dismiss_onboarding()
+    {
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'fbs_onboarding')) {
+            wp_die('Security check failed');
+        }
+
+        update_option('fbs_stockmind_onboarding_dismissed', 1);
+        wp_redirect(admin_url('admin.php?page=fbs-stockmind'));
+        exit;
+    }
 }

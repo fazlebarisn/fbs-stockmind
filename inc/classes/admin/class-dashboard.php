@@ -25,7 +25,7 @@ class Dashboard
      */
     protected function __construct()
     {
-        // Constructor implementation
+        add_action('wp_dashboard_setup', [$this, 'register_dashboard_widget']);
     }
 
     /**
@@ -240,5 +240,48 @@ class Dashboard
     {
         // Use the same calculation as the predictions page for consistency
         return (strtotime($runout_date) - time()) / DAY_IN_SECONDS;
+    }
+
+    /**
+     * Register WP Dashboard widget
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function register_dashboard_widget()
+    {
+        if (fbs_stockmind_can_manage()) {
+            wp_add_dashboard_widget(
+                'fbs_stockmind_dashboard_widget',
+                __('StockMind Alerts', 'fbs-stockmind'),
+                [$this, 'render_dashboard_widget']
+            );
+        }
+    }
+
+    /**
+     * Render WP Dashboard widget
+     *
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function render_dashboard_widget()
+    {
+        $predictions = $this->get_recent_predictions(3);
+        
+        if (empty($predictions)) {
+            echo '<p>' . esc_html__('No critical stock alerts right now. You are fully stocked!', 'fbs-stockmind') . '</p>';
+        } else {
+            echo '<ul style="margin: 0; padding: 0; list-style: none;">';
+            foreach ($predictions as $prediction) {
+                echo '<li style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">';
+                echo '<strong>' . esc_html($prediction['product_name']) . '</strong><br>';
+                echo '<span style="color: #d63638;">' . sprintf(esc_html__('Runs out in %d days', 'fbs-stockmind'), max(0, ceil($prediction['days_until_runout']))) . '</span>';
+                echo '</li>';
+            }
+            echo '</ul>';
+        }
+        
+        echo '<a href="' . esc_url(admin_url('admin.php?page=fbs-stockmind')) . '" class="button">' . esc_html__('View Full Dashboard', 'fbs-stockmind') . '</a>';
     }
 }

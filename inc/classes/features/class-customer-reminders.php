@@ -38,6 +38,9 @@ class Customer_Reminders
     {
         // Frontend hooks for displaying reminder forms
         add_action('wp_footer', [$this, 'enqueue_frontend_scripts']);
+        
+        // Register shortcode
+        add_shortcode('fbs_stockmind_reminder', [$this, 'render_reminder_shortcode']);
     }
 
     /**
@@ -78,6 +81,65 @@ class Customer_Reminders
         $customer_email = $order->get_billing_email();
         
         include FBS_STOCKMIND_DIR_PATH . '/inc/templates/frontend/reminder-form.php';
+    }
+
+    /**
+     * Render reminder form via shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
+    public function render_reminder_shortcode($atts)
+    {
+        if (!fbs_stockmind_get_option('enable_customer_reminders', true)) {
+            return '';
+        }
+
+        $atts = shortcode_atts([
+            'product_id' => 0,
+        ], $atts, 'fbs_stockmind_reminder');
+
+        $product_id = intval($atts['product_id']);
+        
+        if (!$product_id && is_product()) {
+            $product_id = get_the_ID();
+        }
+
+        if (!$product_id || !fbs_stockmind_is_product_replenishable($product_id)) {
+            return '';
+        }
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            return '';
+        }
+
+        // We don't have an order context here, so order_id is 0
+        $order_id = 0;
+        
+        // If user is logged in, use their email
+        $customer_email = '';
+        if (is_user_logged_in()) {
+            $current_user = wp_get_current_user();
+            $customer_email = $current_user->user_email;
+        }
+
+        $replenishable_products = [
+            [
+                'id' => $product_id,
+                'name' => $product->get_name(),
+                'quantity' => 1,
+            ]
+        ];
+
+        ob_start();
+        echo '<div class="fbs-shortcode-container">';
+        // The template expects $replenishable_products, $order_id, and optionally $customer_email
+        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/frontend/reminder-form.php';
+        echo '</div>';
+        return ob_get_clean();
     }
 
     /**

@@ -61,6 +61,11 @@ defined('ABSPATH') or die('Nice Try!');
                         </div>
                         
                         <div class="fbs-product-actions">
+                            <?php if (empty($customer_email)): ?>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="email" class="fbs-reminder-email-input" placeholder="<?php esc_attr_e('Your email address', 'fbs-stockmind'); ?>" style="width: 100%; padding: 8px;" />
+                                </div>
+                            <?php endif; ?>
                             <button type="button" 
                                     class="fbs-btn fbs-btn-primary fbs-set-reminder" 
                                     data-product-id="<?php echo esc_attr($fbs_stockmind_product_data['id']); ?>"

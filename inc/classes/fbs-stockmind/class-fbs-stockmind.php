@@ -211,10 +211,17 @@ class FBS_StockMind
         // Add inline script for reminder form functionality
         $inline_script = "
 jQuery(document).ready(function($) {
-    // Show reminder form after a short delay
-    setTimeout(function() {
-        $('#fbs-reminder-form').fadeIn(300);
-    }, 2000);
+    // For shortcode usage, show it without delay and inline (not overlay)
+    if ($('.fbs-reminder-form').parent().hasClass('fbs-shortcode-container')) {
+        $('.fbs-reminder-form').show();
+        $('.fbs-reminder-overlay').hide();
+        $('.fbs-reminder-form').css({position: 'relative', zIndex: 1, top: 'auto', left: 'auto', transform: 'none', width: '100%', maxWidth: '100%'});
+    } else {
+        // Show reminder form after a short delay (for checkout)
+        setTimeout(function() {
+            $('#fbs-reminder-form').fadeIn(300);
+        }, 2000);
+    }
     
     // Close form handlers
     $('.fbs-reminder-close, .fbs-reminder-overlay').on('click', function() {
@@ -227,6 +234,18 @@ jQuery(document).ready(function($) {
         var productId = \$button.data('product-id');
         var orderId = \$button.data('order-id');
         var customerEmail = \$button.data('customer-email');
+        
+        var \$emailInput = \$button.closest('.fbs-product-actions').find('.fbs-reminder-email-input');
+        if (\$emailInput.length > 0) {
+            customerEmail = \$emailInput.val();
+            if (!customerEmail) {
+                if (typeof fbsStockMind.showToast === 'function') {
+                    fbsStockMind.showToast('error', 'Please enter your email address.');
+                }
+                return;
+            }
+        }
+        
         
         // Disable button and show loading
         \$button.prop('disabled', true).html('<span class=\"fbs-btn-icon\">⏳</span> ' + fbsStockMind.strings.setting);
