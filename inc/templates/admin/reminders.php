@@ -72,7 +72,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <div class="fbs-reminder-details">
                             <div class="fbs-reminder-header">
                                 <h3 class="fbs-reminder-product-name">
-                                    <a href="<?php echo esc_url(get_permalink($fbs_stockmind_reminder['product_id'])); ?>" target="_blank">
+                                    <a href="<?php echo esc_url(get_edit_post_link($fbs_stockmind_reminder['product_id'])); ?>" target="_blank">
                                         <?php echo esc_html($fbs_stockmind_reminder['product_name']); ?>
                                     </a>
                                 </h3>

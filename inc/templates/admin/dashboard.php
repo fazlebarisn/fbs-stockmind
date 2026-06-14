@@ -96,7 +96,11 @@ defined('ABSPATH') or die('Nice Try!');
                                     <?php endif; ?>
                                 </div>
                                 <div class="fbs-prediction-details">
-                                    <h4 class="fbs-prediction-name"><?php echo esc_html($fbs_stockmind_prediction['product_name']); ?></h4>
+                                    <h4 class="fbs-prediction-name">
+                                        <a href="<?php echo esc_url(get_edit_post_link($fbs_stockmind_prediction['product_id'])); ?>" style="text-decoration: none; color: inherit;">
+                                            <?php echo esc_html($fbs_stockmind_prediction['product_name']); ?>
+                                        </a>
+                                    </h4>
                                     <div class="fbs-prediction-meta">
                                         <span class="fbs-stock-info">
                                             <strong><?php echo esc_html($fbs_stockmind_prediction['current_stock']); ?></strong> <?php esc_html_e('in stock', 'fbs-stockmind'); ?>
@@ -157,7 +161,11 @@ defined('ABSPATH') or die('Nice Try!');
                                     <?php endif; ?>
                                 </div>
                                 <div class="fbs-replenishment-details">
-                                    <h4 class="fbs-replenishment-name"><?php echo esc_html($fbs_stockmind_replenishment['product_name']); ?></h4>
+                                    <h4 class="fbs-replenishment-name">
+                                        <a href="<?php echo esc_url(get_edit_post_link($fbs_stockmind_replenishment['product_id'])); ?>" style="text-decoration: none; color: inherit;">
+                                            <?php echo esc_html($fbs_stockmind_replenishment['product_name']); ?>
+                                        </a>
+                                    </h4>
                                     <div class="fbs-replenishment-meta">
                                         <span class="fbs-customer-info">
                                             <?php echo esc_html($fbs_stockmind_replenishment['customer_email']); ?>
