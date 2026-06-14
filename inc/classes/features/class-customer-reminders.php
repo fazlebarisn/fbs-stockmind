@@ -310,6 +310,7 @@ class Customer_Reminders
             // Send reminder email
             if ($this->send_reminder_email($reminder)) {
                 $this->update_reminder_sent($reminder->id);
+                do_action('fbs_stockmind_after_reminder_sent', $reminder);
             }
         }
     }

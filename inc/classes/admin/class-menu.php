@@ -118,14 +118,16 @@ class Menu
         );
 
         // Pro Features submenu
-        add_submenu_page(
-            'fbs-stockmind',
-            __('🚀 Upgrade to Pro', 'fbs-stockmind'),
-            __('🚀 Upgrade to Pro', 'fbs-stockmind'),
-            'manage_options',
-            'fbs-stockmind-pro-features',
-            [$this, 'render_pro_features_page']
-        );
+        if (!class_exists('FBS_StockMind_Pro\Inc\FBS_StockMind_Pro')) {
+            add_submenu_page(
+                'fbs-stockmind',
+                __('🚀 Upgrade to Pro', 'fbs-stockmind'),
+                __('🚀 Upgrade to Pro', 'fbs-stockmind'),
+                'manage_woocommerce',
+                'fbs-stockmind-pro-features',
+                [$this, 'render_pro_features_page']
+            );
+        }
 
         // Allow pro to add additional menu items
         do_action('fbs_stockmind_admin_menu', 'fbs-stockmind');

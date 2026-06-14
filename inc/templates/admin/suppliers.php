@@ -42,6 +42,7 @@ $fbs_supplier_at_limit = ($max_suppliers > 0 && $supplier_count >= $max_supplier
                     <?php esc_html_e('Add New Supplier', 'fbs-stockmind'); ?>
                 </button>
             <?php endif; ?>
+            <?php do_action('fbs_stockmind_supplier_header_actions'); ?>
         </div>
     </div>
 

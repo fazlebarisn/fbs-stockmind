@@ -44,6 +44,7 @@ defined('ABSPATH') or die('Nice Try!');
                     <span class="fbs-tab-icon">✉️</span>
                     <?php esc_html_e('Email', 'fbs-stockmind'); ?>
                 </button>
+                <?php do_action('fbs_stockmind_settings_tabs_nav'); ?>
             </nav>
 
             <!-- General Settings Tab -->
@@ -281,6 +282,8 @@ defined('ABSPATH') or die('Nice Try!');
                     </div>
                 </div>
             </div>
+
+            <?php do_action('fbs_stockmind_settings_tabs_content', $settings); ?>
         </div>
 
         <!-- Form Actions -->

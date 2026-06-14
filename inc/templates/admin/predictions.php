@@ -197,7 +197,10 @@ defined('ABSPATH') or die('Nice Try!');
                                     data-prediction-id="<?php echo esc_attr($fbs_stockmind_prediction['id']); ?>">
                                 <?php esc_html_e('Dismiss', 'fbs-stockmind'); ?>
                             </button>
+                            <?php do_action('fbs_stockmind_prediction_actions', $fbs_stockmind_prediction); ?>
                         </div>
+                        
+                        <?php do_action('fbs_stockmind_prediction_after_item', $fbs_stockmind_prediction); ?>
                     </div>
                 <?php endforeach; ?>
             </div>
