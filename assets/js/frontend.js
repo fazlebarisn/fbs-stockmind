@@ -65,23 +65,33 @@
          */
         setReminder: function($button) {
             const productId = $button.data('product-id');
-            const orderId = $button.data('order-id');
-            const customerEmail = $button.data('customer-email');
+            const orderId = $button.data('order-id') || 0;
+            let customerEmail = $button.data('customer-email');
             
-            if (!productId || !orderId || !customerEmail) {
+            const $emailInput = $button.closest('.fbs-product-actions').find('.fbs-reminder-email-input');
+            if ($emailInput.length > 0) {
+                customerEmail = $emailInput.val().trim();
+                if (!customerEmail) {
+                    FBSStockMindFrontend.showToast('error', 'Please enter your email address.');
+                    return;
+                }
+            }
+            
+            if (!productId || !customerEmail) {
                 FBSStockMindFrontend.showToast('error', 'Missing required information.');
                 return;
             }
             
             // Disable button and show loading
-            $button.prop('disabled', true).html('<span class="fbs-btn-icon">⏳</span> Setting...');
+            $button.prop('disabled', true).html('<span class="fbs-btn-icon">⏳</span> ' + fbsStockMind.strings.setting);
             
             // Make AJAX request
             $.ajax({
                 url: fbsStockMind.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'fbs_stockmind_set_reminder',
+                    action: 'fbs_stockmind_ajax',
+                    action_type: 'set_reminder',
                     nonce: fbsStockMind.nonce,
                     customer_email: customerEmail,
                     product_id: productId,
@@ -89,7 +99,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        $button.html('<span class="fbs-btn-icon">✅</span> Reminder Set!');
+                        $button.html('<span class="fbs-btn-icon">✅</span> ' + fbsStockMind.strings.reminderSet);
                         $button.removeClass('fbs-btn-primary').addClass('fbs-btn-success');
                         
                         FBSStockMindFrontend.showToast('success', response.data);
@@ -97,16 +107,20 @@
                         // Track the success
                         FBSStockMindFrontend.trackReminderSet(productId, orderId, 'success');
                     } else {
-                        $button.prop('disabled', false).html('<span class="fbs-btn-icon">🔔</span> Enable Reminder');
+                        if (response.data === fbsStockMind.strings.alreadyExists || response.data === 'Reminder already exists.') {
+                            $button.prop('disabled', true).html('<span class="fbs-btn-icon">✅</span> ' + fbsStockMind.strings.alreadySet);
+                            $button.removeClass('fbs-btn-primary').addClass('fbs-btn-success');
+                        } else {
+                            $button.prop('disabled', false).html('<span class="fbs-btn-icon">🔔</span> ' + fbsStockMind.strings.enableReminder);
+                            FBSStockMindFrontend.showToast('error', response.data);
+                        }
                         
-                        FBSStockMindFrontend.showToast('error', response.data);
-                        
-                        // Track the error
+                        // Track the error / warning
                         FBSStockMindFrontend.trackReminderSet(productId, orderId, 'error', response.data);
                     }
                 },
                 error: function(xhr, status, error) {
-                    $button.prop('disabled', false).html('<span class="fbs-btn-icon">🔔</span> Enable Reminder');
+                    $button.prop('disabled', false).html('<span class="fbs-btn-icon">🔔</span> ' + fbsStockMind.strings.enableReminder);
                     
                     FBSStockMindFrontend.showToast('error', fbsStockMind.strings.error);
                     

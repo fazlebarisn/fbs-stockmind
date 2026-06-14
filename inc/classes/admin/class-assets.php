@@ -124,6 +124,11 @@ class Assets
                 'loading' => __('Loading...', 'fbs-stockmind'),
                 'error' => __('An error occurred. Please try again.', 'fbs-stockmind'),
                 'success' => __('Reminder set successfully!', 'fbs-stockmind'),
+                'setting' => __('Setting...', 'fbs-stockmind'),
+                'reminderSet' => __('Reminder Set!', 'fbs-stockmind'),
+                'enableReminder' => __('Enable Reminder', 'fbs-stockmind'),
+                'alreadyExists' => __('Reminder already exists.', 'fbs-stockmind'),
+                'alreadySet' => __('Already Set', 'fbs-stockmind'),
             ],
         ]);
     }

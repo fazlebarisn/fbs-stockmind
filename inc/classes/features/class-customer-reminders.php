@@ -137,7 +137,7 @@ class Customer_Reminders
         ob_start();
         echo '<div class="fbs-shortcode-container">';
         // The template expects $replenishable_products, $order_id, and optionally $customer_email
-        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/frontend/reminder-form.php';
+        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/frontend/product-reminder-form.php';
         echo '</div>';
         return ob_get_clean();
     }
@@ -213,7 +213,7 @@ class Customer_Reminders
         $product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
         $order_id = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
 
-        if (empty($customer_email) || !$product_id || !$order_id) {
+        if (empty($customer_email) || !$product_id) {
             wp_send_json_error(__('Invalid data provided.', 'fbs-stockmind'));
         }
 
@@ -224,7 +224,7 @@ class Customer_Reminders
         if ($this->set_reminder($customer_email, $product_id, $order_id)) {
             wp_send_json_success(__('Reminder set successfully!', 'fbs-stockmind'));
         } else {
-            wp_send_json_error(__('Reminder already exists or failed to set.', 'fbs-stockmind'));
+            wp_send_json_error(__('Reminder already exists.', 'fbs-stockmind'));
         }
     }
 
