@@ -4,7 +4,7 @@ Tags: woocommerce, inventory, stock management, predictions, reminders, stock al
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,8 @@ Predictions are calculated daily via a WordPress cron job. The plugin analyzes y
 11. Customer Reminder On Product Page.
 
 == Changelog ==
+= 1.1.1 =
+* Fix Issues
 
 = 1.1.0 =
 * New: Automated Onboarding Wizard - quickly scan past orders and identify frequently bought items as replenishable with one click!
