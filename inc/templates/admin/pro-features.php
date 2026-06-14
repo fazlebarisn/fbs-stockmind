@@ -25,7 +25,8 @@
 
     <div style="margin-top: 40px; text-align: center; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         <h2 style="font-size: 24px; margin-bottom: 10px;">Ready to fully automate your inventory?</h2>
-        <p style="font-size: 16px; color: #666; margin-bottom: 30px;">Get FBS StockMind Pro today and ensure you never run out of stock again. <strong>Subscriptions start at just $10/month!</strong></p>
-        <a href="https://wpbay.com/product/fbs-stockmind-pro/" target="_blank" class="button button-primary button-hero" style="font-size: 18px; padding: 10px 30px; height: auto;">Upgrade to Pro Now</a>
+        <p style="font-size: 16px; color: #666; margin-bottom: 20px;">Get FBS StockMind Pro today and ensure you never run out of stock again.</p>
+        <p style="margin-bottom: 30px;"><span style="background: #eef5fa; color: #2271b1; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 16px; border: 1px solid #c7e0f4;">Subscriptions start at just $10/month!</span></p>
+        <a href="https://wpbay.com/product/fbs-stockmind-pro/" target="_blank" class="button button-primary button-hero" style="font-size: 18px; border-radius:5px; padding: 0 10px; height: auto;">Upgrade to Pro Now</a>
     </div>
 </div>

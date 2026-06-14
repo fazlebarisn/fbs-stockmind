@@ -324,13 +324,24 @@ class Settings
         // Get default sales data period (30 for free, 90 for pro)
         $default_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
         
+        // Determine if settings are editable (Pro active)
+        $prediction_editable = $this->is_prediction_settings_editable();
+        $reminder_editable = $this->is_reminder_settings_editable();
+        
+        // If not editable, enforce the defaults
+        $accuracy_threshold = $prediction_editable ? fbs_stockmind_get_option('prediction_accuracy_threshold', $default_threshold) : $default_threshold;
+        $sales_period = $prediction_editable ? fbs_stockmind_get_option('sales_data_period', $default_sales_period) : $default_sales_period;
+        
+        $advance_days = $reminder_editable ? fbs_stockmind_get_option('reminder_advance_days', 5) : apply_filters('fbs_stockmind_default_reminder_advance_days', 5);
+        $max_attempts = $reminder_editable ? fbs_stockmind_get_option('max_reminder_attempts', 1) : apply_filters('fbs_stockmind_default_max_reminder_attempts', 1);
+        
         return [
             'alert_window' => fbs_stockmind_get_option('alert_window', 14),
             'default_lead_time' => fbs_stockmind_get_option('default_lead_time', 7),
-            'prediction_accuracy_threshold' => fbs_stockmind_get_option('prediction_accuracy_threshold', $default_threshold),
-            'sales_data_period' => fbs_stockmind_get_option('sales_data_period', $default_sales_period),
-            'reminder_advance_days' => fbs_stockmind_get_option('reminder_advance_days', 5),
-            'max_reminder_attempts' => fbs_stockmind_get_option('max_reminder_attempts', 1), // Free: 1 attempt default
+            'prediction_accuracy_threshold' => $accuracy_threshold,
+            'sales_data_period' => $sales_period,
+            'reminder_advance_days' => $advance_days,
+            'max_reminder_attempts' => $max_attempts,
             'enable_customer_reminders' => fbs_stockmind_get_option('enable_customer_reminders', true),
             'email_from_name' => fbs_stockmind_get_option('email_from_name', get_bloginfo('name')),
             'email_from_address' => fbs_stockmind_get_option('email_from_address', get_option('admin_email')),

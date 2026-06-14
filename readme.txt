@@ -66,7 +66,7 @@ Predictions are calculated daily via cron job. The plugin analyzes sales data fr
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.2 =
 * Initial release
 * AI-powered stock predictions
 * Supplier management system
