@@ -1,6 +1,6 @@
 === FBS StockMind ===
 Contributors: fazlebari
-Tags: woocommerce, inventory, stock management, predictions, reminders, stock alerts
+Tags: woocommerce, inventory management, stock management, predictions, stock alerts
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4

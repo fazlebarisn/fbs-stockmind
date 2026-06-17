@@ -1,8 +1,7 @@
 <?php
 /**
- * Plugin Name:       FBS StockMind
- * Description:       Premium WooCommerce plugin that provides predictive low-stock alerts for store owners and smart replenishment reminders for customers.
- * Requires at least: 6.4
+ * Plugin Name:       FBS StockMind – Predictive Inventory & Low Stock Alerts for WooCommerce
+ * Description:       Prevent stockouts and drive repeat sales. AI-powered low stock alerts for store owners and automated replenishment email reminders for customers.
  * Requires PHP:      7.4
  * Version:           1.1.1
  * Author:            Fazle Bari
