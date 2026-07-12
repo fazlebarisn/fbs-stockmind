@@ -4,7 +4,7 @@ Tags: woocommerce, inventory management, stock management, predictions, stock al
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,7 +33,7 @@ Ready to fully automate your inventory? Upgrade to **FBS StockMind Pro** to unlo
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/fbs-stockmind/` or install it directly via the WordPress Plugin directory.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
+2. Toggle the plugin through the 'Plugins' screen in WordPress.
 3. Ensure WooCommerce is installed and active.
 4. Navigate to **StockMind** in your admin menu to view your dashboard and configure your settings.
 
@@ -74,6 +74,11 @@ Predictions are calculated daily via a WordPress cron job. The plugin analyzes y
 11. Customer Reminder On Product Page.
 
 == Changelog ==
+= 1.1.2 =
+* New: Integrated "Our Plugins" portfolio showcase page.
+* New: Integrated "Meet The Author" profile details page.
+* Tweak: Redesigned the backend UI with modern aesthetics, clean drop shadows, and responsive grid layouts.
+
 = 1.1.1 =
 * Fix Issues
 

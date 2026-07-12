@@ -129,6 +129,26 @@ class Menu
             );
         }
 
+        // Our Plugins submenu
+        add_submenu_page(
+            'fbs-stockmind',
+            __('Our Plugins', 'fbs-stockmind'),
+            __('Our Plugins', 'fbs-stockmind'),
+            'manage_woocommerce',
+            'fbs-stockmind-plugins',
+            [$this, 'render_our_plugins_page']
+        );
+
+        // Meet The Author submenu
+        add_submenu_page(
+            'fbs-stockmind',
+            __('Meet The Author', 'fbs-stockmind'),
+            __('Meet The Author', 'fbs-stockmind'),
+            'manage_woocommerce',
+            'fbs-stockmind-author',
+            [$this, 'render_author_page']
+        );
+
         // Allow pro to add additional menu items
         do_action('fbs_stockmind_admin_menu', 'fbs-stockmind');
     }
@@ -325,5 +345,25 @@ class Menu
         update_option('fbs_stockmind_onboarding_dismissed', 1);
         wp_redirect(admin_url('admin.php?page=fbs-stockmind'));
         exit;
+    }
+
+    /**
+     * Render Our Plugins page
+     *
+     * @since 1.0.0
+     */
+    public function render_our_plugins_page()
+    {
+        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/admin/our-plugins.php';
+    }
+
+    /**
+     * Render Meet the Author page
+     *
+     * @since 1.0.0
+     */
+    public function render_author_page()
+    {
+        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/admin/plugin-author.php';
     }
 }
