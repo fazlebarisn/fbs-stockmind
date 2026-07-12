@@ -1,4 +1,4 @@
-=== FBS StockMind ===
+=== FBS StockMind – Predictive Inventory & Low Stock Alerts for WooCommerce ===
 Contributors: fazlebari
 Tags: woocommerce, inventory management, stock management, predictions, stock alerts
 Requires at least: 6.4
