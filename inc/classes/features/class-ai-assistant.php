@@ -82,20 +82,20 @@ class AI_Assistant
             <h1 class="wp-heading-inline">
                 <span class="fbs-title-icon">🤖</span> <?php esc_html_e('StockMind AI Inventory Assistant', 'fbs-stockmind'); ?>
             </h1>
+            <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-settings&tab=ai')); ?>" class="page-title-action">
+                ⚙️ <?php esc_html_e('AI Assistant Settings', 'fbs-stockmind'); ?>
+            </a>
             <hr class="wp-header-end">
 
             <?php if (empty($api_key)): ?>
-                <div class="notice notice-warning" style="margin-top: 15px; padding: 15px;">
-                    <p>
+                <div class="notice notice-warning" style="margin-top: 15px; padding: 15px; border-left-color: #f59e0b;">
+                    <p style="font-size: 14px; margin-bottom: 8px;">
                         <strong><?php esc_html_e('AI API Key Required', 'fbs-stockmind'); ?></strong><br>
-                        <?php 
-                        printf(
-                            /* translators: %s: Settings page URL */
-                            esc_html__('Please enter your Google Gemini or OpenAI API key in the %s to enable the AI Assistant.', 'fbs-stockmind'),
-                            '<a href="' . esc_url(admin_url('admin.php?page=fbs-stockmind-settings')) . '">' . esc_html__('StockMind Settings', 'fbs-stockmind') . '</a>'
-                        ); 
-                        ?>
+                        <?php esc_html_e('Please configure your Google Gemini or OpenAI API key to activate your interactive inventory assistant.', 'fbs-stockmind'); ?>
                     </p>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-settings&tab=ai')); ?>" class="button button-primary" style="margin-top: 5px;">
+                        ⚙️ <?php esc_html_e('Go to AI Assistant Settings', 'fbs-stockmind'); ?> &rarr;
+                    </a>
                 </div>
             <?php else: ?>
                 <div class="fbs-ai-chat-container">
@@ -104,9 +104,14 @@ class AI_Assistant
                             <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
                             <span><?php esc_html_e('AI Assistant Connected', 'fbs-stockmind'); ?></span>
                         </div>
-                        <button type="button" id="fbs-ai-clear-chat" class="button button-small" style="color: #6b7280; border-color: #d1d5db;">
-                            <span>🗑️</span> <?php esc_html_e('Clear Chat', 'fbs-stockmind'); ?>
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-settings&tab=ai')); ?>" class="button button-small" style="color: #4b5563; border-color: #d1d5db; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>⚙️</span> <?php esc_html_e('AI Assistant Settings', 'fbs-stockmind'); ?>
+                            </a>
+                            <button type="button" id="fbs-ai-clear-chat" class="button button-small" style="color: #6b7280; border-color: #d1d5db;">
+                                <span>🗑️</span> <?php esc_html_e('Clear Chat', 'fbs-stockmind'); ?>
+                            </button>
+                        </div>
                     </div>
                     <div class="fbs-ai-chat-messages" id="fbs-ai-chat-messages">
                         <div class="fbs-ai-message fbs-ai-message-assistant">

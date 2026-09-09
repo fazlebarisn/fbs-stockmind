@@ -159,7 +159,10 @@ defined('ABSPATH') or die('Nice Try!');
                     </div>
 
                     <div class="fbs-info-box">
-                        <h3 class="fbs-info-title"><?php esc_html_e('How Predictions Work', 'fbs-stockmind'); ?></h3>
+                        <h3 class="fbs-info-title">💡 <?php esc_html_e('How Stock Predictions Work', 'fbs-stockmind'); ?></h3>
+                        <p class="fbs-info-text">
+                            <?php esc_html_e('FBS StockMind continuously forecasts inventory depletion to help prevent stockouts and optimize your reorder timing:', 'fbs-stockmind'); ?>
+                        </p>
                         <ul class="fbs-info-list">
                             <?php
                             // Get actual sales data period being used
@@ -170,16 +173,32 @@ defined('ABSPATH') or die('Nice Try!');
                                 $fbs_stockmind_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
                             }
                             ?>
-                            <li><?php 
+                            <li>
+                                <strong><?php esc_html_e('Sales Velocity Analysis:', 'fbs-stockmind'); ?></strong> 
+                                <?php 
                                 printf(
                                     /* translators: %d: Number of days */
-                                    esc_html__('Analyzes sales data from the last %d days', 'fbs-stockmind'),
+                                    esc_html__('Calculates daily burn rate using sales history across your active window (last %d days).', 'fbs-stockmind'),
                                     absint($fbs_stockmind_sales_period)
                                 ); 
-                            ?></li>
-                            <li><?php esc_html_e('Calculates average daily sales rate', 'fbs-stockmind'); ?></li>
-                            <li><?php esc_html_e('Factors in supplier lead times', 'fbs-stockmind'); ?></li>
-                            <li><?php esc_html_e('Updates predictions daily via cron job', 'fbs-stockmind'); ?></li>
+                                ?>
+                            </li>
+                            <li>
+                                <strong><?php esc_html_e('Supplier Lead Times:', 'fbs-stockmind'); ?></strong> 
+                                <?php esc_html_e('Factors in fulfillment lead time to calculate your latest safe purchase date before items run out.', 'fbs-stockmind'); ?>
+                            </li>
+                            <li>
+                                <strong><?php esc_html_e('Confidence Scoring:', 'fbs-stockmind'); ?></strong> 
+                                <?php esc_html_e('Scores prediction accuracy (Very Low, Low, Medium, High) based on sales volume, consistency, and recency.', 'fbs-stockmind'); ?>
+                            </li>
+                            <li>
+                                <strong><?php esc_html_e('Critical Stock Protection:', 'fbs-stockmind'); ?></strong> 
+                                <?php esc_html_e('Products nearing depletion or within their supplier lead time are immediately surfaced as urgent alerts.', 'fbs-stockmind'); ?>
+                            </li>
+                            <li>
+                                <strong><?php esc_html_e('Instant & Scheduled Sync:', 'fbs-stockmind'); ?></strong> 
+                                <?php esc_html_e('Predictions update in real-time on orders and stock edits, as well as scheduled daily background scans.', 'fbs-stockmind'); ?>
+                            </li>
                         </ul>
                     </div>
                 </div>

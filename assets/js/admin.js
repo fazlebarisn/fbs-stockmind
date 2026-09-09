@@ -55,13 +55,31 @@
                 } catch(e) {}
             });
 
-            // Restore last active tab if exists
+            // Support opening specific tab via URL parameter (?tab=ai) or hash (#ai or #ai-assistant)
+            let requestedTab = null;
             try {
-                const lastTab = localStorage.getItem('fbsStockMindActiveTab');
-                if (lastTab && $(`.fbs-tab-button[data-tab="${lastTab}"]`).length) {
-                    $(`.fbs-tab-button[data-tab="${lastTab}"]`).trigger('click');
+                const urlParams = new URLSearchParams(window.location.search);
+                const tabParam = urlParams.get('tab');
+                const rawHash = window.location.hash ? window.location.hash.replace('#', '') : null;
+                
+                let targetCandidate = tabParam || rawHash;
+                if (targetCandidate === 'ai-assistant') {
+                    targetCandidate = 'ai';
+                }
+                
+                if (targetCandidate && $(`.fbs-tab-button[data-tab="${targetCandidate}"]`).length) {
+                    requestedTab = targetCandidate;
+                } else {
+                    const lastTab = localStorage.getItem('fbsStockMindActiveTab');
+                    if (lastTab && $(`.fbs-tab-button[data-tab="${lastTab}"]`).length) {
+                        requestedTab = lastTab;
+                    }
                 }
             } catch(e) {}
+
+            if (requestedTab && $(`.fbs-tab-button[data-tab="${requestedTab}"]`).length) {
+                $(`.fbs-tab-button[data-tab="${requestedTab}"]`).trigger('click');
+            }
         },
 
         /**
