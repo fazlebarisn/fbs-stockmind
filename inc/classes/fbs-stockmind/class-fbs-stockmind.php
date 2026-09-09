@@ -78,6 +78,11 @@ class FBS_StockMind
             FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-supplier-manager.php',
             FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-customer-reminders.php',
             FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-notification-system.php',
+            FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-event-listener.php',
+            FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-background-processor.php',
+            FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-data-migrator.php',
+            FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-ai-tools.php',
+            FBS_STOCKMIND_DIR_PATH . '/inc/classes/features/class-ai-assistant.php',
             FBS_STOCKMIND_DIR_PATH . '/inc/classes/ajax/class-ajax-handler.php',
         ];
         
@@ -98,6 +103,11 @@ class FBS_StockMind
         Features\Supplier_Manager::get_instance();
         Features\Customer_Reminders::get_instance();
         Features\Notification_System::get_instance();
+        Features\Event_Listener::get_instance();
+        Features\Background_Processor::get_instance();
+        Features\Data_Migrator::get_instance();
+        Features\AI_Tools::get_instance();
+        Features\AI_Assistant::get_instance();
         
         // Load AJAX handlers
         Ajax\Ajax_Handler::get_instance();

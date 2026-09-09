@@ -28,6 +28,7 @@
             this.initFilters();
             this.initNotifications();
             this.initTooltips();
+            this.initAiSettings();
         },
 
         /**
@@ -47,6 +48,96 @@
                 // Update active tab content
                 $('.fbs-tab-content').removeClass('active');
                 $(`#${tabId}-tab`).addClass('active');
+
+                // Save active tab
+                try {
+                    localStorage.setItem('fbsStockMindActiveTab', tabId);
+                } catch(e) {}
+            });
+
+            // Restore last active tab if exists
+            try {
+                const lastTab = localStorage.getItem('fbsStockMindActiveTab');
+                if (lastTab && $(`.fbs-tab-button[data-tab="${lastTab}"]`).length) {
+                    $(`.fbs-tab-button[data-tab="${lastTab}"]`).trigger('click');
+                }
+            } catch(e) {}
+        },
+
+        /**
+         * Initialize AI Settings (provider toggling and connection testing)
+         */
+        initAiSettings: function() {
+            const updateAiModelOptions = function() {
+                const provider = $('#fbs_stockmind_ai_provider').val();
+                if (provider === 'openai') {
+                    $('#optgroup-gemini').hide();
+                    $('#optgroup-openai').show();
+                    if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-gemini') {
+                        $('#fbs_stockmind_ai_model').val('gpt-4o-mini');
+                    }
+                    $('#fbs_stockmind_key_hint').html(
+                        'Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #667eea; text-decoration: underline;">OpenAI Platform</a>.'
+                    );
+                } else {
+                    $('#optgroup-gemini').show();
+                    $('#optgroup-openai').hide();
+                    if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-openai') {
+                        $('#fbs_stockmind_ai_model').val('gemini-3.6-flash');
+                    }
+                    $('#fbs_stockmind_key_hint').html(
+                        'Get a free Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea; text-decoration: underline;">Google AI Studio</a>.'
+                    );
+                }
+            };
+
+            $('#fbs_stockmind_ai_provider').on('change', updateAiModelOptions);
+            if ($('#fbs_stockmind_ai_provider').length) {
+                updateAiModelOptions();
+            }
+
+            // AI Connection Test Handler
+            $(document).on('click', '#fbs-stockmind-test-ai-key', function(e) {
+                e.preventDefault();
+                const $btn = $(this);
+                const $result = $('#fbs-stockmind-ai-test-result');
+                const provider = $('#fbs_stockmind_ai_provider').val() || 'gemini';
+                const apiKey = $('#fbs_stockmind_ai_api_key').val();
+
+                if (!apiKey || apiKey.trim() === '') {
+                    $result.css('color', '#ef4444').text('❌ Please paste an API key first.');
+                    return;
+                }
+
+                $btn.prop('disabled', true).text('Testing...');
+                $result.css('color', '#6b7280').text('Testing connection to ' + (provider === 'openai' ? 'OpenAI' : 'Google Gemini') + '...');
+
+                const ajaxUrl = (typeof fbsStockMind !== 'undefined' && fbsStockMind.ajaxUrl) ? fbsStockMind.ajaxUrl : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
+                const nonce = (typeof fbsStockMind !== 'undefined' && fbsStockMind.nonce) ? fbsStockMind.nonce : '';
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'fbs_stockmind_test_ai_connection',
+                        nonce: nonce,
+                        provider: provider,
+                        api_key: apiKey
+                    },
+                    success: function(response) {
+                        $btn.prop('disabled', false).text('Test Connection');
+                        if (response && response.success) {
+                            $result.css('color', '#10b981').text('✅ ' + (response.data && response.data.message ? response.data.message : 'Connection successful!'));
+                        } else {
+                            const errMsg = response && response.data && response.data.message ? response.data.message : 'Connection failed. Please check your API key.';
+                            $result.css('color', '#ef4444').text('❌ ' + errMsg);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $btn.prop('disabled', false).text('Test Connection');
+                        $result.css('color', '#ef4444').text('❌ Server request failed: ' + (error || 'Network error'));
+                    }
+                });
             });
         },
 

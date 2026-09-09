@@ -27,6 +27,11 @@ class Activate
     {
         $this->create_database_tables();
         $this->migrate_database_tables();
+        
+        // Load the schema definition and create tables
+        require_once FBS_STOCKMIND_DIR_PATH . '/inc/classes/database/class-schema.php';
+        \FBS_StockMind\Inc\Database\Schema::get_instance()->create_tables();
+
         $this->set_default_options();
         $this->create_supplier_post_type();
         $this->flush_rewrite_rules();

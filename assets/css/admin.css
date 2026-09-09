@@ -585,54 +585,101 @@
     margin: 0;
 }
 
-/* Settings Tabs */
+/* Settings Tabs - Vertical Sidebar Layout */
 .fbs-settings-tabs {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    min-height: 520px;
     overflow: hidden;
 }
 
 .fbs-tab-nav {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    flex: 0 0 220px;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-right: 1px solid #e2e8f0;
+    padding: 1rem 0;
     display: flex;
-    border-bottom: 1px solid #e9ecef;
-    background: #f8f9fa;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
 .fbs-tab-button {
-    flex: 1;
-    padding: 16px 20px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-left: 3px solid transparent;
+    justify-content: flex-start;
+    gap: 10px;
+    box-sizing: border-box;
 }
 
 .fbs-tab-button:hover {
-    background: #e9ecef;
-    color: #2c3e50;
+    background: rgba(102, 126, 234, 0.05);
+    color: #475569;
+    border-left-color: rgba(102, 126, 234, 0.3);
 }
 
 .fbs-tab-button.active {
-    background: white;
-    color: #667eea;
-    border-bottom: 2px solid #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    border-left-color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.fbs-tab-button.active::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: calc(50% - 8px);
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #ffffff;
 }
 
 .fbs-tab-content {
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: 2.2rem 2.5rem;
     display: none;
-    padding: 30px;
+    background: #ffffff;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .fbs-tab-content.active {
     display: block;
+    animation: fbsFadeIn 0.3s ease-in-out;
+}
+
+@keyframes fbsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Form Styles */
