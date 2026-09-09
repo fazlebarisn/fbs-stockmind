@@ -62,7 +62,7 @@ class Settings
         register_setting('fbs_stockmind_settings', 'fbs_stockmind_prediction_accuracy_threshold', [
             'type' => 'number',
             'sanitize_callback' => [$this, 'sanitize_float'],
-            'default' => 0.6,
+            'default' => 0.3,
         ]);
         register_setting('fbs_stockmind_settings', 'fbs_stockmind_sales_data_period', [
             'type' => 'integer',
@@ -215,7 +215,7 @@ class Settings
         $prediction_editable = $this->is_prediction_settings_editable();
         
         // Get default values
-        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.6);
+        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.3);
         $default_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
         
         // Get current values
@@ -348,8 +348,8 @@ class Settings
      */
     private function get_all_settings()
     {
-        // Get default accuracy threshold (0.6 for free, 0.8 for pro)
-        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.6);
+        // Get default accuracy threshold (0.3 for free, 0.8 for pro)
+        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.3);
         // Get default sales data period (30 for free, 90 for pro)
         $default_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
         

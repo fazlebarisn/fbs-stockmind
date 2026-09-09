@@ -75,6 +75,11 @@ class Background_Processor
                 $quantity,
                 $line_total
             ));
+
+            // Immediately recalculate prediction for ordered product
+            if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
+                \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($product_id);
+            }
         }
     }
 

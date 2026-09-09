@@ -187,8 +187,8 @@ class Activate
      */
     private function set_default_options()
     {
-        // Get default threshold (0.6 for free, 0.8 for pro)
-        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.6);
+        // Get default threshold (0.3 for free, 0.8 for pro)
+        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.3);
         $default_max_attempts = apply_filters('fbs_stockmind_default_max_reminder_attempts', 1);
         
         $default_options = [

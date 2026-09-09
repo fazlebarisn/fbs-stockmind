@@ -206,18 +206,13 @@ class Predictor
             $sales_data
         );
         
-        // Get accuracy threshold setting - allow pro to override
-        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.6);
+        // Get accuracy threshold setting - allow pro to override (default 0.3 to support products with early sales data)
+        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.3);
         $accuracy_threshold = apply_filters(
             'fbs_stockmind_prediction_accuracy_threshold',
             fbs_stockmind_get_option('prediction_accuracy_threshold', $default_threshold),
             $product_id
         );
-        
-        // Check if confidence meets threshold
-        if ($confidence_score < $accuracy_threshold) {
-            return false; // Prediction not reliable enough
-        }
 
         // Get lead time
         $lead_time = $this->get_product_lead_time($product_id);
@@ -231,6 +226,18 @@ class Predictor
         // Ensure minimum of 1 day
         if ($days_until_runout < 1) {
             $days_until_runout = 1;
+        }
+
+        // For urgent/low stock situations (runout within lead time or <= 7 days),
+        // ensure critical stockouts are never hidden from the merchant even with limited sales history
+        $effective_threshold = $accuracy_threshold;
+        if ($days_until_runout <= max($lead_time, 7)) {
+            $effective_threshold = min($accuracy_threshold, 0.25);
+        }
+        
+        // Check if confidence meets effective threshold
+        if ($confidence_score < $effective_threshold) {
+            return false; // Prediction not reliable enough
         }
         
         // Calculate the predicted runout date (from today)

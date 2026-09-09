@@ -49,6 +49,11 @@ class Event_Listener
      */
     public function queue_order_processing($order_id, $order = null)
     {
+        // Immediately record daily sales and recalculate prediction
+        if (class_exists('\FBS_StockMind\Inc\Features\Background_Processor')) {
+            \FBS_StockMind\Inc\Features\Background_Processor::get_instance()->process_order($order_id);
+        }
+
         if (function_exists('as_enqueue_async_action')) {
             // Check if action is already pending to avoid duplicates
             if (!as_has_scheduled_action('fbs_stockmind_process_order', ['order_id' => $order_id])) {
