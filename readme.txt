@@ -1,34 +1,43 @@
-=== FBS StockMind – Predictive Inventory & Low Stock Alerts for WooCommerce ===
+=== FBS StockMind – AI Inventory Management, Predictive Stock Alerts & Reorder Reminders for WooCommerce ===
 Contributors: fazlebari
-Tags: woocommerce, inventory management, stock management, predictions, stock alerts
+Tags: woocommerce, inventory management, stock alerts, ai assistant, replenishment
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Premium WooCommerce plugin that provides predictive low-stock alerts for store owners and smart replenishment reminders for customers.
+AI-powered predictive inventory management, intelligent low-stock alerts, smart customer replenishment reminders, and an interactive AI Assistant for WooCommerce.
 
 == Description ==
 
-FBS StockMind is a powerful WordPress plugin that provides predictive low-stock alerts for store owners and smart replenishment reminders for customers. By accurately analyzing your sales velocity and inventory levels, StockMind ensures you never run out of your best-selling items, while simultaneously offering a seamless way to invite repeat buyers back to your store.
+FBS StockMind is an intelligent inventory management plugin for WooCommerce that combines predictive stockout forecasting, automated customer replenishment reminders, and an interactive AI Assistant.
+
+By analyzing historical sales velocity and real-time inventory levels, StockMind ensures you never run out of your best-selling items while keeping customer repurchase rates high.
 
 = Core Features =
 
-* **AI-Powered Predictions**: The free version intelligently analyzes your store's sales data from the last 30 days. It calculates average daily sales rates and provides mathematically precise predictions of when each product will run out of stock.
-* **Onboarding Wizard & Auto-Detect**: Getting started is incredibly fast. Upon activation, an automated wizard can instantly scan your past orders and automatically mark your most frequently purchased products as "replenishable".
-* **Dashboard Widget**: Keep track of the most critical stock alerts directly from your main WordPress Dashboard without having to navigate into the plugin settings.
-* **Smart Customer Reminders**: Add a non-intrusive reminder form to your WooCommerce Thank You pages, or embed it anywhere using the `[fbs_stockmind_reminder]` shortcode. Customers (and guest users!) can enter their email to receive a timely reminder to reorder exactly when they are likely running low.
-* **Modern Admin Interface**: Enjoy a beautiful, card-based dashboard design with real-time statistics, intuitive navigation, quick filters, and toast-style notifications.
+* **AI-Powered Stock Predictions**: Analyzes past 30 days of WooCommerce sales data, calculates average daily sales velocity, and predicts exact stock runout dates so you can replenish before running out.
+* **Interactive AI Inventory Assistant**: Chat directly with an AI assistant that understands your catalog! Ask about stock levels, low-stock risks, recommended restock quantities, or store health summaries using your own OpenAI or Google Gemini API key.
+* **Smart Function Calling**: When using OpenAI, the AI Assistant dynamically queries your actual store database (predictions, inventory counts, and suppliers) to provide factual, up-to-the-minute answers.
+* **Persistent Chat Experience**: Your conversation with the AI Assistant persists across page navigations and reloads, allowing you to ask follow-up questions without losing context.
+* **Real-time Recalculation & Self-Healing**: Predictions automatically refresh when orders are placed or stock levels change, with instant self-healing checks to prevent stale data.
+* **Automated Onboarding Wizard**: Scans previous orders on activation and automatically marks your most frequently purchased items as "replenishable" with one click.
+* **Smart Customer Replenishment Reminders**: Embed reminder opt-in forms on Thank You pages or anywhere via the `[fbs_stockmind_reminder]` shortcode. Customers and guests receive friendly email notifications when it's time to reorder.
+* **Supplier Management**: Keep track of product suppliers, lead times, and contact details to ensure reorders are placed well before safety thresholds.
+* **Dashboard Widget**: Monitor critical low-stock alerts and runout countdowns directly from your WordPress admin dashboard.
+* **Modern & Intuitive Admin UI**: Enjoy a responsive, card-based interface with toast notifications, quick filters, and clean navigation.
 
 = Go Further with FBS StockMind Pro =
 
-Ready to fully automate your inventory? Upgrade to **FBS StockMind Pro** to unlock:
-* **90 Days of Sales History**: Analyzes up to 90 days of data and automatically detects seasonal trends.
-* **Auto-Purchase Orders**: Convert a low-stock prediction into a Draft Purchase Order with one click and email it directly to your supplier.
-* **Unlimited Suppliers**: Advanced supplier performance tracking, individual lead times, and no limits (the free version limits you to 3 suppliers).
-* **Revenue-Generating Reminders**: Attach unique discount coupons to the "Reorder Now" emails to incentivize immediate purchases.
+Ready to fully automate your supply chain? Upgrade to **FBS StockMind Pro** to unlock:
+* **90 Days of Sales History**: Deep historical trend analysis and seasonal demand tracking.
+* **Customizable Prediction Thresholds**: Adjust prediction accuracy thresholds and analysis periods directly from settings.
+* **Auto-Purchase Orders**: Generate Draft Purchase Orders with one click and email them straight to suppliers.
+* **Unlimited Suppliers & Performance Metrics**: Remove the 3-supplier limit and track vendor fulfillment times.
+* **Revenue-Generating Reminders**: Attach automatic discount coupons to "Reorder Now" emails to accelerate repeat sales.
+* **Multi-Stage Reminder Sequences**: Schedule multiple follow-up reminders with custom timing intervals.
 
 == Installation ==
 
@@ -41,46 +50,66 @@ Ready to fully automate your inventory? Upgrade to **FBS StockMind Pro** to unlo
 
 = Does this plugin require WooCommerce? =
 
-Yes, FBS StockMind requires WooCommerce to be installed and active.
+Yes, FBS StockMind requires WooCommerce 6.0+ to be installed and active.
 
-= What version of WordPress is required? =
+= Does the AI Assistant require an API key? =
 
-WordPress 6.4 or higher is required.
+Yes. To use the built-in AI Assistant, add your free Google Gemini API key or OpenAI API key under **StockMind > Settings > AI Assistant**. Your API key is stored securely in your WordPress database and connects directly to the provider without any middleman server.
 
-= What version of PHP is required? =
+= What AI models are supported? =
 
-PHP 7.4 or higher is required.
+The AI Assistant supports OpenAI models (such as GPT-4o and GPT-4o-mini) with function-calling support, as well as Google Gemini models (such as Gemini 2.5 Flash and Gemini 2.0 Flash).
+
+= How are stock predictions calculated? =
+
+Predictions are calculated using daily sales velocity, current stock levels, and configured supplier lead times. StockMind recalculates predictions automatically in real time whenever an order is placed or stock is updated, and performs a comprehensive daily recalculation via WP-Cron.
+
+= How do customer replenishment reminders work? =
+
+Customers can opt in to replenishment reminders on the order Thank You page or via the `[fbs_stockmind_reminder]` shortcode. When a predicted replenishment cycle arrives, StockMind automatically dispatches a friendly email reminder prompting them to reorder.
+
+= Can I use replenishment reminders for guest customers? =
+
+Yes! Both registered customers and guest shoppers can sign up for replenishment reminders using their email address.
 
 = How do I configure suppliers? =
 
 Go to StockMind > Suppliers and add your suppliers with their standard lead times. You can then assign suppliers to individual products in the product edit screen.
 
-= How are predictions calculated? =
-
-Predictions are calculated daily via a WordPress cron job. The plugin analyzes your recent sales data, calculates your average daily sales rate, and factors in supplier lead times to accurately predict the exact date a product will run out of stock.
-
 == Screenshots ==
 
-1. Dashboard view showing predictions and statistics
-2. Recent Predictions and Upcoming Replenishments
-3. Quick Actions
-4. Stock Predictions
-5. Manage suppliers
-6. Manage customer replenishment reminders
-7. StockMind general settings
-8. StockMind Prediction settings
-9. StockMind Customer Reminder settings
-10. StockMind Email settings
-11. Customer Reminder On Product Page.
+1. StockMind Overview Dashboard with predictive alerts and sales statistics.
+2. Interactive AI Assistant chat interface for real-time inventory queries.
+3. AI Assistant Settings with OpenAI and Google Gemini configurations.
+4. Stock Predictions list showing runout dates, days remaining, and confidence scores.
+5. Supplier management screen with lead times and contact info.
+6. Customer replenishment reminder manager.
+7. General, prediction, and reminder configuration settings.
+8. Pro options and feature comparison matrix.
+9. WordPress Dashboard widget showing urgent stock alerts.
+10. Customer replenishment signup form on the WooCommerce Thank You page.
 
 == Changelog ==
+
+= 1.2.0 =
+* New: Built-in AI Assistant supporting OpenAI (GPT-4o, GPT-4o-mini) and Google Gemini (Gemini 2.5 Flash, 2.0 Flash) models.
+* New: Smart Function Calling for OpenAI allowing the AI Assistant to query live store data (low-stock counts, runout predictions, and supplier directories).
+* New: Persistent chat conversation memory stored in the browser across page reloads and navigations.
+* New: Dedicated AI Assistant settings tab with provider selection, custom model configuration, response tone controls, and live API connection testing.
+* New: Real-time self-healing predictions that instantly recalculate runout dates whenever an order is completed or stock is adjusted.
+* Tweak: Streamlined admin menu structure by removing redundant upsell navigation and embedding Pro Options directly inside Settings.
+* Tweak: Added explanatory "How Predictions Work" reference guide directly in the Predictions interface.
+* Tweak: Added direct cross-navigation between the AI Assistant chat screen and AI Assistant settings.
+* Tweak: Verified compatibility and updated "Tested up to" header for WordPress 7.1.
+* Fix: Addressed all WordPress.org Plugin Check (PCP) and PHPCS notices regarding prepared queries, dynamic table prefixes, unescaped database parameters, and input sanitization.
+
 = 1.1.2 =
 * New: Integrated "Our Plugins" portfolio showcase page.
 * New: Integrated "Meet The Author" profile details page.
 * Tweak: Redesigned the backend UI with modern aesthetics, clean drop shadows, and responsive grid layouts.
 
 = 1.1.1 =
-* Fix Issues
+* Fix: Minor UI improvements and bug fixes.
 
 = 1.1.0 =
 * New: Automated Onboarding Wizard - quickly scan past orders and identify frequently bought items as replenishable with one click!
@@ -100,8 +129,8 @@ Predictions are calculated daily via a WordPress cron job. The plugin analyzes y
 
 == Upgrade Notice ==
 
-= 1.0.1 =
-This major update introduces an onboarding wizard, a dashboard widget, and the `[fbs_stockmind_reminder]` shortcode for guests. We highly recommend upgrading to take advantage of these new features!
+= 1.2.0 =
+Major update: Adds an interactive AI Assistant for your inventory, real-time self-healing predictions, and WordPress 7.1 compatibility.
 
-= 1.0.0 =
-Initial release of FBS StockMind.
+= 1.1.0 =
+Introduces the automated onboarding wizard, WordPress dashboard widget, and guest replenishment shortcode.
