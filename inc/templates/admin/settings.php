@@ -124,7 +124,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <label for="sales_data_period" class="fbs-form-label">
                             <?php esc_html_e('Sales Data Analysis Period (Days)', 'fbs-stockmind'); ?>
                             <?php if (!$fbs_stockmind_prediction_editable): ?>
-                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
+                                <span class="fbs-pro-badge-inline"><?php esc_html_e('PRO', 'fbs-stockmind'); ?></span>
                             <?php endif; ?>
                         </label>
                         <input type="number" 
@@ -136,13 +136,24 @@ defined('ABSPATH') or die('Nice Try!');
                                <?php echo $fbs_stockmind_prediction_editable ? '' : 'readonly'; ?>
                                class="fbs-form-input <?php echo $fbs_stockmind_prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
-                            <?php esc_html_e('Number of days of sales data to analyze for predictions', 'fbs-stockmind'); ?>
+                            <?php esc_html_e('Number of days of sales data to analyze for predictions.', 'fbs-stockmind'); ?>
+                            <?php if (!$fbs_stockmind_prediction_editable): ?>
+                                <span class="fbs-pro-feature-note">
+                                    <span class="fbs-pro-note-tag">⭐ <?php esc_html_e('Pro Feature:', 'fbs-stockmind'); ?></span> 
+                                    <?php esc_html_e('Fixed at 30 days in the free version.', 'fbs-stockmind'); ?> 
+                                    <a href="#" class="fbs-open-pro-tab"><?php esc_html_e('Upgrade to Pro', 'fbs-stockmind'); ?></a> 
+                                    <?php esc_html_e('to customize sales analysis windows up to 365 days for seasonal sales patterns.', 'fbs-stockmind'); ?>
+                                </span>
+                            <?php endif; ?>
                         </p>
                     </div>
                     
                     <div class="fbs-form-group">
                         <label for="prediction_accuracy_threshold" class="fbs-form-label">
                             <?php esc_html_e('Prediction Accuracy Threshold', 'fbs-stockmind'); ?>
+                            <?php if (!$fbs_stockmind_prediction_editable): ?>
+                                <span class="fbs-pro-badge-inline"><?php esc_html_e('PRO', 'fbs-stockmind'); ?></span>
+                            <?php endif; ?>
                         </label>
                         <input type="number" 
                                id="prediction_accuracy_threshold" 
@@ -154,7 +165,15 @@ defined('ABSPATH') or die('Nice Try!');
                                <?php echo $fbs_stockmind_prediction_editable ? '' : 'readonly'; ?>
                                class="fbs-form-input <?php echo $fbs_stockmind_prediction_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
-                            <?php esc_html_e('Minimum confidence level for predictions (0.1 = 10%, 1.0 = 100%)', 'fbs-stockmind'); ?>
+                            <?php esc_html_e('Minimum confidence level required for predictions (0.1 = 10%, 1.0 = 100%).', 'fbs-stockmind'); ?>
+                            <?php if (!$fbs_stockmind_prediction_editable): ?>
+                                <span class="fbs-pro-feature-note">
+                                    <span class="fbs-pro-note-tag">⭐ <?php esc_html_e('Pro Feature:', 'fbs-stockmind'); ?></span> 
+                                    <?php esc_html_e('Preset at 0.3 (30%) in the free version.', 'fbs-stockmind'); ?> 
+                                    <a href="#" class="fbs-open-pro-tab"><?php esc_html_e('Upgrade to Pro', 'fbs-stockmind'); ?></a> 
+                                    <?php esc_html_e('to fine-tune confidence thresholds and unlock advanced statistical prediction algorithms.', 'fbs-stockmind'); ?>
+                                </span>
+                            <?php endif; ?>
                         </p>
                     </div>
 
@@ -232,7 +251,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <label for="reminder_advance_days" class="fbs-form-label">
                             <?php esc_html_e('Reminder Advance Days', 'fbs-stockmind'); ?>
                             <?php if (!$fbs_stockmind_reminder_editable): ?>
-                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
+                                <span class="fbs-pro-badge-inline"><?php esc_html_e('PRO', 'fbs-stockmind'); ?></span>
                             <?php endif; ?>
                         </label>
                         <input type="number" 
@@ -244,7 +263,15 @@ defined('ABSPATH') or die('Nice Try!');
                                <?php echo $fbs_stockmind_reminder_editable ? '' : 'readonly'; ?>
                                class="fbs-form-input <?php echo $fbs_stockmind_reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
-                            <?php esc_html_e('How many days before predicted runout to send reminders', 'fbs-stockmind'); ?>
+                            <?php esc_html_e('How many days before predicted runout to send reminders.', 'fbs-stockmind'); ?>
+                            <?php if (!$fbs_stockmind_reminder_editable): ?>
+                                <span class="fbs-pro-feature-note">
+                                    <span class="fbs-pro-note-tag">⭐ <?php esc_html_e('Pro Feature:', 'fbs-stockmind'); ?></span> 
+                                    <?php esc_html_e('Fixed at 5 days in the free version.', 'fbs-stockmind'); ?> 
+                                    <a href="#" class="fbs-open-pro-tab"><?php esc_html_e('Upgrade to Pro', 'fbs-stockmind'); ?></a> 
+                                    <?php esc_html_e('to configure custom advance reminder schedules (1–30 days) to match product life-cycles.', 'fbs-stockmind'); ?>
+                                </span>
+                            <?php endif; ?>
                         </p>
                     </div>
 
@@ -252,7 +279,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <label for="max_reminder_attempts" class="fbs-form-label">
                             <?php esc_html_e('Maximum Reminder Attempts', 'fbs-stockmind'); ?>
                             <?php if (!$fbs_stockmind_reminder_editable): ?>
-                                <span style="color: #666; font-size: 0.9em; font-weight: normal;">(<?php esc_html_e('Fixed', 'fbs-stockmind'); ?>)</span>
+                                <span class="fbs-pro-badge-inline"><?php esc_html_e('PRO', 'fbs-stockmind'); ?></span>
                             <?php endif; ?>
                         </label>
                         <input type="number" 
@@ -264,7 +291,15 @@ defined('ABSPATH') or die('Nice Try!');
                                <?php echo $fbs_stockmind_reminder_editable ? '' : 'readonly'; ?>
                                class="fbs-form-input <?php echo $fbs_stockmind_reminder_editable ? '' : 'fbs-readonly-input'; ?>" />
                         <p class="fbs-form-description">
-                            <?php esc_html_e('Maximum number of reminder emails to send per customer', 'fbs-stockmind'); ?>
+                            <?php esc_html_e('Maximum number of reminder emails to send per customer.', 'fbs-stockmind'); ?>
+                            <?php if (!$fbs_stockmind_reminder_editable): ?>
+                                <span class="fbs-pro-feature-note">
+                                    <span class="fbs-pro-note-tag">⭐ <?php esc_html_e('Pro Feature:', 'fbs-stockmind'); ?></span> 
+                                    <?php esc_html_e('Limited to 1 email attempt in the free version.', 'fbs-stockmind'); ?> 
+                                    <a href="#" class="fbs-open-pro-tab"><?php esc_html_e('Upgrade to Pro', 'fbs-stockmind'); ?></a> 
+                                    <?php esc_html_e('to enable multi-step replenishment sequences (up to 10 automated follow-up emails).', 'fbs-stockmind'); ?>
+                                </span>
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>
@@ -412,48 +447,174 @@ defined('ABSPATH') or die('Nice Try!');
             <!-- Pro Options Showcase Tab -->
             <div class="fbs-tab-content" id="pro-tab">
                 <div class="fbs-settings-section">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 30px; color: #ffffff; margin-bottom: 30px;">
+                    <!-- Hero Banner -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 14px; padding: 32px; color: #ffffff; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-                            <div>
-                                <span style="background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                            <div style="max-width: 680px;">
+                                <span style="background: rgba(255,255,255,0.22); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">
                                     <?php esc_html_e('Premium Upgrade', 'fbs-stockmind'); ?>
                                 </span>
-                                <h2 style="color: #ffffff; margin: 10px 0 6px 0; font-size: 24px; font-weight: 700;">
+                                <h2 style="color: #ffffff; margin: 12px 0 8px 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px;">
                                     <?php esc_html_e('Unlock the Full Power of StockMind Pro', 'fbs-stockmind'); ?>
                                 </h2>
-                                <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px; max-width: 550px;">
-                                    <?php esc_html_e('Gain access to unlimited suppliers, automated purchase order generation, visual stock charts, SMS restocking notifications, and unlimited AI assistant questions.', 'fbs-stockmind'); ?>
+                                <p style="color: rgba(255,255,255,0.92); margin: 0 0 14px 0; font-size: 14px; line-height: 1.6;">
+                                    <?php esc_html_e('Automate your entire inventory operations with smart purchase orders, visual depletion graphs, multi-step customer replenishment sequences, custom 365-day forecasting, SMS alerts, and AI-driven purchasing strategies.', 'fbs-stockmind'); ?>
                                 </p>
+                                <div style="font-size: 12px; color: rgba(255,255,255,0.85); display: flex; gap: 16px; flex-wrap: wrap;">
+                                    <span>⚡ <?php esc_html_e('Instant Activation', 'fbs-stockmind'); ?></span>
+                                    <span>🛡️ <?php esc_html_e('30-Day Money-Back Guarantee', 'fbs-stockmind'); ?></span>
+                                    <span>👑 <?php esc_html_e('Priority VIP Support', 'fbs-stockmind'); ?></span>
+                                </div>
                             </div>
                             <div>
-                                <a href="https://wpbay.com/product/fbs-stockmind-pro/" target="_blank" class="fbs-btn" style="background: #ffffff; color: #4338ca; font-weight: 700; padding: 12px 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
+                                <a href="https://wpbay.com/product/fbs-stockmind-pro/" target="_blank" class="fbs-btn" style="background: #ffffff; color: #4338ca; font-weight: 800; font-size: 15px; padding: 14px 28px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); text-decoration: none; display: inline-block;">
                                     <?php esc_html_e('Upgrade to Pro Now →', 'fbs-stockmind'); ?>
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
-                            <div style="font-size: 24px; margin-bottom: 10px;">📈</div>
-                            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;"><?php esc_html_e('Visual Stock Runout Charts', 'fbs-stockmind'); ?></h4>
-                            <p style="margin: 0; font-size: 13px; color: #64748b;"><?php esc_html_e('Interactive Chart.js visual graphs mapping historical sales velocity against inventory depletion curves.', 'fbs-stockmind'); ?></p>
+                    <!-- Section Title -->
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 16px 0;">
+                        ✨ <?php esc_html_e('Everything Included in StockMind Pro', 'fbs-stockmind'); ?>
+                    </h3>
+
+                    <!-- 10 Feature Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 35px;">
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">📈</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Visual Stock Runout Charts', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Interactive visual depletion graphs mapping sales velocity against stock levels, displaying critical reorder threshold safety lines.', 'fbs-stockmind'); ?></p>
                         </div>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
-                            <div style="font-size: 24px; margin-bottom: 10px;">🏢</div>
-                            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;"><?php esc_html_e('Unlimited Suppliers & Directory', 'fbs-stockmind'); ?></h4>
-                            <p style="margin: 0; font-size: 13px; color: #64748b;"><?php esc_html_e('Manage unlimited vendor profiles, custom lead times, order minimums, and direct contact details.', 'fbs-stockmind'); ?></p>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">🏢</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Unlimited Suppliers & Directory', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Manage unlimited vendor profiles, individual lead times, minimum order quantities (MOQ), wholesale pricing, and direct contacts.', 'fbs-stockmind'); ?></p>
                         </div>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
-                            <div style="font-size: 24px; margin-bottom: 10px;">📝</div>
-                            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;"><?php esc_html_e('1-Click Purchase Order Generation', 'fbs-stockmind'); ?></h4>
-                            <p style="margin: 0; font-size: 13px; color: #64748b;"><?php esc_html_e('Generate PDF & CSV purchase orders ready to dispatch directly to your manufacturers and distributors.', 'fbs-stockmind'); ?></p>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">📝</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('1-Click Purchase Order Generation', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Generate branded PDF and CSV purchase orders formatted and ready to email directly to your manufacturers and distributors.', 'fbs-stockmind'); ?></p>
                         </div>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px;">
-                            <div style="font-size: 24px; margin-bottom: 10px;">💬</div>
-                            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: #1e293b;"><?php esc_html_e('Twilio SMS Restock Alerts', 'fbs-stockmind'); ?></h4>
-                            <p style="margin: 0; font-size: 13px; color: #64748b;"><?php esc_html_e('Receive urgent SMS notifications directly on your phone when critical high-velocity items risk stockout.', 'fbs-stockmind'); ?></p>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">⚡</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Automated PO Restock Triggers', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Automatically draft purchase orders and notify suppliers the moment stock dips below calculated lead-time thresholds.', 'fbs-stockmind'); ?></p>
                         </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">📅</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Custom 365-Day Analysis Windows', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Customize sales analysis windows from 7 up to 365 days (instead of fixed 30 days) to accurately account for seasonality and holiday spikes.', 'fbs-stockmind'); ?></p>
+                        </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">🎯</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Tunable Prediction Accuracy', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Fine-tune prediction confidence thresholds from 10% to 100% and toggle advanced statistical algorithms tailored for large catalogs.', 'fbs-stockmind'); ?></p>
+                        </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">🔄</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Multi-Step Customer Replenishment', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Send up to 10 automated smart follow-up reminder emails before and after runout with dynamic WooCommerce discount coupons.', 'fbs-stockmind'); ?></p>
+                        </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">💬</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Twilio SMS & WhatsApp Alerts', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Receive urgent SMS and WhatsApp restocking notifications directly on your phone when critical high-velocity items risk stockout.', 'fbs-stockmind'); ?></p>
+                        </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">🤖</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Advanced AI Inventory Analyst', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Run in-depth catalog health audits, bestseller growth trends, supplier risk evaluations, and custom AI-powered purchasing strategies.', 'fbs-stockmind'); ?></p>
+                        </div>
+                        <div class="fbs-pro-feature-card">
+                            <div class="fbs-pro-card-icon">🏬</div>
+                            <h4 class="fbs-pro-card-title"><?php esc_html_e('Multi-Warehouse Stock Tracking', 'fbs-stockmind'); ?></h4>
+                            <p class="fbs-pro-card-desc"><?php esc_html_e('Track inventory velocity and depletion dates across multiple fulfillment locations and warehouses with location-specific runout dates.', 'fbs-stockmind'); ?></p>
+                        </div>
+                    </div>
+
+                    <!-- Free vs Pro Comparison Table -->
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 14px 0;">
+                        ⚖️ <?php esc_html_e('Free vs. StockMind Pro Comparison', 'fbs-stockmind'); ?>
+                    </h3>
+                    <table class="fbs-pro-comparison-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40%;"><?php esc_html_e('Feature', 'fbs-stockmind'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Free Version', 'fbs-stockmind'); ?></th>
+                                <th class="pro-col" style="width: 32%;"><?php esc_html_e('StockMind Pro ⭐', 'fbs-stockmind'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong><?php esc_html_e('Sales Analysis Window', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Fixed 30 Days', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Flexible (7 to 365 Days) ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Prediction Accuracy Threshold', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Preset at 30%', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Customizable (10% to 100%) ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Supplier Management', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Basic Directory (Up to 3)', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Unlimited Suppliers & Terms ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Purchase Orders (PDF & CSV)', 'fbs-stockmind'); ?></strong></td>
+                                <td><span style="color: #94a3b8;">✕ <?php esc_html_e('Not Available', 'fbs-stockmind'); ?></span></td>
+                                <td class="pro-col"><?php esc_html_e('1-Click PDF & CSV PO Generation ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Automated PO Restock Triggers', 'fbs-stockmind'); ?></strong></td>
+                                <td><span style="color: #94a3b8;">✕ <?php esc_html_e('Manual Only', 'fbs-stockmind'); ?></span></td>
+                                <td class="pro-col"><?php esc_html_e('Automated Triggers on Low Stock ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Visual Depletion Charts', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Text Data Only', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Interactive Chart.js Graphs ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Customer Replenishment Reminders', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('1 Reminder Email Attempt', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Up to 10 Follow-ups + Coupons ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Urgent Restock Notifications', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Email Only', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Email + Twilio SMS & WhatsApp ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('AI Assistant Queries', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Standard Overview', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Deep Audits & Custom Strategy ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Multi-Warehouse Support', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Single Location', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Multi-Location & Warehouses ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong><?php esc_html_e('Customer Support', 'fbs-stockmind'); ?></strong></td>
+                                <td><?php esc_html_e('Community Forum', 'fbs-stockmind'); ?></td>
+                                <td class="pro-col"><?php esc_html_e('Priority VIP Support & Updates ✨', 'fbs-stockmind'); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Bottom CTA Banner -->
+                    <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 24px; text-align: center; margin-top: 25px;">
+                        <h4 style="margin: 0 0 6px 0; font-size: 17px; color: #1e293b; font-weight: 700;">
+                            🚀 <?php esc_html_e('Ready to scale your inventory and eliminate stockouts?', 'fbs-stockmind'); ?>
+                        </h4>
+                        <p style="margin: 0 0 16px 0; color: #64748b; font-size: 13px;">
+                            <?php esc_html_e('Upgrade to StockMind Pro to take full control of your supply chain and increase customer lifetime value.', 'fbs-stockmind'); ?>
+                        </p>
+                        <a href="https://wpbay.com/product/fbs-stockmind-pro/" target="_blank" class="fbs-btn fbs-btn-primary" style="font-size: 14px; padding: 12px 28px;">
+                            <?php esc_html_e('Get StockMind Pro Today →', 'fbs-stockmind'); ?>
+                        </a>
                     </div>
                 </div>
             </div>

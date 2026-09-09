@@ -80,6 +80,12 @@
             if (requestedTab && $(`.fbs-tab-button[data-tab="${requestedTab}"]`).length) {
                 $(`.fbs-tab-button[data-tab="${requestedTab}"]`).trigger('click');
             }
+
+            // Switch to Pro tab when clicking "Upgrade to Pro" helper links
+            $(document).on('click', '.fbs-open-pro-tab', function(e) {
+                e.preventDefault();
+                $('.fbs-tab-button[data-tab="pro"]').trigger('click');
+            });
         },
 
         /**

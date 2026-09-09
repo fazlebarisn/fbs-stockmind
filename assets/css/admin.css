@@ -729,6 +729,45 @@
     box-shadow: none;
 }
 
+/* Pro feature badges and notes */
+.fbs-pro-badge-inline {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+    border: 1px solid #fde68a;
+}
+
+.fbs-pro-feature-note {
+    display: block;
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.fbs-pro-note-tag {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.fbs-pro-feature-note a.fbs-open-pro-tab {
+    color: #7c3aed;
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.fbs-pro-feature-note a.fbs-open-pro-tab:hover {
+    color: #6d28d9;
+}
+
 .fbs-form-input,
 .fbs-form-textarea,
 .fbs-form-select {
@@ -1410,4 +1449,73 @@
         align-items: flex-start;
         gap: 8px;
     }
+}
+
+/* Pro Showcase & Comparison Table */
+.fbs-pro-feature-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.fbs-pro-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.1);
+    border-color: #cbd5e1;
+}
+.fbs-pro-card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+.fbs-pro-card-title {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.fbs-pro-card-desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #64748b;
+}
+.fbs-pro-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    margin: 25px 0;
+    border: 1px solid #e2e8f0;
+}
+.fbs-pro-comparison-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    color: #334155;
+}
+.fbs-pro-comparison-table th.pro-col {
+    background: linear-gradient(135deg, #ede9fe 0%, #fae8ff 100%);
+    color: #6b21a8;
+}
+.fbs-pro-comparison-table td {
+    padding: 14px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+}
+.fbs-pro-comparison-table tr:hover td {
+    background: #fafafa;
+}
+.fbs-pro-comparison-table td.pro-col {
+    background: #faf5ff;
+    font-weight: 600;
+    color: #581c87;
 }
