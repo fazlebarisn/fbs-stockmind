@@ -117,18 +117,6 @@ class Menu
             [$this, 'render_settings_page']
         );
 
-        // Pro Features submenu
-        if (!class_exists('FBS_StockMind_Pro\Inc\FBS_StockMind_Pro')) {
-            add_submenu_page(
-                'fbs-stockmind',
-                __('🚀 Upgrade to Pro', 'fbs-stockmind'),
-                __('🚀 Upgrade to Pro', 'fbs-stockmind'),
-                'manage_woocommerce',
-                'fbs-stockmind-pro-features',
-                [$this, 'render_pro_features_page']
-            );
-        }
-
         // Our Plugins submenu
         add_submenu_page(
             'fbs-stockmind',
@@ -235,17 +223,6 @@ class Menu
     public function render_settings_page()
     {
         Settings::get_instance()->render();
-    }
-
-    /**
-     * Render Pro Features page
-     *
-     * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
-     */
-    public function render_pro_features_page()
-    {
-        include FBS_STOCKMIND_DIR_PATH . '/inc/templates/admin/pro-features.php';
     }
 
     /**
