@@ -151,5 +151,10 @@ class Background_Processor
             $current_stock,
             $stock_value
         ));
+
+        // Update predictions table for this product
+        if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
+            \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($product_id);
+        }
     }
 }

@@ -84,6 +84,11 @@ class Event_Listener
 
         $product_id = $product_with_stock->get_id();
         
+        // Immediately recalculate prediction for this product so tables stay real-time accurate
+        if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
+            \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($product_id);
+        }
+
         if (function_exists('as_enqueue_async_action')) {
             if (!as_has_scheduled_action('fbs_stockmind_process_stock_update', ['product_id' => $product_id])) {
                 as_enqueue_async_action('fbs_stockmind_process_stock_update', ['product_id' => $product_id], 'fbs-stockmind');

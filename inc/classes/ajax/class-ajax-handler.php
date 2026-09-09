@@ -350,7 +350,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
-        $predictor->calculate_all_predictions();
+        $predictor->calculate_all_predictions(true);
         
         wp_send_json_success(__('Predictions calculated successfully.', 'fbs-stockmind'));
     }

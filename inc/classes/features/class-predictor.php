@@ -499,13 +499,22 @@ class Predictor
 
     /**
      * Start the prediction calculation process
+     *
+     * @param bool $sync Whether to process synchronously (e.g. for manual clicks)
      */
-    public function calculate_all_predictions()
+    public function calculate_all_predictions($sync = false)
     {
+        if ($sync) {
+            $this->process_predictions_batch(0);
+            return;
+        }
+
         if (function_exists('as_enqueue_async_action')) {
             if (!as_has_scheduled_action('fbs_stockmind_process_predictions_batch', ['offset' => 0])) {
                 as_enqueue_async_action('fbs_stockmind_process_predictions_batch', ['offset' => 0], 'fbs-stockmind');
             }
+        } else {
+            $this->process_predictions_batch(0);
         }
     }
 
@@ -627,6 +636,78 @@ class Predictor
      * @since 1.0.0
      * @author Fazle Bari <fazlebarisn@gmail.com>
      */
+    /**
+     * Update/recalculate prediction for a single product immediately
+     *
+     * @param int $product_id
+     * @return bool True if an active prediction was saved, false otherwise
+     */
+    public function update_single_product_prediction($product_id)
+    {
+        global $wpdb;
+        $product = wc_get_product($product_id);
+        if (!$product || $product->get_status() !== 'publish') {
+            return false;
+        }
+
+        $predictions_table = fbs_stockmind_get_table_name('predictions');
+        $alert_window = fbs_stockmind_get_option('alert_window', 14);
+
+        if (!fbs_stockmind_is_product_stock_tracked($product)) {
+            $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
+            return false;
+        }
+
+        try {
+            $prediction_data = $this->calculate_runout_date($product_id);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        if (!$prediction_data) {
+            $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
+            return false;
+        }
+
+        $predicted_date = $prediction_data['predicted_date'];
+        $confidence_score = $prediction_data['confidence_score'];
+        $days_until_runout = $prediction_data['days_until_runout'];
+
+        if ($days_until_runout <= $alert_window) {
+            $existing = $wpdb->get_row($wpdb->prepare("SELECT id FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0", $product_id));
+
+            if ($existing) {
+                $wpdb->update($predictions_table, [
+                    'predicted_runout_date' => $predicted_date,
+                    'days_until_runout' => $days_until_runout,
+                    'confidence_score' => $confidence_score,
+                    'calculated_at' => current_time('mysql'),
+                ], ['id' => $existing->id], ['%s', '%f', '%f', '%s'], ['%d']);
+            } else {
+                $wpdb->insert($predictions_table, [
+                    'product_id' => $product_id,
+                    'predicted_runout_date' => $predicted_date,
+                    'days_until_runout' => $days_until_runout,
+                    'confidence_score' => $confidence_score,
+                    'calculated_at' => current_time('mysql'),
+                    'is_dismissed' => 0,
+                ], ['%d', '%s', '%f', '%f', '%s', '%d']);
+            }
+            return true;
+        } else {
+            $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
+            return false;
+        }
+    }
+
+    /**
+     * Get active predictions
+     *
+     * @param int $limit Number of predictions to retrieve
+     * @return array
+     * @since 1.0.0
+     * @author Fazle Bari <fazlebarisn@gmail.com>
+     */
     public function get_active_predictions($limit = -1)
     {
         global $wpdb;
@@ -664,12 +745,31 @@ class Predictor
                 continue;
             }
 
+            $current_stock = $product->get_stock_quantity();
+
+            // Real-time Self-Healing Check:
+            // If the cached prediction says "Out of stock" (days_until_runout <= 0) but the product actually has stock (> 0),
+            // or if the stock is 0 but days_until_runout > 0, recalculate on the spot!
+            if (($result->days_until_runout <= 0 && $current_stock > 0) || ($current_stock <= 0 && $result->days_until_runout > 0)) {
+                $has_prediction = $this->update_single_product_prediction($result->product_id);
+                if (!$has_prediction) {
+                    // Product is no longer in alert window or has no prediction needed
+                    continue;
+                }
+                // Fetch refreshed row
+                $refreshed = $wpdb->get_row($wpdb->prepare("SELECT * FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0", $result->product_id));
+                if (!$refreshed) {
+                    continue;
+                }
+                $result = $refreshed;
+            }
+
             $predictions[] = [
                 'id' => $result->id,
                 'product_id' => $result->product_id,
                 'product_name' => $product->get_name(),
                 'product_image' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-                'current_stock' => $product->get_stock_quantity(),
+                'current_stock' => $current_stock,
                 'predicted_runout_date' => $result->predicted_runout_date,
                 'confidence_score' => $result->confidence_score,
                 'calculated_at' => $result->calculated_at,
