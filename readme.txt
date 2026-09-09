@@ -85,9 +85,8 @@ Go to StockMind > Suppliers and add your suppliers with their standard lead time
 5. Supplier management screen with lead times and contact info.
 6. Customer replenishment reminder manager.
 7. General, prediction, and reminder configuration settings.
-8. Pro options and feature comparison matrix.
-9. WordPress Dashboard widget showing urgent stock alerts.
-10. Customer replenishment signup form on the WooCommerce Thank You page.
+8. WordPress Dashboard widget showing urgent stock alerts.
+9. Customer replenishment signup form on the WooCommerce Thank You page.
 
 == Changelog ==
 
