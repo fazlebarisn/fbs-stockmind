@@ -432,6 +432,7 @@ class Settings
             wp_send_json_error(['message' => __('Please enter an API key first.', 'fbs-stockmind')]);
         }
 
+        // phpcs:disable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Testing user-configured direct API credentials
         if ($provider === 'openai') {
             $response = wp_remote_get('https://api.openai.com/v1/models', [
                 'headers' => [
@@ -471,5 +472,6 @@ class Settings
 
             wp_send_json_success(['message' => __('Connection successful! Google Gemini API key is valid.', 'fbs-stockmind')]);
         }
+        // phpcs:enable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration
     }
 }

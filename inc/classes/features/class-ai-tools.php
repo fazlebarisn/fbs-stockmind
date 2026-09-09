@@ -28,6 +28,7 @@ class AI_Tools
         $predictions_table = $wpdb->prefix . 'fbs_stockmind_predictions';
         $suppliers_table = $wpdb->prefix . 'fbs_stockmind_suppliers';
         
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Trusted table names and real-time inventory aggregation for AI tool execution
         $products_needing_attention = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(DISTINCT product_id) FROM $predictions_table 
              WHERE is_dismissed = 0 AND predicted_runout_date <= DATE_ADD(CURDATE(), INTERVAL %d DAY)",
@@ -35,11 +36,13 @@ class AI_Tools
         ));
         
         $total_suppliers = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $low_stock_count = count(wc_get_products([
             'limit' => -1,
             'status' => 'publish',
             'stock_status' => 'instock',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Low stock product count needed for AI tools summary
             'meta_query' => [
                 [
                     'key' => '_stock',
@@ -78,6 +81,7 @@ class AI_Tools
         global $wpdb;
         $predictions_table = $wpdb->prefix . 'fbs_stockmind_predictions';
 
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Trusted table name, real-time risk evaluation for AI assistant
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT product_id, predicted_runout_date, days_until_runout, confidence_score 
              FROM $predictions_table 
@@ -86,6 +90,7 @@ class AI_Tools
              LIMIT %d",
             $limit
         ));
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $products = [];
         foreach ($results as $row) {
@@ -119,6 +124,7 @@ class AI_Tools
         $sales_table = $wpdb->prefix . 'fbs_stockmind_daily_sales';
         $start_date = gmdate('Y-m-d', strtotime("-{$days} days"));
 
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Trusted table name, real-time best sellers aggregation for AI assistant
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT product_id, SUM(units_sold) as total_sold, SUM(revenue) as total_revenue
              FROM $sales_table 
@@ -129,6 +135,7 @@ class AI_Tools
             $start_date,
             $limit
         ));
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         $products = [];
         foreach ($results as $row) {
@@ -157,7 +164,9 @@ class AI_Tools
 
         global $wpdb;
         $suppliers_table = $wpdb->prefix . 'fbs_stockmind_suppliers';
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Trusted table name, single vendor lookup for AI assistant
         $name = $wpdb->get_var($wpdb->prepare("SELECT name FROM $suppliers_table WHERE id = %d", $supplier_id));
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
         
         return $name ? $name : 'Unknown';
     }

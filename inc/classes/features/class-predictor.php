@@ -441,7 +441,7 @@ class Predictor
     public function get_product_sales_data($product_id, $days = 90)
     {
         global $wpdb;
-        $sales_table = $wpdb->prefix . 'fbs_stockmind_daily_sales';
+        $sales_table = fbs_stockmind_get_table_name('daily_sales');
         $start_date = gmdate('Y-m-d', strtotime("-{$days} days"));
         
         // Initialize sales data array with all dates set to 0
@@ -456,12 +456,13 @@ class Predictor
         }
 
         // Query our pre-aggregated fast table
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT date, units_sold FROM {$sales_table} WHERE product_id = %d AND date >= %s",
             $product_id,
             $start_date
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         if ($results) {
             foreach ($results as $row) {
@@ -556,6 +557,7 @@ class Predictor
         $predictions_table = fbs_stockmind_get_table_name('predictions');
         $alert_window = fbs_stockmind_get_option('alert_window', 14);
 
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Real-time batch predictions calculation on custom plugin table
         foreach ($product_ids as $product_id) {
             $product = wc_get_product($product_id);
             if (!$product) continue;
@@ -581,7 +583,6 @@ class Predictor
             $days_until_runout = $prediction_data['days_until_runout'];
 
             if ($days_until_runout <= $alert_window) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $existing = $wpdb->get_row($wpdb->prepare("SELECT id FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0", $product_id));
 
                 if ($existing) {
@@ -605,6 +606,7 @@ class Predictor
                 $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
             }
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         // Queue next batch
         if (function_exists('as_enqueue_async_action')) {
@@ -661,6 +663,7 @@ class Predictor
         $alert_window = fbs_stockmind_get_option('alert_window', 14);
 
         if (!fbs_stockmind_is_product_stock_tracked($product)) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary cleanup on custom predictions table
             $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
             return false;
         }
@@ -672,6 +675,7 @@ class Predictor
         }
 
         if (!$prediction_data) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Necessary cleanup on custom predictions table
             $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
             return false;
         }
@@ -680,6 +684,7 @@ class Predictor
         $confidence_score = $prediction_data['confidence_score'];
         $days_until_runout = $prediction_data['days_until_runout'];
 
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Single product prediction calculations on custom plugin table
         if ($days_until_runout <= $alert_window) {
             $existing = $wpdb->get_row($wpdb->prepare("SELECT id FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0", $product_id));
 
@@ -700,11 +705,14 @@ class Predictor
                     'is_dismissed' => 0,
                 ], ['%d', '%s', '%f', '%f', '%s', '%d']);
             }
-            return true;
+            $result = true;
         } else {
             $wpdb->delete($predictions_table, ['product_id' => $product_id, 'is_dismissed' => 0], ['%d', '%d']);
-            return false;
+            $result = false;
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+        return $result;
     }
 
     /**
@@ -764,7 +772,9 @@ class Predictor
                     continue;
                 }
                 // Fetch refreshed row
+                // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
                 $refreshed = $wpdb->get_row($wpdb->prepare("SELECT * FROM $predictions_table WHERE product_id = %d AND is_dismissed = 0", $result->product_id));
+                // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
                 if (!$refreshed) {
                     continue;
                 }

@@ -53,7 +53,7 @@ class Background_Processor
 
         $order_date = $order->get_date_created()->date('Y-m-d');
         global $wpdb;
-        $sales_table = $wpdb->prefix . 'fbs_stockmind_daily_sales';
+        $sales_table = fbs_stockmind_get_table_name('daily_sales');
 
         foreach ($order->get_items() as $item) {
             $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
@@ -63,6 +63,7 @@ class Background_Processor
             $line_total = $item->get_total(); // Revenue excluding tax
 
             // Upsert daily sales record
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO {$sales_table} (product_id, date, units_sold, revenue, updated_at) 
                  VALUES (%d, %s, %d, %f, CURRENT_TIMESTAMP)
@@ -75,6 +76,7 @@ class Background_Processor
                 $quantity,
                 $line_total
             ));
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
             // Immediately recalculate prediction for ordered product
             if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
@@ -95,7 +97,7 @@ class Background_Processor
 
         $order_date = $order->get_date_created()->date('Y-m-d');
         global $wpdb;
-        $sales_table = $wpdb->prefix . 'fbs_stockmind_daily_sales';
+        $sales_table = fbs_stockmind_get_table_name('daily_sales');
 
         foreach ($order->get_items() as $item) {
             $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
@@ -105,6 +107,7 @@ class Background_Processor
             $line_total = $item->get_total();
 
             // Upsert with refund values
+            // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO {$sales_table} (product_id, date, refund_quantity, revenue, updated_at) 
                  VALUES (%d, %s, %d, -%f, CURRENT_TIMESTAMP)
@@ -117,6 +120,7 @@ class Background_Processor
                 $quantity,
                 $line_total
             ));
+            // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
         }
     }
 
@@ -142,9 +146,10 @@ class Background_Processor
         $stock_value = $current_stock > 0 ? $current_stock * $price : 0;
 
         global $wpdb;
-        $snapshots_table = $wpdb->prefix . 'fbs_stockmind_inventory_snapshots';
+        $snapshots_table = fbs_stockmind_get_table_name('inventory_snapshots');
 
         // Upsert daily snapshot
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
         $wpdb->query($wpdb->prepare(
             "INSERT INTO {$snapshots_table} (product_id, date, stock_level, stock_value) 
              VALUES (%d, %s, %d, %f)
@@ -156,6 +161,7 @@ class Background_Processor
             $current_stock,
             $stock_value
         ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         // Update predictions table for this product
         if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {

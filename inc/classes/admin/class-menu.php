@@ -253,16 +253,23 @@ class Menu
      */
     public function display_onboarding_notice()
     {
-        // Check if onboarding is dismissed
-        if (isset($_GET['onboarding']) && $_GET['onboarding'] === 'success') {
-            $count = isset($_GET['count']) ? absint($_GET['count']) : 0;
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Query parameters used only for displaying transient UI notice following a safe redirect
+        if (isset($_GET['onboarding']) && sanitize_text_field(wp_unslash($_GET['onboarding'])) === 'success') {
+            $count = isset($_GET['count']) ? absint(wp_unslash($_GET['count'])) : 0;
             ?>
             <div class="notice notice-success is-dismissible" style="padding: 10px;">
-                <p><strong>Success!</strong> We found and marked <?php echo esc_html($count); ?> products as replenishable.</p>
+                <p><strong><?php esc_html_e('Success!', 'fbs-stockmind'); ?></strong> <?php 
+                    printf(
+                        /* translators: %d: Number of products marked as replenishable */
+                        esc_html__('We found and marked %d products as replenishable.', 'fbs-stockmind'), 
+                        absint($count)
+                    ); 
+                ?></p>
             </div>
             <?php
             return;
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
 
         if (get_option('fbs_stockmind_onboarding_dismissed')) {
             return;
@@ -277,12 +284,12 @@ class Menu
         <div class="notice notice-info" style="padding: 20px;">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <h3 style="margin-top: 0;">Welcome to FBS StockMind! 🎉</h3>
-                    <p>Let's get started by automatically finding products that your customers frequently buy. We can mark them as 'replenishable' for you.</p>
+                    <h3 style="margin-top: 0;"><?php esc_html_e('Welcome to FBS StockMind! 🎉', 'fbs-stockmind'); ?></h3>
+                    <p><?php esc_html_e("Let's get started by automatically finding products that your customers frequently buy. We can mark them as 'replenishable' for you.", 'fbs-stockmind'); ?></p>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button button-primary">Auto-Detect Products</a>
-                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_dismiss_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button">Skip for now</a>
+                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button button-primary"><?php esc_html_e('Auto-Detect Products', 'fbs-stockmind'); ?></a>
+                    <a href="<?php echo esc_url(admin_url('admin-post.php?action=fbs_stockmind_dismiss_onboarding&_wpnonce=' . wp_create_nonce('fbs_onboarding'))); ?>" class="button"><?php esc_html_e('Skip for now', 'fbs-stockmind'); ?></a>
                 </div>
             </div>
         </div>
@@ -294,16 +301,18 @@ class Menu
      */
     public function handle_onboarding_action()
     {
-        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'fbs_onboarding')) {
-            wp_die('Security check failed');
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified via wp_verify_nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'fbs_onboarding')) {
+            wp_die(esc_html__('Security check failed', 'fbs-stockmind'));
         }
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_die('Permission denied');
+            wp_die(esc_html__('Permission denied', 'fbs-stockmind'));
         }
 
         // Simple logic to find products with more than 3 sales total and mark them as replenishable
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Onboarding scan query, runs once upon user request and needs real-time order item metadata
         $results = $wpdb->get_results("
             SELECT order_item_meta.meta_value as product_id, SUM(order_item_meta_qty.meta_value) as total_qty
             FROM {$wpdb->prefix}woocommerce_order_items as order_items
@@ -316,6 +325,7 @@ class Menu
             HAVING total_qty >= 3
             LIMIT 50
         ");
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 
         $count = 0;
         if (!empty($results)) {
@@ -329,7 +339,7 @@ class Menu
 
         update_option('fbs_stockmind_onboarding_dismissed', 1);
 
-        wp_redirect(admin_url('admin.php?page=fbs-stockmind&onboarding=success&count=' . $count));
+        wp_safe_redirect(admin_url('admin.php?page=fbs-stockmind&onboarding=success&count=' . $count));
         exit;
     }
 
@@ -338,12 +348,17 @@ class Menu
      */
     public function handle_dismiss_onboarding()
     {
-        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'fbs_onboarding')) {
-            wp_die('Security check failed');
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce is verified via wp_verify_nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'fbs_onboarding')) {
+            wp_die(esc_html__('Security check failed', 'fbs-stockmind'));
+        }
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(esc_html__('Permission denied', 'fbs-stockmind'));
         }
 
         update_option('fbs_stockmind_onboarding_dismissed', 1);
-        wp_redirect(admin_url('admin.php?page=fbs-stockmind'));
+        wp_safe_redirect(admin_url('admin.php?page=fbs-stockmind'));
         exit;
     }
 

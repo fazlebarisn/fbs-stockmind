@@ -148,15 +148,23 @@ class AI_Assistant
         }
 
         $message = isset($_POST['message']) ? sanitize_textarea_field(wp_unslash($_POST['message'])) : '';
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Raw JSON string is decoded and sanitized per item below
         $history_json = isset($_POST['history']) ? wp_unslash($_POST['history']) : '[]';
-        $history = json_decode($history_json, true);
+        $history_decoded = json_decode($history_json, true);
+        $history = [];
+        if (is_array($history_decoded)) {
+            foreach ($history_decoded as $item) {
+                if (is_array($item) && isset($item['sender'], $item['text'])) {
+                    $history[] = [
+                        'sender' => sanitize_key($item['sender']),
+                        'text'   => sanitize_textarea_field($item['text']),
+                    ];
+                }
+            }
+        }
         
         if (empty($message)) {
             wp_send_json_error('Message is empty.');
-        }
-
-        if (!is_array($history)) {
-            $history = [];
         }
 
         $provider = fbs_stockmind_get_option('ai_provider', 'gemini');
@@ -274,6 +282,7 @@ class AI_Assistant
         $last_err = 'Failed to connect to Gemini.';
 
         foreach ($candidates as $candidate_model) {
+            // phpcs:disable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Direct integration with user-configured Gemini API key
             $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . urlencode($candidate_model) . ':generateContent?key=' . urlencode($api_key);
 
             $response = wp_remote_post($url, [
@@ -281,6 +290,7 @@ class AI_Assistant
                 'body'    => wp_json_encode($body),
                 'timeout' => 30
             ]);
+            // phpcs:enable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration
 
             if (is_wp_error($response)) {
                 $last_err = $response->get_error_message();
@@ -325,6 +335,7 @@ class AI_Assistant
             'temperature' => 0.7
         ];
 
+        // phpcs:disable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Direct integration with user-configured OpenAI API key
         $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $api_key,
@@ -333,6 +344,7 @@ class AI_Assistant
             'body' => wp_json_encode($body),
             'timeout' => 30
         ]);
+        // phpcs:enable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration
 
         if (is_wp_error($response)) {
             return $response;
