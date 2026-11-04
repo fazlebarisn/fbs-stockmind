@@ -48,8 +48,8 @@ defined('ABSPATH') or die('Nice Try!');
                     <span class="fbs-tab-icon">🤖</span>
                     <?php esc_html_e('AI Assistant', 'fbs-stockmind'); ?>
                 </button>
-                <?php if (!function_exists('fbs_stockmind_pro_is_woocommerce_active')): ?>
-                <button type="button" class="fbs-tab-button pro-tab" data-tab="pro" style="color: #f59e0b;">
+                <?php if (!fbs_stockmind_is_pro_active()): ?>
+                <button type="button" class="fbs-tab-button pro-tab" data-tab="pro">
                     <span class="fbs-tab-icon">⭐</span>
                     <?php esc_html_e('Pro Options', 'fbs-stockmind'); ?>
                 </button>

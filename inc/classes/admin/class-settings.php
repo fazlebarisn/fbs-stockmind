@@ -333,6 +333,9 @@ class Settings
             fbs_stockmind_update_option($key, $value);
         }
 
+        // Allow FBS StockMind Pro to save additional settings via AJAX save as well
+        do_action('fbs_stockmind_save_settings', $settings_data);
+
         wp_send_json_success(__('Settings saved successfully!', 'fbs-stockmind'));
     }
 

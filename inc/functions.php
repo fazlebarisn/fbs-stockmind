@@ -324,6 +324,10 @@ function fbs_stockmind_utm_url($path = 'plugins/', $campaign = 'pro-upgrade', $c
  */
 function fbs_stockmind_is_pro_active()
 {
+    if (function_exists('fbs_stockmind_pro_is_license_active')) {
+        return fbs_stockmind_pro_is_license_active();
+    }
+
     if (defined('FBS_STOCKMIND_PRO_VERSION')) {
         return true;
     }
