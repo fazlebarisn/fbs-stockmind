@@ -65,25 +65,17 @@ class Activate
     }
 
     /**
-     * Migrate legacy options from v1.0–v1.2 (double-prefixed OpenAI key & deprecated Gemini 3.x model slugs).
+     * Clean up deprecated legacy direct-API options from v1.0–v1.2 in favor of WordPress AI Connectors.
      *
      * @since 1.3.0
      * @return void
      */
     public function migrate_legacy_options()
     {
-        // Migrate double-prefixed OpenAI API key if present
-        $legacy_openai_key = get_option('fbs_stockmind_fbs_stockmind_openai_key', '');
-        if (!empty($legacy_openai_key) && empty(get_option('fbs_stockmind_openai_key', ''))) {
-            update_option('fbs_stockmind_openai_key', $legacy_openai_key);
-            delete_option('fbs_stockmind_fbs_stockmind_openai_key');
-        }
-
-        // Migrate non-existent Gemini 3.x model names to gemini-2.5-flash
-        $saved_model = (string) get_option('fbs_stockmind_ai_model', '');
-        if (in_array($saved_model, ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'], true)) {
-            update_option('fbs_stockmind_ai_model', 'gemini-2.5-flash');
-        }
+        delete_option('fbs_stockmind_fbs_stockmind_openai_key');
+        delete_option('fbs_stockmind_openai_key');
+        delete_option('fbs_stockmind_ai_provider');
+        delete_option('fbs_stockmind_ai_model');
     }
 
     /**

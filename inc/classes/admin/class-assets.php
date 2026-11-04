@@ -54,12 +54,19 @@ class Assets
             return;
         }
 
+        $admin_css_ver = file_exists(FBS_STOCKMIND_DIR_PATH . '/assets/css/admin.css')
+            ? FBS_STOCKMIND_VERSION . '.' . filemtime(FBS_STOCKMIND_DIR_PATH . '/assets/css/admin.css')
+            : FBS_STOCKMIND_VERSION;
+        $admin_js_ver = file_exists(FBS_STOCKMIND_DIR_PATH . '/assets/js/admin.js')
+            ? FBS_STOCKMIND_VERSION . '.' . filemtime(FBS_STOCKMIND_DIR_PATH . '/assets/js/admin.js')
+            : FBS_STOCKMIND_VERSION;
+
         // Enqueue CSS
         wp_enqueue_style(
             'fbs-stockmind-admin',
             FBS_STOCKMIND_URL . '/assets/css/admin.css',
             [],
-            FBS_STOCKMIND_VERSION
+            $admin_css_ver
         );
 
         // Enqueue JavaScript
@@ -67,7 +74,7 @@ class Assets
             'fbs-stockmind-admin',
             FBS_STOCKMIND_URL . '/assets/js/admin.js',
             ['jquery'],
-            FBS_STOCKMIND_VERSION,
+            $admin_js_ver,
             true
         );
 

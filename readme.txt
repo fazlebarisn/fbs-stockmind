@@ -19,8 +19,8 @@ By analyzing real-time WooCommerce sales velocity (across both simple and variab
 = Core Features =
 
 * **Predictive Stockout Forecasting**: Analyzes the past 30 days of WooCommerce order velocity (including variable product variations and net refunds) and predicts exact stock runout dates so you can reorder ahead of supplier lead times.
-* **Interactive AI Inventory Assistant**: Chat directly with an AI assistant that understands your live catalog! Ask about low-stock risks, runout forecasts, best-sellers, or supplier lead times using **WordPress Native AI Connectors** (`Settings ➔ Connectors`), **Google Gemini** (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-2.5-pro`), or **OpenAI** (`gpt-4o-mini`, `gpt-4o`).
-* **Smart Live Store Function Calling**: When using OpenAI, the AI Assistant dynamically queries your live store metrics (active predictions, stock risk items, best-sellers, and supplier directories) to provide factual, up-to-the-minute answers.
+* **Interactive AI Inventory Assistant**: Chat directly with an AI assistant that understands your live catalog! Powered natively by **WordPress AI Client & Connectors** (`Settings ➔ Connectors`) — connect Google Gemini, OpenAI, Anthropic, Mistral, or Vercel AI Gateway once in WordPress and ask about low-stock risks, runout forecasts, best-sellers, or supplier lead times.
+* **Live Store Inventory Context**: StockMind automatically feeds your live active predictions, stock-risk products, 30-day best-sellers, and supplier counts into your WordPress AI Connection for factual, up-to-the-minute answers.
 * **Quick Prompt Chips & Persistent Chat**: Launch 1-click inventory audits with Quick Prompt chips and keep your conversation intact across page reloads.
 * **Real-Time Self-Healing & HPOS Ready**: Fully compatible with WooCommerce High-Performance Order Storage (`custom_order_tables`) and Cart/Checkout Blocks. Predictions automatically refresh when orders or variations change.
 * **Automated Onboarding Wizard**: Scans historical WooCommerce orders on activation and flags frequently purchased items as replenishable in one click.
@@ -50,18 +50,7 @@ Ready to automate your entire WooCommerce supply chain? Explore **[FBS StockMind
 
 == External Services ==
 
-FBS StockMind includes an **optional** AI Inventory Assistant. No data is transmitted to any external AI service unless an administrator explicitly configures an AI provider and initiates a chat query or API connection test in the WordPress admin dashboard.
-
-1. **WordPress Native AI Connectors (`wp_ai_client_prompt`)**:
-   * Connects through the provider configured by the site administrator under **Settings ➔ Connectors** in WordPress.
-2. **Google Gemini API (`generativelanguage.googleapis.com`)**:
-   * Used only when the administrator selects **Google Gemini Direct API Key** and enters their own API key.
-   * Transmits the administrator's chat prompt and summarized store inventory context to generate responses.
-   * [Google Gemini Terms of Service](https://ai.google.dev/gemini-api/terms) | [Google Privacy Policy](https://policies.google.com/privacy)
-3. **OpenAI API (`api.openai.com`)**:
-   * Used only when the administrator selects **OpenAI Direct API Key** and enters their own API key.
-   * Transmits the administrator's chat prompt and requested inventory tool summaries to generate responses.
-   * [OpenAI Terms of Use](https://openai.com/policies/terms-of-use/) | [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy/)
+FBS StockMind integrates exclusively with WordPress's native **AI Client API (`wp_ai_client_prompt`)** and **Settings ➔ Connectors**. The plugin does not make hardcoded requests to third-party AI endpoints on its own; AI requests are routed only when an administrator connects an AI provider in **WordPress Settings ➔ Connectors** and initiates an inventory chat query or connection test in the WordPress admin dashboard.
 
 == Installation ==
 
@@ -80,9 +69,9 @@ Yes, FBS StockMind requires WooCommerce 6.0 or higher and fully supports WooComm
 
 Yes! StockMind aggregates variation stock levels (or parent-managed stock) and variation order history so variable products receive accurate runout predictions.
 
-= Does the AI Assistant require an API key? =
+= Does the AI Assistant require a separate API key inside StockMind? =
 
-You can connect using WordPress's native **Settings ➔ Connectors** integration (recommended), or paste your own free Google Gemini API key or OpenAI API key under **StockMind ➔ Settings ➔ AI Assistant**. Your credentials stay in your WordPress database and connect directly to the AI provider.
+No! StockMind uses WordPress's native **Settings ➔ Connectors** integration (`wp_ai_client_prompt`). Connect Google Gemini, OpenAI, Anthropic, or Mistral once in WordPress **Settings ➔ Connectors**, and StockMind AI Assistant works automatically.
 
 = How do customer replenishment reminders work? =
 
@@ -107,7 +96,7 @@ Yes! Both logged-in customers and guest shoppers can subscribe using their email
 == Changelog ==
 
 = 1.3.0 =
-* New: Native WordPress AI Client & Connectors (`Settings ➔ Connectors`) integration alongside direct Google Gemini (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-2.5-pro`) and OpenAI (`gpt-4o-mini`, `gpt-4o`) support.
+* New: Switched AI Inventory Assistant exclusively to WordPress's native AI Client & Connectors (`wp_ai_client_prompt` / `Settings ➔ Connectors`), matching the unified WordPress AI Connection architecture.
 * New: Redesigned AI Inventory Assistant UI with dark gradient header, active provider & daily quota badges, and 1-click Quick Prompt chips.
 * New: Declared official WooCommerce High-Performance Order Storage (`custom_order_tables`) and Cart/Checkout Blocks compatibility.
 * New: Added signed 1-click unsubscribe links to customer replenishment reminder emails.

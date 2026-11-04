@@ -350,11 +350,11 @@ defined('ABSPATH') or die('Nice Try!');
             <!-- AI Assistant Settings Tab -->
             <div class="fbs-tab-content" id="ai-tab">
                 <div class="fbs-settings-section">
-                    <h2 class="fbs-section-title" style="display: flex; align-items: center; gap: 8px;">
-                        <span>🤖</span> <?php esc_html_e('AI Assistant Settings', 'fbs-stockmind'); ?>
+                    <h2 class="fbs-ai-settings-heading">
+                        <?php esc_html_e('🤖 AI Inventory Assistant Settings', 'fbs-stockmind'); ?>
                     </h2>
-                    <p style="color: #4b5563; font-size: 14px; margin-bottom: 24px;">
-                        <?php esc_html_e('Connect via WordPress Settings ➔ Connectors or use your own Google Gemini / OpenAI API key to analyze inventory health, forecast runout dates, and answer live questions about your WooCommerce catalog.', 'fbs-stockmind'); ?>
+                    <p class="fbs-ai-settings-lead">
+                        <?php esc_html_e('Uses WordPress\'s native AI Client & Connectors to analyze your live WooCommerce stock velocity, runout forecasts, best-sellers, and supplier lead times in 1 click.', 'fbs-stockmind'); ?>
                     </p>
 
                     <?php
@@ -365,168 +365,106 @@ defined('ABSPATH') or die('Nice Try!');
                     $fbs_sm_ai_providers   = $fbs_sm_ai_status['providers'] ?? [];
                     ?>
 
-                    <div class="fbs-form-group">
-                        <label for="fbs_stockmind_ai_provider" class="fbs-form-label">
-                            <?php esc_html_e('AI Connection Method', 'fbs-stockmind'); ?>
-                        </label>
-                        <select name="fbs_stockmind_ai_provider" id="fbs_stockmind_ai_provider" class="fbs-form-select" style="max-width: 480px; width: 100%;">
-                            <option value="wp_native" <?php selected($settings['ai_provider'], 'wp_native'); ?>>
-                                <?php esc_html_e('WordPress Default AI Connector (Settings ➔ Connectors — Recommended)', 'fbs-stockmind'); ?>
-                            </option>
-                            <option value="gemini" <?php selected($settings['ai_provider'], 'gemini'); ?>>
-                                <?php esc_html_e('Google Gemini Direct API Key (Fast & Free Tier)', 'fbs-stockmind'); ?>
-                            </option>
-                            <option value="openai" <?php selected($settings['ai_provider'], 'openai'); ?>>
-                                <?php esc_html_e('OpenAI Direct API Key (GPT-4o mini / GPT-4o)', 'fbs-stockmind'); ?>
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- WordPress Native AI Connector Status Box -->
-                    <div id="fbs-stockmind-wp-native-card" class="fbs-form-group" style="<?php echo 'wp_native' === $settings['ai_provider'] ? '' : 'display:none;'; ?>">
-                        <div style="background: #ffffff; border: 1px solid <?php echo $fbs_sm_wp_ai_ready ? '#a7f3d0' : '#fde68a'; ?>; border-radius: 12px; padding: 18px 20px; max-width: 640px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);">
-                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: <?php echo $fbs_sm_wp_ai_ready ? '#d1fae5' : '#fef3c7'; ?>; font-size: 16px;">
-                                        <?php echo $fbs_sm_wp_ai_ready ? '✅' : '⚠️'; ?>
-                                    </span>
-                                    <div>
-                                        <div style="font-weight: 700; font-size: 14px; color: #0f172a;">
-                                            <?php
-                                            if ($fbs_sm_wp_ai_ready) {
-                                                esc_html_e('Connected via WordPress AI Connectors', 'fbs-stockmind');
-                                            } else {
-                                                esc_html_e('No Active WordPress AI Connector Configured', 'fbs-stockmind');
-                                            }
-                                            ?>
-                                        </div>
-                                        <div style="font-size: 12.5px; color: #64748b; margin-top: 2px;">
-                                            <?php esc_html_e('Uses WordPress native AI Client (wp_ai_client_prompt) & Settings ➔ Connectors.', 'fbs-stockmind'); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: <?php echo $fbs_sm_wp_ai_ready ? '#ecfdf5' : '#fffbeb'; ?>; color: <?php echo $fbs_sm_wp_ai_ready ? '#047857' : '#b45309'; ?>; border: 1px solid <?php echo $fbs_sm_wp_ai_ready ? '#6ee7b7' : '#fcd34d'; ?>;">
-                                    <?php echo $fbs_sm_wp_ai_ready ? esc_html__('Ready', 'fbs-stockmind') : esc_html__('Setup Needed', 'fbs-stockmind'); ?>
-                                </span>
-                            </div>
-
-                            <?php if (!empty($fbs_sm_ai_providers)) : ?>
-                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px 0; padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                                    <?php foreach ($fbs_sm_ai_providers as $fbs_prov) : ?>
-                                        <div style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 6px; font-size: 12px; background: <?php echo !empty($fbs_prov['is_connected']) ? '#f0fdf4' : '#f8fafc'; ?>; border: 1px solid <?php echo !empty($fbs_prov['is_connected']) ? '#bbf7d0' : '#e2e8f0'; ?>; color: #334155;">
-                                            <span style="width: 7px; height: 7px; border-radius: 50%; background: <?php echo !empty($fbs_prov['is_connected']) ? '#10b981' : '#94a3b8'; ?>;"></span>
-                                            <strong><?php echo esc_html($fbs_prov['name']); ?>:</strong>
-                                            <span>
-                                                <?php
-                                                if (!empty($fbs_prov['is_connected'])) {
-                                                    esc_html_e('Connected', 'fbs-stockmind');
-                                                } elseif (!empty($fbs_prov['has_key']) && empty($fbs_prov['plugin_active'])) {
-                                                    esc_html_e('Provider Plugin Inactive', 'fbs-stockmind');
-                                                } else {
-                                                    esc_html_e('Not Connected', 'fbs-stockmind');
-                                                }
-                                                ?>
+                    <table class="form-table fbs-ai-form-table">
+                        <tr valign="top">
+                            <th scope="row"><?php esc_html_e('WordPress AI Connection', 'fbs-stockmind'); ?></th>
+                            <td>
+                                <div class="fbs-wp-ai-card <?php echo $fbs_sm_wp_ai_ready ? 'fbs-wp-ai-card--ready' : 'fbs-wp-ai-card--setup'; ?>">
+                                    <div class="fbs-wp-ai-card__header">
+                                        <div class="fbs-wp-ai-card__title-group">
+                                            <span class="fbs-wp-ai-card__icon <?php echo $fbs_sm_wp_ai_ready ? 'fbs-wp-ai-card__icon--ready' : 'fbs-wp-ai-card__icon--setup'; ?>">
+                                                <?php echo $fbs_sm_wp_ai_ready ? '✅' : '⚠️'; ?>
                                             </span>
+                                            <div>
+                                                <div class="fbs-wp-ai-card__title">
+                                                    <?php
+                                                    if ($fbs_sm_wp_ai_ready) {
+                                                        esc_html_e('Connected via WordPress AI Connectors', 'fbs-stockmind');
+                                                    } else {
+                                                        esc_html_e('No Active AI Connector Configured', 'fbs-stockmind');
+                                                    }
+                                                    ?>
+                                                </div>
+                                                <div class="fbs-wp-ai-card__sub">
+                                                    <?php esc_html_e('Uses WordPress native AI Client (wp_ai_client_prompt) & Settings ➔ Connectors.', 'fbs-stockmind'); ?>
+                                                </div>
+                                            </div>
                                         </div>
-                                    <?php endforeach; ?>
+                                        <span class="fbs-wp-ai-card__badge <?php echo $fbs_sm_wp_ai_ready ? 'fbs-wp-ai-card__badge--ready' : 'fbs-wp-ai-card__badge--setup'; ?>">
+                                            <?php echo $fbs_sm_wp_ai_ready ? esc_html__('Ready', 'fbs-stockmind') : esc_html__('Setup Needed', 'fbs-stockmind'); ?>
+                                        </span>
+                                    </div>
+
+                                    <?php if (!empty($fbs_sm_ai_providers)) : ?>
+                                        <div class="fbs-wp-ai-providers">
+                                            <?php foreach ($fbs_sm_ai_providers as $fbs_prov) : ?>
+                                                <div class="fbs-wp-ai-provider-pill <?php echo !empty($fbs_prov['is_connected']) ? 'fbs-wp-ai-provider-pill--connected' : ''; ?>">
+                                                    <span class="fbs-wp-ai-provider-dot <?php echo !empty($fbs_prov['is_connected']) ? 'fbs-wp-ai-provider-dot--connected' : ''; ?>"></span>
+                                                    <strong><?php echo esc_html($fbs_prov['name']); ?>:</strong>
+                                                    <span>
+                                                        <?php
+                                                        if (!empty($fbs_prov['is_connected'])) {
+                                                            esc_html_e('Connected', 'fbs-stockmind');
+                                                        } elseif (!empty($fbs_prov['has_key']) && empty($fbs_prov['plugin_active'])) {
+                                                            esc_html_e('Provider Plugin Inactive', 'fbs-stockmind');
+                                                        } else {
+                                                            esc_html_e('Not Connected', 'fbs-stockmind');
+                                                        }
+                                                        ?>
+                                                    </span>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="fbs-wp-ai-card__actions">
+                                        <a href="<?php echo esc_url($fbs_sm_connectors_url); ?>" class="fbs-wp-ai-btn-primary">
+                                            <span>⚙️</span> <?php esc_html_e('Manage WordPress Connectors', 'fbs-stockmind'); ?>
+                                        </a>
+                                        <button type="button" class="fbs-wp-ai-btn-secondary fbs-stockmind-test-ai-btn" id="fbs-stockmind-test-ai-key">
+                                            <?php esc_html_e('Test AI Connection', 'fbs-stockmind'); ?>
+                                        </button>
+                                        <?php if (!empty($fbs_sm_wp_ai_url)) : ?>
+                                            <a href="<?php echo esc_url($fbs_sm_wp_ai_url); ?>" class="fbs-wp-ai-link">
+                                                <?php esc_html_e('WordPress AI Settings ➔', 'fbs-stockmind'); ?>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <p class="fbs-wp-ai-test-msg">
+                                        <span id="fbs-stockmind-ai-test-result"></span>
+                                    </p>
                                 </div>
-                            <?php endif; ?>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><?php esc_html_e('Default Response Tone', 'fbs-stockmind'); ?></th>
+                            <td>
+                                <select name="fbs_stockmind_ai_tone" id="fbs_stockmind_ai_tone" class="fbs-form-select fbs-ai-tone-select">
+                                    <option value="analytical" <?php selected($settings['ai_tone'], 'analytical'); ?>><?php esc_html_e('Analytical & Action-Oriented (Purchasing Manager)', 'fbs-stockmind'); ?></option>
+                                    <option value="concise" <?php selected($settings['ai_tone'], 'concise'); ?>><?php esc_html_e('Concise & Direct (Executive Summary)', 'fbs-stockmind'); ?></option>
+                                    <option value="persuasive" <?php selected($settings['ai_tone'], 'persuasive'); ?>><?php esc_html_e('Strategic & Growth-Focused (Merchandising)', 'fbs-stockmind'); ?></option>
+                                    <option value="friendly" <?php selected($settings['ai_tone'], 'friendly'); ?>><?php esc_html_e('Warm, Helpful & Friendly', 'fbs-stockmind'); ?></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
 
-                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                                <a href="<?php echo esc_url($fbs_sm_connectors_url); ?>" class="button button-primary" style="display: inline-flex; align-items: center; gap: 6px;">
-                                    <span>⚙️</span> <?php esc_html_e('Manage WordPress Connectors', 'fbs-stockmind'); ?>
-                                </a>
-                                <button type="button" class="button button-secondary fbs-stockmind-test-ai-btn">
-                                    <?php esc_html_e('Test AI Connection', 'fbs-stockmind'); ?>
-                                </button>
-                                <?php if (!empty($fbs_sm_wp_ai_url)) : ?>
-                                    <a href="<?php echo esc_url($fbs_sm_wp_ai_url); ?>" class="button button-link" style="text-decoration: none;">
-                                        <?php esc_html_e('WordPress AI Settings ➔', 'fbs-stockmind'); ?>
-                                    </a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Direct API Key Fields (Gemini / OpenAI) -->
-                    <div id="fbs-stockmind-direct-ai-fields" style="<?php echo 'wp_native' === $settings['ai_provider'] ? 'display:none;' : ''; ?>">
-                        <div class="fbs-form-group">
-                            <label for="fbs_stockmind_ai_model" class="fbs-form-label">
-                                <?php esc_html_e('AI Model', 'fbs-stockmind'); ?>
-                            </label>
-                            <select name="fbs_stockmind_ai_model" id="fbs_stockmind_ai_model" class="fbs-form-select" style="max-width: 480px; width: 100%;">
-                                <optgroup label="<?php esc_attr_e('Google Gemini Models', 'fbs-stockmind'); ?>" id="optgroup-gemini">
-                                    <option value="gemini-2.5-flash" <?php selected($settings['ai_model'], 'gemini-2.5-flash'); ?>><?php esc_html_e('Gemini 2.5 Flash (Recommended — Fast & Accurate)', 'fbs-stockmind'); ?></option>
-                                    <option value="gemini-2.0-flash" <?php selected($settings['ai_model'], 'gemini-2.0-flash'); ?>><?php esc_html_e('Gemini 2.0 Flash', 'fbs-stockmind'); ?></option>
-                                    <option value="gemini-2.5-pro" <?php selected($settings['ai_model'], 'gemini-2.5-pro'); ?>><?php esc_html_e('Gemini 2.5 Pro (Advanced Reasoning)', 'fbs-stockmind'); ?></option>
-                                </optgroup>
-                                <optgroup label="<?php esc_attr_e('OpenAI Models', 'fbs-stockmind'); ?>" id="optgroup-openai">
-                                    <option value="gpt-4o-mini" <?php selected($settings['ai_model'], 'gpt-4o-mini'); ?>><?php esc_html_e('GPT-4o mini (Recommended — Fast & Cost-Effective)', 'fbs-stockmind'); ?></option>
-                                    <option value="gpt-4o" <?php selected($settings['ai_model'], 'gpt-4o'); ?>><?php esc_html_e('GPT-4o (High Intelligence)', 'fbs-stockmind'); ?></option>
-                                </optgroup>
-                            </select>
-                            <p class="fbs-form-description">
-                                <?php esc_html_e('Select which model powers your StockMind AI Inventory Assistant.', 'fbs-stockmind'); ?>
-                            </p>
-                        </div>
-
-                        <div class="fbs-form-group">
-                            <label for="fbs_stockmind_ai_api_key" class="fbs-form-label">
-                                <?php esc_html_e('API Key', 'fbs-stockmind'); ?>
-                            </label>
-                            <div style="display: flex; gap: 10px; align-items: center; max-width: 540px; flex-wrap: wrap;">
-                                <input type="password" 
-                                       name="fbs_stockmind_ai_api_key" 
-                                       id="fbs_stockmind_ai_api_key" 
-                                       value="<?php echo esc_attr($settings['ai_api_key']); ?>" 
-                                       placeholder="<?php esc_attr_e('Paste your Google Gemini or OpenAI API Key here', 'fbs-stockmind'); ?>" 
-                                       class="fbs-form-input" 
-                                       style="flex: 1; min-width: 260px;" />
-                                <button type="button" class="fbs-btn fbs-btn-secondary fbs-stockmind-test-ai-btn" id="fbs-stockmind-test-ai-key" style="white-space: nowrap; padding: 10px 16px;">
-                                    <?php esc_html_e('Test Connection', 'fbs-stockmind'); ?>
-                                </button>
-                            </div>
-                            <p class="fbs-form-description" style="margin-top: 6px;">
-                                <span id="fbs-stockmind-key-hint">
-                                    <?php
-                                    printf(
-                                        /* translators: 1: Google AI Studio link, 2: OpenAI link */
-                                        esc_html__('Get a free Gemini API key from %1$s or an OpenAI key from %2$s.', 'fbs-stockmind'),
-                                        '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">Google AI Studio</a>',
-                                        '<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">OpenAI Platform</a>'
-                                    );
-                                    ?>
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <p class="fbs-form-description" style="margin-top: -6px; margin-bottom: 18px;">
-                        <span id="fbs-stockmind-ai-test-result" style="font-weight: 600;"></span>
-                    </p>
-
-                    <div class="fbs-form-group">
-                        <label for="fbs_stockmind_ai_tone" class="fbs-form-label">
-                            <?php esc_html_e('Assistant Response Tone', 'fbs-stockmind'); ?>
-                        </label>
-                        <select name="fbs_stockmind_ai_tone" id="fbs_stockmind_ai_tone" class="fbs-form-select" style="max-width: 480px; width: 100%;">
-                            <option value="analytical" <?php selected($settings['ai_tone'], 'analytical'); ?>><?php esc_html_e('Analytical & Action-Oriented (Purchasing Manager)', 'fbs-stockmind'); ?></option>
-                            <option value="concise" <?php selected($settings['ai_tone'], 'concise'); ?>><?php esc_html_e('Concise & Direct (Executive Summary)', 'fbs-stockmind'); ?></option>
-                            <option value="persuasive" <?php selected($settings['ai_tone'], 'persuasive'); ?>><?php esc_html_e('Strategic & Growth-Focused (Merchandising)', 'fbs-stockmind'); ?></option>
-                            <option value="friendly" <?php selected($settings['ai_tone'], 'friendly'); ?>><?php esc_html_e('Warm, Helpful & Friendly', 'fbs-stockmind'); ?></option>
-                        </select>
-                    </div>
-
-                    <div style="margin-top: 25px; padding: 18px 20px; border-radius: 12px; background: linear-gradient(135deg, #f0f9ff 0%, #eef2ff 100%); border: 1px solid #bae6fd; max-width: 650px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-                        <div style="max-width: 440px;">
-                            <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 15px; display: flex; align-items: center; gap: 6px;">
-                                <span>✨</span> <?php esc_html_e('Ready to Chat with Your Inventory?', 'fbs-stockmind'); ?>
+                    <div class="fbs-ai-callout-card">
+                        <div class="fbs-ai-callout-card__copy">
+                            <h4>
+                                <span>✨</span> <?php esc_html_e('Live WooCommerce Inventory Intelligence (v1.3)', 'fbs-stockmind'); ?>
                             </h4>
-                            <p style="margin: 0; color: #334155; font-size: 13px; line-height: 1.55;">
-                                <?php esc_html_e('Open the AI Assistant screen to ask questions about low-stock items, runout forecasts, and weekly restock priorities.', 'fbs-stockmind'); ?>
+                            <p>
+                                <?php
+                                echo wp_kses(
+                                    __('Open the <strong>AI Assistant</strong> screen to chat directly with your catalog. StockMind automatically feeds your live <strong>Active Predictions, Low-Stock Counts, 30-Day Best-Sellers, and Supplier Lead Times</strong> into your connected WordPress AI provider for instant purchasing insights.', 'fbs-stockmind'),
+                                    ['strong' => []]
+                                );
+                                ?>
                             </p>
                         </div>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-ai-assistant')); ?>" class="fbs-btn fbs-btn-primary" style="text-decoration: none;">
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-ai-assistant')); ?>" class="fbs-btn fbs-btn-primary">
                             🤖 <?php esc_html_e('Open AI Assistant →', 'fbs-stockmind'); ?>
                         </a>
                     </div>

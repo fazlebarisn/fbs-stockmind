@@ -20,9 +20,9 @@ FBS StockMind is an intelligent inventory forecasting and repeat-order automatio
 - Full WooCommerce High-Performance Order Storage (`custom_order_tables`) compatibility
 
 ### 🤖 Interactive AI Inventory Assistant
-- Native integration with **WordPress AI Connectors** (`Settings ➔ Connectors`)
-- Direct API key support for **Google Gemini** (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-2.5-pro`) and **OpenAI** (`gpt-4o-mini`, `gpt-4o`)
-- Live store function calling for inventory summaries, urgent runout alerts, best-sellers, and supplier directories
+- Powered natively by **WordPress AI Client & Connectors** (`wp_ai_client_prompt` / `Settings ➔ Connectors`)
+- Works seamlessly with any connected WordPress AI provider (Google Gemini, OpenAI, Anthropic, Mistral, Vercel AI Gateway)
+- Automatically injects live WooCommerce inventory summaries, urgent runout alerts, 30-day best-sellers, and supplier directories
 - 1-click Quick Prompt chips and persistent browser chat memory
 
 ### 🔄 Smart Customer Replenishment Reminders

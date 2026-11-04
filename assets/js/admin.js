@@ -96,66 +96,17 @@
         },
 
         /**
-         * Initialize AI Settings (provider toggling and connection testing)
+         * Initialize AI Settings (WordPress AI Connection test)
          */
         initAiSettings: function() {
-            const updateAiModelOptions = function() {
-                const provider = $('#fbs_stockmind_ai_provider').val();
-                if (provider === 'wp_native') {
-                    $('#fbs-stockmind-wp-native-card').show();
-                    $('#fbs-stockmind-direct-ai-fields').hide();
-                    return;
-                }
-
-                $('#fbs-stockmind-wp-native-card').hide();
-                $('#fbs-stockmind-direct-ai-fields').show();
-
-                if (provider === 'openai') {
-                    $('#optgroup-gemini').hide();
-                    $('#optgroup-openai').show();
-                    if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-gemini') {
-                        $('#fbs_stockmind_ai_model').val('gpt-4o-mini');
-                    }
-                    $('#fbs-stockmind-key-hint').html(
-                        'Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">OpenAI Platform</a>.'
-                    );
-                } else {
-                    $('#optgroup-gemini').show();
-                    $('#optgroup-openai').hide();
-                    if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-openai') {
-                        $('#fbs_stockmind_ai_model').val('gemini-2.5-flash');
-                    }
-                    $('#fbs-stockmind-key-hint').html(
-                        'Get a free Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">Google AI Studio</a>.'
-                    );
-                }
-            };
-
-            $('#fbs_stockmind_ai_provider').on('change', updateAiModelOptions);
-            if ($('#fbs_stockmind_ai_provider').length) {
-                updateAiModelOptions();
-            }
-
-            // AI Connection Test Handler (supports WordPress Native AI Connector & Direct Keys)
             $(document).on('click', '.fbs-stockmind-test-ai-btn, #fbs-stockmind-test-ai-key', function(e) {
                 e.preventDefault();
                 const $btn = $(this);
                 const originalLabel = $btn.text();
                 const $result = $('#fbs-stockmind-ai-test-result');
-                const provider = $('#fbs_stockmind_ai_provider').val() || 'gemini';
-                const apiKey = $('#fbs_stockmind_ai_api_key').val() || '';
-
-                if (provider !== 'wp_native' && (!apiKey || apiKey.trim() === '')) {
-                    $result.css('color', '#ef4444').text('❌ Please paste an API key first.');
-                    return;
-                }
-
-                const providerLabel = provider === 'wp_native'
-                    ? 'WordPress AI Connector'
-                    : (provider === 'openai' ? 'OpenAI' : 'Google Gemini');
 
                 $btn.prop('disabled', true).text('Testing...');
-                $result.css('color', '#64748b').text('Testing connection to ' + providerLabel + '...');
+                $result.css('color', '#64748b').text('Testing WordPress AI Connection...');
 
                 const ajaxUrl = (typeof fbsStockMind !== 'undefined' && fbsStockMind.ajaxUrl) ? fbsStockMind.ajaxUrl : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
                 const nonce = (typeof fbsStockMind !== 'undefined' && fbsStockMind.nonce) ? fbsStockMind.nonce : '';
@@ -165,16 +116,14 @@
                     type: 'POST',
                     data: {
                         action: 'fbs_stockmind_test_ai_connection',
-                        nonce: nonce,
-                        provider: provider,
-                        api_key: apiKey
+                        nonce: nonce
                     },
                     success: function(response) {
                         $btn.prop('disabled', false).text(originalLabel);
                         if (response && response.success) {
-                            $result.css('color', '#10b981').text('✅ ' + (response.data && response.data.message ? response.data.message : 'Connection successful!'));
+                            $result.css('color', '#10b981').text('✅ ' + (response.data && response.data.message ? response.data.message : 'WordPress AI Connection verified!'));
                         } else {
-                            const errMsg = response && response.data && response.data.message ? response.data.message : 'Connection failed. Please verify your AI configuration.';
+                            const errMsg = response && response.data && response.data.message ? response.data.message : 'No active AI Connector found in WordPress Settings -> Connectors.';
                             $result.css('color', '#ef4444').text('❌ ' + errMsg);
                         }
                     },
