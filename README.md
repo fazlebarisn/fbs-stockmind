@@ -4,6 +4,7 @@
 **Author:** [Fazle Bari — FBS Fusion](https://fbsfusion.com/)  
 **WordPress.org:** [https://wordpress.org/plugins/fbs-stockmind/](https://wordpress.org/plugins/fbs-stockmind/)  
 **Pro Edition:** [https://fbsfusion.com/plugins/#fbs-stockmind](https://fbsfusion.com/plugins/#fbs-stockmind)  
+**Video Walkthrough:** [Watch on YouTube](https://www.youtube.com/watch?v=Dkc_0F_MUes)  
 **Requires WordPress:** 6.4+ | **Tested up to:** 7.1 | **Requires PHP:** 7.4+ | **WooCommerce:** 6.0 – 11.1 (HPOS Ready)
 
 FBS StockMind is an intelligent inventory forecasting and repeat-order automation plugin for WooCommerce built by **FBS Fusion**. It combines predictive stockout alerts, supplier lead-time tracking, customer replenishment reminders, and a live AI Inventory Assistant.

@@ -14,6 +14,8 @@ AI inventory forecasting, predictive low-stock alerts, smart customer reorder re
 
 **FBS StockMind** (by [FBS Fusion](https://fbsfusion.com/)) is an intelligent inventory forecasting and customer replenishment engine for WooCommerce that combines predictive stockout alerts, automated reorder reminders, supplier lead-time tracking, and an interactive AI Inventory Assistant.
 
+[youtube https://www.youtube.com/watch?v=Dkc_0F_MUes]
+
 By analyzing real-time WooCommerce sales velocity (across both simple and variable products) alongside net refunds and supplier lead times, StockMind helps you restock best-sellers before they run out—while driving repeat purchases from existing customers.
 
 = Core Features =
