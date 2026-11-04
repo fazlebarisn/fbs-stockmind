@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       FBS StockMind – AI Inventory Management, Predictive Stock Alerts & Reorder Reminders for WooCommerce
  * Plugin URI:        https://fbsfusion.com/plugins/
- * Description:       Prevent stockouts and drive repeat sales with AI inventory forecasting, supplier purchase order alerts, conversational AI assistant, and automated customer replenishment reminders for WooCommerce.
+ * Description:       AI inventory forecasting, predictive low-stock alerts, smart customer reorder reminders, and an interactive AI Assistant for WooCommerce.
  * Version:           1.3.0
  * Requires at least: 6.4
  * Tested up to:      7.1
