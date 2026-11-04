@@ -36,27 +36,118 @@ class Customer_Reminders
      */
     protected function setup_hooks()
     {
-        // Frontend hooks for displaying reminder forms
-        add_action('wp_footer', [$this, 'enqueue_frontend_scripts']);
-        
         // Register shortcode
         add_shortcode('fbs_stockmind_reminder', [$this, 'render_reminder_shortcode']);
+
+        // Signed 1-click reminder unsubscribe handler
+        add_action('template_redirect', [$this, 'handle_unsubscribe_request']);
     }
 
     /**
-     * Enqueue frontend scripts
+     * Generate a signed 1-click unsubscribe URL for a customer reminder.
      *
-     * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @param int    $reminder_id    Reminder row ID.
+     * @param string $customer_email Customer email address.
+     * @return string
+     * @since 1.3.0
      */
-    public function enqueue_frontend_scripts()
+    public function get_unsubscribe_url($reminder_id, $customer_email)
     {
-        if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page()) {
+        $reminder_id = absint($reminder_id);
+        $token       = hash_hmac('sha256', $reminder_id . '|' . strtolower(trim((string) $customer_email)), wp_salt('auth'));
+
+        return add_query_arg(
+            [
+                'fbs_sm_unsub' => $reminder_id,
+                'token'        => $token,
+            ],
+            home_url('/')
+        );
+    }
+
+    /**
+     * Handle signed 1-click unsubscribe requests from customer reminder emails.
+     *
+     * @since 1.3.0
+     * @return void
+     */
+    public function handle_unsubscribe_request()
+    {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Cryptographically signed HMAC token used for stateless email unsubscribe links
+        if (!isset($_GET['fbs_sm_unsub'], $_GET['token'])) {
             return;
         }
 
-        wp_enqueue_script('fbs-stockmind-frontend');
-        wp_enqueue_style('fbs-stockmind-frontend');
+        $reminder_id = absint(wp_unslash($_GET['fbs_sm_unsub']));
+        $token       = sanitize_text_field(wp_unslash($_GET['token']));
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+        if ($reminder_id <= 0 || empty($token)) {
+            return;
+        }
+
+        global $wpdb;
+        $reminders_table = fbs_stockmind_get_table_name('reminders');
+
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table lookup for signed unsubscribe verification
+        $reminder = $wpdb->get_row($wpdb->prepare(
+            "SELECT id, customer_email FROM {$reminders_table} WHERE id = %d",
+            $reminder_id
+        ));
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+        if (!$reminder) {
+            wp_die(
+                esc_html__('This reminder link is no longer active.', 'fbs-stockmind'),
+                esc_html__('Reminder Unsubscribe', 'fbs-stockmind'),
+                ['response' => 200, 'back_link' => true]
+            );
+        }
+
+        $expected_token = hash_hmac('sha256', $reminder->id . '|' . strtolower(trim((string) $reminder->customer_email)), wp_salt('auth'));
+        if (!hash_equals($expected_token, $token)) {
+            wp_die(
+                esc_html__('Invalid unsubscribe verification link.', 'fbs-stockmind'),
+                esc_html__('Reminder Unsubscribe', 'fbs-stockmind'),
+                ['response' => 403]
+            );
+        }
+
+        $this->deactivate_reminder((int) $reminder->id);
+
+        $message_html = sprintf(
+            '<h2>%1$s</h2><p>%2$s</p><p><a class="button" href="%3$s">%4$s</a></p>',
+            esc_html__('You have been unsubscribed', 'fbs-stockmind'),
+            esc_html__('You will no longer receive replenishment reminder emails for this product.', 'fbs-stockmind'),
+            esc_url(home_url('/')),
+            esc_html__('Return to Store', 'fbs-stockmind')
+        );
+
+        wp_die(
+            wp_kses_post($message_html),
+            esc_html__('Unsubscribed Successfully', 'fbs-stockmind'),
+            ['response' => 200]
+        );
+    }
+
+    /**
+     * Build sanitized From email header preventing header injection.
+     *
+     * @return string
+     * @since 1.3.0
+     */
+    private function get_sanitized_from_header()
+    {
+        $raw_name  = (string) fbs_stockmind_get_option('email_from_name', get_bloginfo('name'));
+        $from_name = trim(preg_replace('/[\r\n<>"]+/', '', wp_strip_all_tags($raw_name)));
+        if ('' === $from_name) {
+            $from_name = trim(preg_replace('/[\r\n<>"]+/', '', wp_strip_all_tags(get_bloginfo('name'))));
+        }
+
+        $raw_email  = sanitize_email((string) fbs_stockmind_get_option('email_from_address', get_option('admin_email')));
+        $from_email = is_email($raw_email) ? $raw_email : sanitize_email((string) get_option('admin_email'));
+
+        return 'From: ' . $from_name . ' <' . $from_email . '>';
     }
 
     /**
@@ -79,6 +170,9 @@ class Customer_Reminders
         }
 
         $customer_email = $order->get_billing_email();
+
+        wp_enqueue_style('fbs-stockmind-frontend');
+        wp_enqueue_script('fbs-stockmind-frontend');
         
         include FBS_STOCKMIND_DIR_PATH . '/inc/templates/frontend/reminder-form.php';
     }
@@ -133,6 +227,9 @@ class Customer_Reminders
                 'quantity' => 1,
             ]
         ];
+
+        wp_enqueue_style('fbs-stockmind-frontend');
+        wp_enqueue_script('fbs-stockmind-frontend');
 
         ob_start();
         echo '<div class="fbs-shortcode-container">';
@@ -372,11 +469,11 @@ class Customer_Reminders
             $product_name
         );
 
-        $message = $this->get_reminder_email_template($reminder, $product, $product_url);
+        $message = $this->get_reminder_email_template($reminder, $product, $product_url, $subject);
         
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
-            'From: ' . fbs_stockmind_get_option('email_from_name', get_bloginfo('name')) . ' <' . fbs_stockmind_get_option('email_from_address', get_option('admin_email')) . '>',
+            $this->get_sanitized_from_header(),
         ];
 
         $sent = wp_mail($customer_email, $subject, $message, $headers);
@@ -396,15 +493,24 @@ class Customer_Reminders
      * @param object $reminder    The reminder object
      * @param object $product     The product object
      * @param string $product_url The product URL
+     * @param string $subject     The email subject line
      * @return string
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
-    private function get_reminder_email_template($reminder, $product, $product_url)
+    private function get_reminder_email_template($reminder, $product, $product_url, $subject = '')
     {
-        $product_name = $product->get_name();
-        $product_price = $product->get_price_html();
-        $product_image = wp_get_attachment_image_url($product->get_image_id(), 'medium');
+        $product_name    = $product->get_name();
+        $product_price   = $product->get_price_html();
+        $product_image   = wp_get_attachment_image_url($product->get_image_id(), 'medium');
+        $unsubscribe_url = $this->get_unsubscribe_url($reminder->id, $reminder->customer_email);
+        if ('' === $subject) {
+            $subject = sprintf(
+                /* translators: %s: Product name */
+                __('Time to reorder: %s', 'fbs-stockmind'),
+                $product_name
+            );
+        }
         
         ob_start();
         include FBS_STOCKMIND_DIR_PATH . '/inc/templates/email/reminder.php';
@@ -571,7 +677,7 @@ class Customer_Reminders
 
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
-            'From: ' . fbs_stockmind_get_option('email_from_name', get_bloginfo('name')) . ' <' . fbs_stockmind_get_option('email_from_address', get_option('admin_email')) . '>',
+            $this->get_sanitized_from_header(),
         ];
 
         return wp_mail($customer_email, $subject, $template, $headers);

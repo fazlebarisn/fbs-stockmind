@@ -95,7 +95,7 @@ defined('ABSPATH') or die('Nice Try!');
                         <div class="fbs-prediction-details">
                             <div class="fbs-prediction-header">
                                 <h3 class="fbs-prediction-name">
-                                    <a href="<?php echo esc_url(admin_url('post.php?post=' . $fbs_stockmind_prediction['product_id'] . '&action=edit')); ?>" target="_blank">
+                                    <a href="<?php echo esc_url(get_edit_post_link($fbs_stockmind_prediction['product_id'])); ?>" target="_blank">
                                         <?php echo esc_html($fbs_stockmind_prediction['product_name']); ?>
                                     </a>
                                 </h3>
@@ -137,8 +137,6 @@ defined('ABSPATH') or die('Nice Try!');
                                         <?php 
                                         if ($fbs_stockmind_days_until_runout <= 0) {
                                             esc_html_e('Already out of stock', 'fbs-stockmind');
-                                        } elseif ($fbs_stockmind_days_until_runout == 1) {
-                                            esc_html_e('Today', 'fbs-stockmind');
                                         } else {
                                             printf(
                                                 /* translators: %d: Number of days */
@@ -176,7 +174,7 @@ defined('ABSPATH') or die('Nice Try!');
                             </a>
                             <?php
                             $fbs_stockmind_supplier_id = fbs_stockmind_get_product_supplier($fbs_stockmind_prediction['product_id']);
-                            $fbs_stockmind_pro_active = function_exists('fbs_stockmind_pro_is_active') && fbs_stockmind_pro_is_active();
+                            $fbs_stockmind_pro_active = fbs_stockmind_is_pro_active() || (function_exists('fbs_stockmind_pro_is_active') && fbs_stockmind_pro_is_active());
                             $fbs_stockmind_has_supplier = !empty($fbs_stockmind_supplier_id);
                             $fbs_stockmind_can_create_po = $fbs_stockmind_pro_active && $fbs_stockmind_has_supplier;
                             ?>
@@ -205,6 +203,13 @@ defined('ABSPATH') or die('Nice Try!');
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
+    </div>
+
+    <div class="fbs-info-box">
+        <h3 class="fbs-info-title">💡 <?php esc_html_e('How StockMind Predictions Work', 'fbs-stockmind'); ?></h3>
+        <p class="fbs-info-text">
+            <?php esc_html_e('StockMind tracks real-time WooCommerce order velocity (including variable product variations and net refunds) and compares remaining stock against each product\'s supplier lead time so you receive restock alerts before running out.', 'fbs-stockmind'); ?>
+        </p>
     </div>
 </div>
 

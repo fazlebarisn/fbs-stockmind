@@ -38,13 +38,12 @@ class FBS_StockMind
     protected function setup_hooks()
     {
         add_action('init', [$this, 'load_textdomain']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        add_action('admin_init', [$this, 'maybe_upgrade_database']);
         add_action('wp_ajax_fbs_stockmind_ajax', [$this, 'handle_ajax_request']);
         add_action('wp_ajax_nopriv_fbs_stockmind_ajax', [$this, 'handle_ajax_request']);
         
-        // WooCommerce hooks
+        // WooCommerce thank-you page reminder widget (frontend only)
         add_action('woocommerce_thankyou', [$this, 'show_replenishment_reminder'], 10, 1);
-        add_action('woocommerce_order_status_completed', [$this, 'show_replenishment_reminder'], 10, 1);
         
         // Cron jobs
         add_action('fbs_stockmind_daily_predictions', [$this, 'run_daily_predictions']);
@@ -58,6 +57,17 @@ class FBS_StockMind
         if (!wp_next_scheduled('fbs_stockmind_daily_reminders')) {
             wp_schedule_event(time(), 'daily', 'fbs_stockmind_daily_reminders');
         }
+    }
+
+    /**
+     * Run seamless database & option upgrades when updating the plugin.
+     *
+     * @since 1.3.0
+     * @return void
+     */
+    public function maybe_upgrade_database()
+    {
+        Activate::ensure_database_ready();
     }
 
     /**

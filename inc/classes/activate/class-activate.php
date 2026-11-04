@@ -21,7 +21,7 @@ class Activate
      * Constructor
      *
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     protected function __construct()
     {
@@ -33,20 +33,68 @@ class Activate
         \FBS_StockMind\Inc\Database\Schema::get_instance()->create_tables();
 
         $this->set_default_options();
+        $this->migrate_legacy_options();
         $this->create_supplier_post_type();
         $this->flush_rewrite_rules();
+        update_option('fbs_stockmind_db_version', '1.3.0');
+    }
+
+    /**
+     * Ensure database tables and option migrations run seamlessly on plugin updates.
+     *
+     * @since 1.3.0
+     * @return void
+     */
+    public static function ensure_database_ready()
+    {
+        $current_db_version = (string) get_option('fbs_stockmind_db_version', '1.0.0');
+        if (version_compare($current_db_version, '1.3.0', '>=')) {
+            return;
+        }
+
+        $instance = self::get_instance();
+        $instance->create_database_tables();
+        $instance->migrate_database_tables();
+
+        require_once FBS_STOCKMIND_DIR_PATH . '/inc/classes/database/class-schema.php';
+        \FBS_StockMind\Inc\Database\Schema::get_instance()->create_tables();
+
+        $instance->set_default_options();
+        $instance->migrate_legacy_options();
+        update_option('fbs_stockmind_db_version', '1.3.0');
+    }
+
+    /**
+     * Migrate legacy options from v1.0–v1.2 (double-prefixed OpenAI key & deprecated Gemini 3.x model slugs).
+     *
+     * @since 1.3.0
+     * @return void
+     */
+    public function migrate_legacy_options()
+    {
+        // Migrate double-prefixed OpenAI API key if present
+        $legacy_openai_key = get_option('fbs_stockmind_fbs_stockmind_openai_key', '');
+        if (!empty($legacy_openai_key) && empty(get_option('fbs_stockmind_openai_key', ''))) {
+            update_option('fbs_stockmind_openai_key', $legacy_openai_key);
+            delete_option('fbs_stockmind_fbs_stockmind_openai_key');
+        }
+
+        // Migrate non-existent Gemini 3.x model names to gemini-2.5-flash
+        $saved_model = (string) get_option('fbs_stockmind_ai_model', '');
+        if (in_array($saved_model, ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'], true)) {
+            update_option('fbs_stockmind_ai_model', 'gemini-2.5-flash');
+        }
     }
 
     /**
      * Manually trigger database migration (for existing installations)
      *
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     public static function trigger_migration()
     {
-        $instance = self::get_instance();
-        $instance->migrate_database_tables();
+        self::ensure_database_ready();
     }
 
     /**

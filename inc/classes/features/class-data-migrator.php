@@ -30,6 +30,8 @@ class Data_Migrator
      */
     public function ajax_trigger_migration()
     {
+        check_ajax_referer('fbs_stockmind_nonce', 'nonce');
+
         if (!current_user_can('manage_woocommerce')) {
             wp_send_json_error('Permission denied.');
         }

@@ -94,11 +94,21 @@ defined('ABSPATH') or die('Nice Try!');
                                 </div>
                                 
                                 <div class="fbs-meta-item">
-                                    <span class="fbs-meta-label"><?php esc_html_e('Order:', 'fbs-stockmind'); ?></span>
+                                    <span class="fbs-meta-label"><?php esc_html_e('Source:', 'fbs-stockmind'); ?></span>
                                     <span class="fbs-meta-value">
-                                        <a href="<?php echo esc_url(admin_url('post.php?post=' . $fbs_stockmind_reminder['order_id'] . '&action=edit')); ?>" target="_blank">
-                                            #<?php echo esc_html($fbs_stockmind_reminder['order_id']); ?>
-                                        </a>
+                                        <?php if (!empty($fbs_stockmind_reminder['order_id'])) : ?>
+                                            <a href="<?php echo esc_url(fbs_stockmind_get_order_edit_url($fbs_stockmind_reminder['order_id'])); ?>" target="_blank">
+                                                <?php
+                                                printf(
+                                                    /* translators: %d: WooCommerce Order ID */
+                                                    esc_html__('Order #%d', 'fbs-stockmind'),
+                                                    absint($fbs_stockmind_reminder['order_id'])
+                                                );
+                                                ?>
+                                            </a>
+                                        <?php else : ?>
+                                            <?php esc_html_e('Product Page / Shortcode', 'fbs-stockmind'); ?>
+                                        <?php endif; ?>
                                     </span>
                                 </div>
                                 

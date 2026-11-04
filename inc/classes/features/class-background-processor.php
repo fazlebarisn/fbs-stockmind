@@ -35,9 +35,9 @@ class Background_Processor
     }
 
     /**
-     * Process order and aggregate sales
+     * Process order and aggregate sales (idempotent via HPOS-compatible order meta)
      *
-     * @param int $order_id
+     * @param int $order_id Order ID.
      */
     public function process_order($order_id)
     {
@@ -47,20 +47,34 @@ class Background_Processor
         }
 
         // Only process paid/completed orders
-        if (!in_array($order->get_status(), ['processing', 'completed'])) {
+        if (!in_array($order->get_status(), ['processing', 'completed'], true)) {
             return;
         }
 
-        $order_date = $order->get_date_created()->date('Y-m-d');
+        // Prevent duplicate sales inflation when an order transitions processing -> completed or retries
+        if ($order->get_meta('_fbs_stockmind_sales_recorded')) {
+            return;
+        }
+
+        $order->update_meta_data('_fbs_stockmind_sales_recorded', 1);
+        $order->save_meta_data();
+
+        $date_created = $order->get_date_created();
+        $order_date   = $date_created ? $date_created->date('Y-m-d') : gmdate('Y-m-d');
+
         global $wpdb;
         $sales_table = fbs_stockmind_get_table_name('daily_sales');
+        $parent_products_to_recalc = [];
 
         foreach ($order->get_items() as $item) {
-            $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
-            if (!$product_id) continue;
+            $parent_product_id = (int) $item->get_product_id();
+            $record_product_id = $item->get_variation_id() ? (int) $item->get_variation_id() : $parent_product_id;
+            if (!$record_product_id) {
+                continue;
+            }
 
-            $quantity = $item->get_quantity();
-            $line_total = $item->get_total(); // Revenue excluding tax
+            $quantity   = max(0, (int) $item->get_quantity());
+            $line_total = (float) $item->get_total(); // Revenue excluding tax
 
             // Upsert daily sales record
             // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
@@ -71,40 +85,58 @@ class Background_Processor
                  units_sold = units_sold + VALUES(units_sold),
                  revenue = revenue + VALUES(revenue),
                  updated_at = CURRENT_TIMESTAMP",
-                $product_id,
+                $record_product_id,
                 $order_date,
                 $quantity,
                 $line_total
             ));
             // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-            // Immediately recalculate prediction for ordered product
-            if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
-                \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($product_id);
+            if ($parent_product_id > 0) {
+                $parent_products_to_recalc[$parent_product_id] = true;
+            }
+        }
+
+        // Recalculate prediction once per parent product
+        if (!empty($parent_products_to_recalc) && class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
+            $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
+            foreach (array_keys($parent_products_to_recalc) as $pid) {
+                $predictor->update_single_product_prediction($pid);
             }
         }
     }
 
     /**
-     * Process refund and deduct from sales
+     * Process refund and deduct from sales (idempotent via HPOS-compatible order meta)
      *
-     * @param int $order_id
+     * @param int $order_id Order ID.
      */
     public function process_refund($order_id)
     {
         $order = wc_get_order($order_id);
-        if (!$order) return;
+        if (!$order || $order->get_meta('_fbs_stockmind_refund_recorded')) {
+            return;
+        }
 
-        $order_date = $order->get_date_created()->date('Y-m-d');
+        $order->update_meta_data('_fbs_stockmind_refund_recorded', 1);
+        $order->save_meta_data();
+
+        $date_created = $order->get_date_created();
+        $order_date   = $date_created ? $date_created->date('Y-m-d') : gmdate('Y-m-d');
+
         global $wpdb;
         $sales_table = fbs_stockmind_get_table_name('daily_sales');
+        $parent_products_to_recalc = [];
 
         foreach ($order->get_items() as $item) {
-            $product_id = $item->get_variation_id() ? $item->get_variation_id() : $item->get_product_id();
-            if (!$product_id) continue;
+            $parent_product_id = (int) $item->get_product_id();
+            $record_product_id = $item->get_variation_id() ? (int) $item->get_variation_id() : $parent_product_id;
+            if (!$record_product_id) {
+                continue;
+            }
 
-            $quantity = $item->get_quantity();
-            $line_total = $item->get_total();
+            $quantity   = max(0, (int) $item->get_quantity());
+            $line_total = (float) $item->get_total();
 
             // Upsert with refund values
             // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
@@ -115,19 +147,30 @@ class Background_Processor
                  refund_quantity = refund_quantity + VALUES(refund_quantity),
                  revenue = revenue + VALUES(revenue),
                  updated_at = CURRENT_TIMESTAMP",
-                $product_id,
+                $record_product_id,
                 $order_date,
                 $quantity,
                 $line_total
             ));
             // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+            if ($parent_product_id > 0) {
+                $parent_products_to_recalc[$parent_product_id] = true;
+            }
+        }
+
+        if (!empty($parent_products_to_recalc) && class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
+            $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
+            foreach (array_keys($parent_products_to_recalc) as $pid) {
+                $predictor->update_single_product_prediction($pid);
+            }
         }
     }
 
     /**
      * Process stock snapshot update
      *
-     * @param int $product_id
+     * @param int $product_id Product or Variation ID.
      */
     public function process_stock_update($product_id)
     {
@@ -141,8 +184,8 @@ class Background_Processor
             return;
         }
 
-        $date = gmdate('Y-m-d');
-        $price = (float) $product->get_regular_price();
+        $date        = gmdate('Y-m-d');
+        $price       = (float) $product->get_price();
         $stock_value = $current_stock > 0 ? $current_stock * $price : 0;
 
         global $wpdb;
@@ -163,9 +206,10 @@ class Background_Processor
         ));
         // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-        // Update predictions table for this product
+        // Update predictions table for the main published product (or parent if variation)
+        $target_prediction_id = $product->get_parent_id() > 0 ? (int) $product->get_parent_id() : (int) $product_id;
         if (class_exists('\FBS_StockMind\Inc\Features\Predictor')) {
-            \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($product_id);
+            \FBS_StockMind\Inc\Features\Predictor::get_instance()->update_single_product_prediction($target_prediction_id);
         }
     }
 }

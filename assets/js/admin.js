@@ -49,6 +49,13 @@
                 $('.fbs-tab-content').removeClass('active');
                 $(`#${tabId}-tab`).addClass('active');
 
+                // Hide Save/Reset bar on the Pro showcase tab
+                if (tabId === 'pro') {
+                    $('#fbs-settings-form-actions').hide();
+                } else {
+                    $('#fbs-settings-form-actions').show();
+                }
+
                 // Save active tab
                 try {
                     localStorage.setItem('fbsStockMindActiveTab', tabId);
@@ -94,23 +101,32 @@
         initAiSettings: function() {
             const updateAiModelOptions = function() {
                 const provider = $('#fbs_stockmind_ai_provider').val();
+                if (provider === 'wp_native') {
+                    $('#fbs-stockmind-wp-native-card').show();
+                    $('#fbs-stockmind-direct-ai-fields').hide();
+                    return;
+                }
+
+                $('#fbs-stockmind-wp-native-card').hide();
+                $('#fbs-stockmind-direct-ai-fields').show();
+
                 if (provider === 'openai') {
                     $('#optgroup-gemini').hide();
                     $('#optgroup-openai').show();
                     if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-gemini') {
                         $('#fbs_stockmind_ai_model').val('gpt-4o-mini');
                     }
-                    $('#fbs_stockmind_key_hint').html(
-                        'Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #667eea; text-decoration: underline;">OpenAI Platform</a>.'
+                    $('#fbs-stockmind-key-hint').html(
+                        'Get an OpenAI API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">OpenAI Platform</a>.'
                     );
                 } else {
                     $('#optgroup-gemini').show();
                     $('#optgroup-openai').hide();
                     if ($('#fbs_stockmind_ai_model option:selected').parent().attr('id') === 'optgroup-openai') {
-                        $('#fbs_stockmind_ai_model').val('gemini-3.6-flash');
+                        $('#fbs_stockmind_ai_model').val('gemini-2.5-flash');
                     }
-                    $('#fbs_stockmind_key_hint').html(
-                        'Get a free Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea; text-decoration: underline;">Google AI Studio</a>.'
+                    $('#fbs-stockmind-key-hint').html(
+                        'Get a free Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: underline;">Google AI Studio</a>.'
                     );
                 }
             };
@@ -120,21 +136,26 @@
                 updateAiModelOptions();
             }
 
-            // AI Connection Test Handler
-            $(document).on('click', '#fbs-stockmind-test-ai-key', function(e) {
+            // AI Connection Test Handler (supports WordPress Native AI Connector & Direct Keys)
+            $(document).on('click', '.fbs-stockmind-test-ai-btn, #fbs-stockmind-test-ai-key', function(e) {
                 e.preventDefault();
                 const $btn = $(this);
+                const originalLabel = $btn.text();
                 const $result = $('#fbs-stockmind-ai-test-result');
                 const provider = $('#fbs_stockmind_ai_provider').val() || 'gemini';
-                const apiKey = $('#fbs_stockmind_ai_api_key').val();
+                const apiKey = $('#fbs_stockmind_ai_api_key').val() || '';
 
-                if (!apiKey || apiKey.trim() === '') {
+                if (provider !== 'wp_native' && (!apiKey || apiKey.trim() === '')) {
                     $result.css('color', '#ef4444').text('❌ Please paste an API key first.');
                     return;
                 }
 
+                const providerLabel = provider === 'wp_native'
+                    ? 'WordPress AI Connector'
+                    : (provider === 'openai' ? 'OpenAI' : 'Google Gemini');
+
                 $btn.prop('disabled', true).text('Testing...');
-                $result.css('color', '#6b7280').text('Testing connection to ' + (provider === 'openai' ? 'OpenAI' : 'Google Gemini') + '...');
+                $result.css('color', '#64748b').text('Testing connection to ' + providerLabel + '...');
 
                 const ajaxUrl = (typeof fbsStockMind !== 'undefined' && fbsStockMind.ajaxUrl) ? fbsStockMind.ajaxUrl : (typeof ajaxurl !== 'undefined' ? ajaxurl : '/wp-admin/admin-ajax.php');
                 const nonce = (typeof fbsStockMind !== 'undefined' && fbsStockMind.nonce) ? fbsStockMind.nonce : '';
@@ -149,16 +170,16 @@
                         api_key: apiKey
                     },
                     success: function(response) {
-                        $btn.prop('disabled', false).text('Test Connection');
+                        $btn.prop('disabled', false).text(originalLabel);
                         if (response && response.success) {
                             $result.css('color', '#10b981').text('✅ ' + (response.data && response.data.message ? response.data.message : 'Connection successful!'));
                         } else {
-                            const errMsg = response && response.data && response.data.message ? response.data.message : 'Connection failed. Please check your API key.';
+                            const errMsg = response && response.data && response.data.message ? response.data.message : 'Connection failed. Please verify your AI configuration.';
                             $result.css('color', '#ef4444').text('❌ ' + errMsg);
                         }
                     },
                     error: function(xhr, status, error) {
-                        $btn.prop('disabled', false).text('Test Connection');
+                        $btn.prop('disabled', false).text(originalLabel);
                         $result.css('color', '#ef4444').text('❌ Server request failed: ' + (error || 'Network error'));
                     }
                 });
@@ -237,6 +258,10 @@
                 FBSStockMindAdmin.calculatePredictions();
             });
 
+            // Refresh predictions (Dashboard button)
+            $('#fbs-refresh-predictions').on('click', function() {
+                FBSStockMindAdmin.refreshPredictions();
+            });
 
             // Reset settings
             $('#fbs-reset-settings').on('click', function() {
@@ -244,7 +269,7 @@
             });
 
             // Clear filters
-            $('#fbs-clear-filters').on('click', function() {
+            $(document).on('click', '#fbs-clear-filters, .fbs-clear-filters-btn', function() {
                 FBSStockMindAdmin.clearFilters();
             });
 
@@ -469,17 +494,22 @@
                         $title.text('Products by ' + (response.data.supplier_name || ''));
                         var products = response.data.products || [];
                         if (products.length === 0) {
-                            $list.html('<p class="fbs-empty-text">No products assigned to this supplier.</p>');
+                            $list.empty().append($('<p class="fbs-empty-text">').text('No products assigned to this supplier.'));
                         } else {
-                            var html = '<ul class="fbs-supplier-products-list">';
+                            var $ul = $('<ul class="fbs-supplier-products-list">');
                             products.forEach(function(p) {
-                                html += '<li><a href="' + (p.edit_url || '#') + '" target="_blank">' + (p.title || '#' + p.id) + '</a></li>';
+                                var safeHref = (p.edit_url && /^https?:\/\//i.test(p.edit_url)) ? p.edit_url : '#';
+                                var $link = $('<a>')
+                                    .attr('href', safeHref)
+                                    .attr('target', '_blank')
+                                    .attr('rel', 'noopener noreferrer')
+                                    .text(p.title || ('#' + p.id));
+                                $ul.append($('<li>').append($link));
                             });
-                            html += '</ul>';
-                            $list.html(html);
+                            $list.empty().append($ul);
                         }
                     } else {
-                        $list.html('<p class="fbs-error">' + (response.data || fbsStockMind.strings.error) + '</p>');
+                        $list.empty().append($('<p class="fbs-error">').text(response.data || fbsStockMind.strings.error));
                     }
                 },
                 error: function(xhr) {
@@ -487,7 +517,7 @@
                     if (xhr && xhr.responseJSON && xhr.responseJSON.data) {
                         msg = xhr.responseJSON.data;
                     }
-                    $list.html('<p class="fbs-error">' + msg + '</p>');
+                    $list.empty().append($('<p class="fbs-error">').text(msg));
                 }
             });
         },
@@ -688,18 +718,31 @@
                 return;
             }
 
-            // Reset form to default values
+            // Reset form to default values (respecting Pro vs Free readonly locks)
             $('#alert_window').val(14);
             $('#default_lead_time').val(7);
-            $('#prediction_accuracy_threshold').val(0.8);
+            if (!$('#sales_data_period').prop('readonly')) {
+                $('#sales_data_period').val(90);
+            } else {
+                $('#sales_data_period').val(30);
+            }
+            if (!$('#prediction_accuracy_threshold').prop('readonly')) {
+                $('#prediction_accuracy_threshold').val(0.3);
+            } else {
+                $('#prediction_accuracy_threshold').val(0.3);
+            }
             $('#reminder_advance_days').val(5);
-            $('#max_reminder_attempts').val(3);
+            if (!$('#max_reminder_attempts').prop('readonly')) {
+                $('#max_reminder_attempts').val(3);
+            } else {
+                $('#max_reminder_attempts').val(1);
+            }
             $('#enable_customer_reminders').prop('checked', true);
             $('#email_from_name').val($('#email_from_name').data('default') || '');
             $('#email_from_address').val($('#email_from_address').data('default') || '');
             $('#enable_admin_alerts').prop('checked', true);
             
-            FBSStockMindAdmin.showToast('info', 'Settings reset to default values. Click Save to apply changes.');
+            FBSStockMindAdmin.showToast('info', 'Settings reset to default values. Click Save Settings to apply changes.');
         },
 
         /**
@@ -753,7 +796,7 @@
                             <div class="fbs-empty-icon">🔍</div>
                             <h3 class="fbs-empty-title">No predictions match your filters</h3>
                             <p class="fbs-empty-text">Try adjusting your search criteria or clearing the filters.</p>
-                            <button type="button" class="fbs-btn fbs-btn-secondary" onclick="FBSStockMindAdmin.clearFilters()">
+                            <button type="button" class="fbs-btn fbs-btn-secondary fbs-clear-filters-btn">
                                 Clear Filters
                             </button>
                         </div>
@@ -842,14 +885,13 @@
                 warning: '⚠️',
                 info: 'ℹ️'
             };
-            
-            const toast = $(`
-                <div class="fbs-toast fbs-toast-${type}">
-                    <span class="fbs-toast-icon">${icons[type]}</span>
-                    <span class="fbs-toast-message">${message}</span>
-                    <button class="fbs-toast-close">&times;</button>
-                </div>
-            `);
+            const safeType = Object.prototype.hasOwnProperty.call(icons, type) ? type : 'info';
+
+            const toast = $('<div>')
+                .addClass('fbs-toast fbs-toast-' + safeType)
+                .append($('<span class="fbs-toast-icon">').text(icons[safeType]))
+                .append($('<span class="fbs-toast-message">').text(message || ''))
+                .append($('<button type="button" class="fbs-toast-close" aria-label="Close">&times;</button>'));
             
             $('#fbs-toast-container').append(toast);
             

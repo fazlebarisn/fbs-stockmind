@@ -37,7 +37,6 @@ class Notification_System
     protected function setup_hooks()
     {
         add_action('admin_notices', [$this, 'show_admin_notices']);
-        add_action('wp_ajax_fbs_stockmind_dismiss_notice', [$this, 'dismiss_admin_notice']);
     }
 
     /**
@@ -208,9 +207,15 @@ class Notification_System
      */
     public function send_admin_notification($subject, $message, $type = 'info')
     {
-        $admin_email = get_option('admin_email');
-        $from_name = fbs_stockmind_get_option('email_from_name', get_bloginfo('name'));
-        $from_email = fbs_stockmind_get_option('email_from_address', $admin_email);
+        $admin_email = sanitize_email((string) get_option('admin_email'));
+        $raw_name    = (string) fbs_stockmind_get_option('email_from_name', get_bloginfo('name'));
+        $from_name   = trim(preg_replace('/[\r\n<>"]+/', '', wp_strip_all_tags($raw_name)));
+        if ('' === $from_name) {
+            $from_name = trim(preg_replace('/[\r\n<>"]+/', '', wp_strip_all_tags(get_bloginfo('name'))));
+        }
+
+        $raw_email  = sanitize_email((string) fbs_stockmind_get_option('email_from_address', $admin_email));
+        $from_email = is_email($raw_email) ? $raw_email : $admin_email;
         
         $headers = [
             'Content-Type: text/html; charset=UTF-8',

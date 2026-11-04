@@ -186,9 +186,13 @@ defined('ABSPATH') or die('Nice Try!');
                                     </div>
                                 </div>
                                 <div class="fbs-replenishment-actions">
-                                    <a href="<?php echo esc_url(admin_url('post.php?post=' . $fbs_stockmind_replenishment['order_id'] . '&action=edit')); ?>" class="fbs-btn fbs-btn-sm fbs-btn-secondary">
-                                        <?php esc_html_e('View Order', 'fbs-stockmind'); ?>
-                                    </a>
+                                    <?php if (!empty($fbs_stockmind_replenishment['order_id'])) : ?>
+                                        <a href="<?php echo esc_url(fbs_stockmind_get_order_edit_url($fbs_stockmind_replenishment['order_id'])); ?>" class="fbs-btn fbs-btn-sm fbs-btn-secondary">
+                                            <?php esc_html_e('View Order', 'fbs-stockmind'); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <span class="fbs-status-badge fbs-status-active"><?php esc_html_e('Product Signup', 'fbs-stockmind'); ?></span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -202,22 +206,44 @@ defined('ABSPATH') or die('Nice Try!');
     <div class="fbs-quick-actions">
         <h2 class="fbs-section-title"><?php esc_html_e('Quick Actions', 'fbs-stockmind'); ?></h2>
         <div class="fbs-actions-grid">
+            <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-ai-assistant')); ?>" class="fbs-action-card">
+                <div class="fbs-action-icon">🤖</div>
+                <h3 class="fbs-action-title"><?php esc_html_e('AI Inventory Assistant', 'fbs-stockmind'); ?></h3>
+                <p class="fbs-action-description"><?php esc_html_e('Chat with your live catalog, stockout forecasts, and suppliers', 'fbs-stockmind'); ?></p>
+            </a>
+
             <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-suppliers')); ?>" class="fbs-action-card">
                 <div class="fbs-action-icon">🏢</div>
                 <h3 class="fbs-action-title"><?php esc_html_e('Manage Suppliers', 'fbs-stockmind'); ?></h3>
-                <p class="fbs-action-description"><?php esc_html_e('Add and configure supplier information', 'fbs-stockmind'); ?></p>
+                <p class="fbs-action-description"><?php esc_html_e('Add and configure supplier lead times and contacts', 'fbs-stockmind'); ?></p>
             </a>
             
             <a href="<?php echo esc_url(admin_url('admin.php?page=fbs-stockmind-settings')); ?>" class="fbs-action-card">
                 <div class="fbs-action-icon">⚙️</div>
                 <h3 class="fbs-action-title"><?php esc_html_e('Plugin Settings', 'fbs-stockmind'); ?></h3>
-                <p class="fbs-action-description"><?php esc_html_e('Configure prediction and reminder settings', 'fbs-stockmind'); ?></p>
+                <p class="fbs-action-description"><?php esc_html_e('Configure AI connectors, predictions, and email reminders', 'fbs-stockmind'); ?></p>
             </a>
             
             <a href="<?php echo esc_url(admin_url('edit.php?post_type=product')); ?>" class="fbs-action-card">
                 <div class="fbs-action-icon">📦</div>
                 <h3 class="fbs-action-title"><?php esc_html_e('Manage Products', 'fbs-stockmind'); ?></h3>
-                <p class="fbs-action-description"><?php esc_html_e('Configure replenishable products and suppliers', 'fbs-stockmind'); ?></p>
+                <p class="fbs-action-description"><?php esc_html_e('Configure replenishable products and assigned suppliers', 'fbs-stockmind'); ?></p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quiet FBS Fusion Engineering Footer Banner -->
+    <div class="fbs-studio-footer-card">
+        <div class="fbs-studio-footer-card__copy">
+            <strong><?php esc_html_e('Built by FBS Fusion Engineering', 'fbs-stockmind'); ?></strong>
+            <span><?php esc_html_e('Need sub-second WooCommerce Core Web Vitals, 502 Bad Gateway rescue, malware cleanup, or custom ERP/AI integrations?', 'fbs-stockmind'); ?></span>
+        </div>
+        <div class="fbs-studio-footer-card__links">
+            <a href="<?php echo esc_url(fbs_stockmind_utm_url('plugins/', 'pro-upgrade', 'dashboard-footer-pro', 'fbs-stockmind')); ?>" target="_blank" rel="noopener noreferrer" class="fbs-studio-pill fbs-studio-pill--emerald">
+                🚀 <?php esc_html_e('Explore StockMind Pro ↗', 'fbs-stockmind'); ?>
+            </a>
+            <a href="<?php echo esc_url(fbs_stockmind_utm_url('speed-security/', 'agency-services', 'dashboard-footer-audit')); ?>" target="_blank" rel="noopener noreferrer" class="fbs-studio-pill">
+                ⚡ <?php esc_html_e('Free Store Speed Audit ↗', 'fbs-stockmind'); ?>
             </a>
         </div>
     </div>

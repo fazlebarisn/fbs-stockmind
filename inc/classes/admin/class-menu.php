@@ -41,6 +41,54 @@ class Menu
         add_action('admin_notices', [$this, 'display_onboarding_notice']);
         add_action('admin_post_fbs_stockmind_onboarding', [$this, 'handle_onboarding_action']);
         add_action('admin_post_fbs_stockmind_dismiss_onboarding', [$this, 'handle_dismiss_onboarding']);
+
+        // Add Plugins list action links & row meta links
+        add_filter('plugin_action_links_' . FBS_STOCKMIND_BASENAME, [$this, 'add_plugin_action_links']);
+        add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
+    }
+
+    /**
+     * Add Settings & Explore Pro links on the Plugins screen.
+     *
+     * @param array<int, string> $links Existing action links.
+     * @return array<int, string>
+     * @since 1.3.0
+     */
+    public function add_plugin_action_links($links)
+    {
+        $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=fbs-stockmind-settings')) . '">' . esc_html__('Settings', 'fbs-stockmind') . '</a>';
+        array_unshift($links, $settings_link);
+
+        if (!fbs_stockmind_is_pro_active()) {
+            $pro_url  = fbs_stockmind_utm_url('plugins/', 'pro-upgrade', 'plugins-action-link', 'fbs-stockmind');
+            $pro_link = '<a href="' . esc_url($pro_url) . '" target="_blank" rel="noopener noreferrer" style="color:#0284c7;font-weight:700;">' . esc_html__('🚀 Explore Pro', 'fbs-stockmind') . '</a>';
+            $links[]  = $pro_link;
+        }
+
+        return $links;
+    }
+
+    /**
+     * Add Support & WooCommerce Speed Audit links to plugin row meta.
+     *
+     * @param array<int, string> $links Existing row meta links.
+     * @param string             $file  Plugin basename.
+     * @return array<int, string>
+     * @since 1.3.0
+     */
+    public function add_plugin_row_meta($links, $file)
+    {
+        if (FBS_STOCKMIND_BASENAME !== $file) {
+            return $links;
+        }
+
+        $support_url = fbs_stockmind_utm_url('hire-us/', 'plugin-support', 'plugin-row-meta');
+        $audit_url   = fbs_stockmind_utm_url('speed-security/', 'agency-services', 'plugin-row-meta');
+
+        $links[] = '<a href="' . esc_url($support_url) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('Support & Custom Dev', 'fbs-stockmind') . '</a>';
+        $links[] = '<a href="' . esc_url($audit_url) . '" target="_blank" rel="noopener noreferrer" style="color:#059669;font-weight:600;">' . esc_html__('⚡ Free WooCommerce Speed Audit', 'fbs-stockmind') . '</a>';
+
+        return $links;
     }
 
     /**
@@ -112,7 +160,7 @@ class Menu
             'fbs-stockmind',
             __('Settings', 'fbs-stockmind'),
             __('Settings', 'fbs-stockmind'),
-            'manage_options',
+            'manage_woocommerce',
             'fbs-stockmind-settings',
             [$this, 'render_settings_page']
         );

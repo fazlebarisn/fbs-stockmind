@@ -153,12 +153,12 @@ class Predictor
             return false;
         }
 
-        // Get current stock - product must have stock tracking enabled at this point
-        $current_stock = $product->get_stock_quantity();
+        // Get current stock across simple and variable products
+        $current_stock = fbs_stockmind_get_product_stock($product_id);
         
-        // Handle null stock - don't create predictions for products with null stock
-        if ($current_stock === null) {
-            return false; // Don't create predictions for products with null stock
+        // For non-variable products where stock quantity is explicitly null, skip
+        if (!$product->is_type('variable') && $product->get_stock_quantity() === null) {
+            return false;
         }
         
         // Handle out-of-stock products (0 or negative stock)
@@ -240,31 +240,9 @@ class Predictor
             return false; // Prediction not reliable enough
         }
         
-        // Calculate the predicted runout date (from today)
-        $predicted_runout_date = gmdate('Y-m-d', strtotime("+{$days_until_runout} days"));
-        
-        // Adjust for lead time - but don't go into the past
-        // If lead time is greater than days until runout, set to minimum 1 day
-        if ($lead_time >= $days_until_runout) {
-            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
-            $actual_days_until_runout = 1;
-        } else {
-            $adjusted_date = gmdate('Y-m-d', strtotime("{$predicted_runout_date} -{$lead_time} days"));
-            $actual_days_until_runout = (strtotime($adjusted_date) - time()) / DAY_IN_SECONDS;
-        }
-        
-        // CRITICAL FIX: Ensure we never have negative days or past dates
-        // If the adjusted date is in the past, it means the product is critical
-        if ($actual_days_until_runout <= 0) {
-            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
-            $actual_days_until_runout = 1; // 1 day until runout
-        }
-        
-        // Additional safety check: ensure the date is not in the past
-        if (strtotime($adjusted_date) < time()) {
-            $adjusted_date = gmdate('Y-m-d', strtotime('+1 day')); // Tomorrow
-            $actual_days_until_runout = 1; // 1 day until runout
-        }
+        // Adjust reorder date by supplier lead time using exact integer day arithmetic (no midnight drift)
+        $actual_days_until_runout = max(1, (int) ($days_until_runout - $lead_time));
+        $adjusted_date            = gmdate('Y-m-d', strtotime("+{$actual_days_until_runout} days"));
 
         return [
             'predicted_date' => $adjusted_date,
@@ -442,32 +420,45 @@ class Predictor
     {
         global $wpdb;
         $sales_table = fbs_stockmind_get_table_name('daily_sales');
-        $start_date = gmdate('Y-m-d', strtotime("-{$days} days"));
+        $start_date  = gmdate('Y-m-d', strtotime("-{$days} days"));
         
         // Initialize sales data array with all dates set to 0
-        $sales_data = [];
+        $sales_data   = [];
         $current_date = new \DateTime($start_date);
-        $end_date = new \DateTime();
+        $end_date     = new \DateTime();
 
         while ($current_date <= $end_date) {
-            $date_str = $current_date->format('Y-m-d');
+            $date_str              = $current_date->format('Y-m-d');
             $sales_data[$date_str] = 0;
             $current_date->add(new \DateInterval('P1D'));
         }
 
-        // Query our pre-aggregated fast table
-        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix
+        // Collect parent product ID and any variation IDs for variable products
+        $product_ids = [absint($product_id)];
+        $product     = wc_get_product($product_id);
+        if ($product && $product->is_type('variable')) {
+            $variation_ids = array_map('absint', (array) $product->get_children());
+            $product_ids   = array_values(array_unique(array_filter(array_merge($product_ids, $variation_ids))));
+        }
+
+        $placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+        $query_args   = array_merge($product_ids, [$start_date]);
+
+        // Query pre-aggregated fast table, deducting refunded units safely
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table name from trusted prefix and dynamic integer placeholders
         $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT date, units_sold FROM {$sales_table} WHERE product_id = %d AND date >= %s",
-            $product_id,
-            $start_date
+            "SELECT date, SUM(GREATEST(0, CAST(units_sold AS SIGNED) - CAST(refund_quantity AS SIGNED))) AS net_sold
+             FROM {$sales_table}
+             WHERE product_id IN ({$placeholders}) AND date >= %s
+             GROUP BY date",
+            $query_args
         ));
-        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
         if ($results) {
             foreach ($results as $row) {
                 if (isset($sales_data[$row->date])) {
-                    $sales_data[$row->date] += (int) $row->units_sold;
+                    $sales_data[$row->date] += max(0, (int) $row->net_sold);
                 }
             }
         }
@@ -513,7 +504,17 @@ class Predictor
     public function calculate_all_predictions($sync = false)
     {
         if ($sync) {
-            $this->process_predictions_batch(0);
+            $offset = 0;
+            while ($offset < 500) {
+                $processed = $this->process_predictions_batch($offset, true);
+                if ($processed < 50) {
+                    break;
+                }
+                $offset += 50;
+            }
+            if ($offset >= 500 && function_exists('as_enqueue_async_action')) {
+                as_enqueue_async_action('fbs_stockmind_process_predictions_batch', ['offset' => $offset], 'fbs-stockmind');
+            }
             return;
         }
 
@@ -522,16 +523,18 @@ class Predictor
                 as_enqueue_async_action('fbs_stockmind_process_predictions_batch', ['offset' => 0], 'fbs-stockmind');
             }
         } else {
-            $this->process_predictions_batch(0);
+            $this->process_predictions_batch(0, true);
         }
     }
 
     /**
      * Process a batch of predictions
      *
-     * @param int $offset
+     * @param int  $offset Batch offset.
+     * @param bool $sync   Whether called synchronously in a manual refresh loop.
+     * @return int Number of products processed in this batch.
      */
-    public function process_predictions_batch($offset)
+    public function process_predictions_batch($offset, $sync = false)
     {
         global $wpdb;
         $batch_size = 50;
@@ -550,8 +553,7 @@ class Predictor
         ]);
 
         if (empty($product_ids)) {
-            // Done
-            return;
+            return 0;
         }
 
         $predictions_table = fbs_stockmind_get_table_name('predictions');
@@ -608,10 +610,12 @@ class Predictor
         }
         // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-        // Queue next batch
-        if (function_exists('as_enqueue_async_action')) {
+        // Queue next batch when running asynchronously
+        if (!$sync && count($product_ids) === $batch_size && function_exists('as_enqueue_async_action')) {
             as_enqueue_async_action('fbs_stockmind_process_predictions_batch', ['offset' => $offset + $batch_size], 'fbs-stockmind');
         }
+
+        return count($product_ids);
     }
 
     /**
@@ -760,7 +764,7 @@ class Predictor
                 continue;
             }
 
-            $current_stock = $product->get_stock_quantity();
+            $current_stock = fbs_stockmind_get_product_stock($result->product_id);
 
             // Real-time Self-Healing Check:
             // If the cached prediction says "Out of stock" (days_until_runout <= 0) but the product actually has stock (> 0),

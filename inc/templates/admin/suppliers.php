@@ -11,7 +11,7 @@ defined('ABSPATH') or die('Nice Try!');
 ?>
 
 <?php
-$fbs_supplier_at_limit = ($max_suppliers > 0 && $supplier_count >= $max_suppliers);
+$fbs_stockmind_supplier_at_limit = ($max_suppliers > 0 && $supplier_count >= $max_suppliers);
 ?>
 <div class="fbs-stockmind-suppliers">
     <!-- Header -->
@@ -26,15 +26,19 @@ $fbs_supplier_at_limit = ($max_suppliers > 0 && $supplier_count >= $max_supplier
             </p>
         </div>
         <div class="fbs-header-actions">
-            <?php if ($fbs_supplier_at_limit) : ?>
+            <?php if ($fbs_stockmind_supplier_at_limit) : ?>
                 <span class="fbs-supplier-limit-notice" title="<?php esc_attr_e('Upgrade to FBS StockMind Pro for unlimited suppliers.', 'fbs-stockmind'); ?>">
                     <?php
                     printf(
                         /* translators: %d: Maximum number of suppliers */
-                        esc_html__('Maximum %d suppliers (free version).', 'fbs-stockmind'),
+                        esc_html__('Limit: %d suppliers (Free)', 'fbs-stockmind'),
                         (int) $max_suppliers
                     );
                     ?>
+                    &nbsp;•&nbsp;
+                    <a href="<?php echo esc_url(fbs_stockmind_utm_url('plugins/', 'pro-upgrade', 'suppliers-limit', 'fbs-stockmind')); ?>" target="_blank" rel="noopener noreferrer" class="fbs-supplier-upgrade-link">
+                        <?php esc_html_e('Unlock Unlimited ↗', 'fbs-stockmind'); ?>
+                    </a>
                 </span>
             <?php else : ?>
                 <button type="button" class="fbs-btn fbs-btn-primary" id="fbs-add-supplier">
@@ -53,7 +57,7 @@ $fbs_supplier_at_limit = ($max_suppliers > 0 && $supplier_count >= $max_supplier
                 <div class="fbs-empty-icon">🏢</div>
                 <h3 class="fbs-empty-title"><?php esc_html_e('No Suppliers Found', 'fbs-stockmind'); ?></h3>
                 <p class="fbs-empty-text"><?php esc_html_e('Add your first supplier to start getting accurate stock predictions', 'fbs-stockmind'); ?></p>
-                <?php if (!$fbs_supplier_at_limit) : ?>
+                <?php if (!$fbs_stockmind_supplier_at_limit) : ?>
                     <button type="button" class="fbs-btn fbs-btn-primary" id="fbs-add-first-supplier">
                         <?php esc_html_e('Add Your First Supplier', 'fbs-stockmind'); ?>
                     </button>

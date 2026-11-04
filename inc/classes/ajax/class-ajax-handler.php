@@ -333,7 +333,7 @@ class Ajax_Handler
         $this->check_admin_permissions();
 
         $predictor = \FBS_StockMind\Inc\Features\Predictor::get_instance();
-        $predictor->calculate_all_predictions();
+        $predictor->calculate_all_predictions(true);
         
         wp_send_json_success(__('Predictions refreshed successfully.', 'fbs-stockmind'));
     }
@@ -370,7 +370,7 @@ class Ajax_Handler
         $notice_id = isset($_POST['notice_id']) ? sanitize_text_field(wp_unslash($_POST['notice_id'])) : '';
         // phpcs:enable WordPress.Security.NonceVerification.Missing
         
-        if (!$notice_id) {
+        if (!$notice_id || 0 !== strpos($notice_id, 'fbs_stockmind_')) {
             wp_send_json_error(__('Invalid notice ID.', 'fbs-stockmind'));
         }
 
@@ -379,23 +379,22 @@ class Ajax_Handler
     }
 
     /**
-     * Handle set reminder (frontend)
+     * Handle set reminder (frontend thank-you page & [fbs_stockmind_reminder] shortcode)
      *
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     public function handle_set_reminder()
     {
         $this->verify_nonce();
 
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_nonce() method
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Will be unslashed
         $customer_email = isset($_POST['customer_email']) ? sanitize_email(wp_unslash($_POST['customer_email'])) : '';
-        $product_id = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
-        $order_id = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
+        $product_id     = isset($_POST['product_id']) ? absint(wp_unslash($_POST['product_id'])) : 0;
+        $order_id       = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
         // phpcs:enable WordPress.Security.NonceVerification.Missing
 
-        if (empty($customer_email) || !$product_id || !$order_id) {
+        if (empty($customer_email) || !fbs_stockmind_validate_product_id($product_id)) {
             wp_send_json_error(__('Invalid data provided.', 'fbs-stockmind'));
         }
 

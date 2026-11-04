@@ -283,3 +283,81 @@ function fbs_stockmind_is_product_stock_tracked($product)
     // For other product types, check if stock management is enabled
     return $product->managing_stock();
 }
+
+/**
+ * Build a tracked FBS Fusion URL with clean UTM parameters.
+ *
+ * @param string $path     Relative path on fbsfusion.com (e.g. 'plugins/', 'hire-us/', 'speed-security/').
+ * @param string $campaign UTM campaign slug (e.g. 'pro-upgrade', 'agency-services').
+ * @param string $content  UTM content placement identifier.
+ * @param string $anchor   Optional URL hash fragment without '#'.
+ * @return string
+ * @since 1.3.0
+ */
+function fbs_stockmind_utm_url($path = 'plugins/', $campaign = 'pro-upgrade', $content = 'dashboard', $anchor = '')
+{
+    $clean_path = ltrim((string) $path, '/');
+    $base_url   = 'https://fbsfusion.com/' . $clean_path;
+
+    $url = add_query_arg(
+        [
+            'utm_source'   => 'fbs-stockmind',
+            'utm_medium'   => 'wp-admin',
+            'utm_campaign' => sanitize_key($campaign),
+            'utm_content'  => sanitize_key($content),
+        ],
+        $base_url
+    );
+
+    if (!empty($anchor)) {
+        $url .= '#' . ltrim(sanitize_text_field($anchor), '#');
+    }
+
+    return $url;
+}
+
+/**
+ * Check whether FBS StockMind Pro is installed and active.
+ *
+ * @return bool
+ * @since 1.3.0
+ */
+function fbs_stockmind_is_pro_active()
+{
+    if (defined('FBS_STOCKMIND_PRO_VERSION')) {
+        return true;
+    }
+
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+    $active_plugins = (array) apply_filters('active_plugins', get_option('active_plugins', []));
+    if (is_multisite()) {
+        $network_plugins = array_keys((array) get_site_option('active_sitewide_plugins', []));
+        $active_plugins  = array_merge($active_plugins, $network_plugins);
+    }
+
+    return in_array('fbs-stockmind-pro/fbs-stockmind-pro.php', $active_plugins, true);
+}
+
+/**
+ * Get HPOS-compatible WooCommerce order edit URL in wp-admin.
+ *
+ * @param int $order_id WooCommerce order ID.
+ * @return string
+ * @since 1.3.0
+ */
+function fbs_stockmind_get_order_edit_url($order_id)
+{
+    $order_id = absint($order_id);
+    if ($order_id <= 0) {
+        return '';
+    }
+
+    if (function_exists('wc_get_order')) {
+        $order = wc_get_order($order_id);
+        if ($order && method_exists($order, 'get_edit_order_url')) {
+            return (string) $order->get_edit_order_url();
+        }
+    }
+
+    return admin_url('post.php?post=' . $order_id . '&action=edit');
+}

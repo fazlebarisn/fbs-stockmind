@@ -140,9 +140,9 @@ class Dashboard
                 'product_id' => $result->product_id,
                 'product_name' => $result->product_name,
                 'product_image' => wp_get_attachment_image_url($product->get_image_id(), 'thumbnail'),
-                'current_stock' => $product->get_stock_quantity(),
+                'current_stock' => fbs_stockmind_get_product_stock($result->product_id),
                 'predicted_runout_date' => $result->predicted_runout_date,
-                'days_until_runout' => $this->calculate_days_until_runout($result->predicted_runout_date),
+                'days_until_runout' => isset($result->days_until_runout) ? (float) $result->days_until_runout : $this->calculate_days_until_runout($result->predicted_runout_date),
                 'calculated_at' => $result->calculated_at,
             ];
         }
@@ -214,6 +214,7 @@ class Dashboard
             'limit' => -1,
             'status' => 'publish',
             'stock_status' => 'instock',
+            'return' => 'ids',
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Necessary for low stock count, meta_query is required for stock filtering
             'meta_query' => [
                 [
@@ -229,17 +230,21 @@ class Dashboard
     }
 
     /**
-     * Calculate days until runout
+     * Calculate days until runout using date-to-date difference (no time-of-day drift)
      *
      * @param string $runout_date The predicted runout date
      * @return int
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     private function calculate_days_until_runout($runout_date)
     {
-        // Use the same calculation as the predictions page for consistency
-        return (strtotime($runout_date) - time()) / DAY_IN_SECONDS;
+        $target_ts = strtotime($runout_date . ' 00:00:00 UTC');
+        $today_ts  = strtotime(gmdate('Y-m-d') . ' 00:00:00 UTC');
+        if (!$target_ts || !$today_ts) {
+            return 0;
+        }
+        return max(0, (int) round(($target_ts - $today_ts) / DAY_IN_SECONDS));
     }
 
     /**

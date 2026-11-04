@@ -115,7 +115,7 @@ class Settings
         register_setting('fbs_stockmind_settings', 'fbs_stockmind_ai_model', [
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
-            'default' => 'gemini-3.6-flash',
+            'default' => 'gemini-2.5-flash',
         ]);
         register_setting('fbs_stockmind_settings', 'fbs_stockmind_ai_api_key', [
             'type' => 'string',
@@ -202,6 +202,10 @@ class Settings
      */
     public function save_settings()
     {
+        if (!fbs_stockmind_can_manage()) {
+            return;
+        }
+
         // Verify nonce (additional check for plugin checker)
         if (!isset($_POST['_wpnonce'])) {
             return;
@@ -214,16 +218,12 @@ class Settings
         // Check if prediction settings are editable (free: read-only, pro: editable)
         $prediction_editable = $this->is_prediction_settings_editable();
         
-        // Get default values
-        $default_threshold = apply_filters('fbs_stockmind_default_accuracy_threshold', 0.3);
-        $default_sales_period = apply_filters('fbs_stockmind_sales_data_period', 30, 0);
-        
         // Get current values
         $current_settings = $this->get_all_settings();
         
         // Only save prediction settings if editable (pro version)
         $prediction_threshold = $prediction_editable 
-            ? floatval(isset($_POST['prediction_accuracy_threshold']) ? wp_unslash($_POST['prediction_accuracy_threshold']) : $current_settings['prediction_accuracy_threshold'])
+            ? $this->sanitize_float(isset($_POST['prediction_accuracy_threshold']) ? sanitize_text_field(wp_unslash($_POST['prediction_accuracy_threshold'])) : $current_settings['prediction_accuracy_threshold'])
             : $current_settings['prediction_accuracy_threshold'];
         
         $sales_data_period = $prediction_editable
@@ -232,9 +232,6 @@ class Settings
         
         // Check if reminder settings are editable (free: read-only, pro: editable)
         $reminder_editable = $this->is_reminder_settings_editable();
-        
-        // Get current values
-        $current_settings = $this->get_all_settings();
         
         // Only save reminder attempts if editable (pro version)
         $reminder_attempts = $reminder_editable
@@ -245,28 +242,35 @@ class Settings
         $reminder_advance_days = $reminder_editable
             ? absint(isset($_POST['reminder_advance_days']) ? wp_unslash($_POST['reminder_advance_days']) : $current_settings['reminder_advance_days'])
             : $current_settings['reminder_advance_days'];
+
+        $submitted_api_key = isset($_POST['fbs_stockmind_ai_api_key'])
+            ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_api_key']))
+            : (isset($_POST['fbs_stockmind_openai_key']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_openai_key'])) : '');
         
         $settings_to_save = [
-            'alert_window' => absint(isset($_POST['alert_window']) ? wp_unslash($_POST['alert_window']) : 14),
-            'default_lead_time' => absint(isset($_POST['default_lead_time']) ? wp_unslash($_POST['default_lead_time']) : 7),
+            'alert_window'                  => max(1, absint(isset($_POST['alert_window']) ? wp_unslash($_POST['alert_window']) : 14)),
+            'default_lead_time'             => max(1, absint(isset($_POST['default_lead_time']) ? wp_unslash($_POST['default_lead_time']) : 7)),
             'prediction_accuracy_threshold' => $prediction_threshold,
-            'sales_data_period' => $sales_data_period,
-            'reminder_advance_days' => $reminder_advance_days,
-            'max_reminder_attempts' => $reminder_attempts,
-            'enable_customer_reminders' => isset($_POST['enable_customer_reminders']),
-            'email_from_name' => isset($_POST['email_from_name']) ? sanitize_text_field(wp_unslash($_POST['email_from_name'])) : '',
-            'email_from_address' => isset($_POST['email_from_address']) ? sanitize_email(wp_unslash($_POST['email_from_address'])) : '',
-            'enable_admin_alerts' => isset($_POST['enable_admin_alerts']),
-            'fbs_stockmind_openai_key' => isset($_POST['fbs_stockmind_ai_api_key']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_api_key'])) : (isset($_POST['fbs_stockmind_openai_key']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_openai_key'])) : ''),
-            'ai_provider' => isset($_POST['fbs_stockmind_ai_provider']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_provider'])) : 'gemini',
-            'ai_model' => isset($_POST['fbs_stockmind_ai_model']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_model'])) : 'gemini-3.6-flash',
-            'ai_api_key' => isset($_POST['fbs_stockmind_ai_api_key']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_api_key'])) : '',
-            'ai_tone' => isset($_POST['fbs_stockmind_ai_tone']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_tone'])) : 'analytical',
+            'sales_data_period'             => max(7, $sales_data_period),
+            'reminder_advance_days'         => max(1, $reminder_advance_days),
+            'max_reminder_attempts'         => max(1, $reminder_attempts),
+            'enable_customer_reminders'     => isset($_POST['enable_customer_reminders']),
+            'email_from_name'               => isset($_POST['email_from_name']) ? sanitize_text_field(wp_unslash($_POST['email_from_name'])) : '',
+            'email_from_address'            => isset($_POST['email_from_address']) ? sanitize_email(wp_unslash($_POST['email_from_address'])) : '',
+            'enable_admin_alerts'           => isset($_POST['enable_admin_alerts']),
+            'openai_key'                    => $submitted_api_key,
+            'ai_provider'                   => isset($_POST['fbs_stockmind_ai_provider']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_provider'])) : 'gemini',
+            'ai_model'                      => isset($_POST['fbs_stockmind_ai_model']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_model'])) : 'gemini-2.5-flash',
+            'ai_api_key'                    => $submitted_api_key,
+            'ai_tone'                       => isset($_POST['fbs_stockmind_ai_tone']) ? sanitize_text_field(wp_unslash($_POST['fbs_stockmind_ai_tone'])) : 'analytical',
         ];
 
         foreach ($settings_to_save as $key => $value) {
             fbs_stockmind_update_option($key, $value);
         }
+
+        // Allow FBS StockMind Pro to save additional settings tabs (Marketing Coupons, Twilio SMS, etc.)
+        do_action('fbs_stockmind_save_settings', $_POST);
 
         add_action('admin_notices', function() {
             echo '<div class="notice notice-success is-dismissible"><p>' . 
@@ -279,7 +283,7 @@ class Settings
      * Handle AJAX save settings
      *
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     public function handle_save_settings()
     {
@@ -294,7 +298,7 @@ class Settings
             return;
         }
 
-        if (!current_user_can('manage_options')) {
+        if (!fbs_stockmind_can_manage()) {
             wp_send_json_error(__('Insufficient permissions.', 'fbs-stockmind'));
         }
 
@@ -313,21 +317,28 @@ class Settings
                 case 'default_lead_time':
                 case 'reminder_advance_days':
                 case 'max_reminder_attempts':
+                case 'sales_data_period':
                     $settings_to_save[$key] = absint($value);
                     break;
                 case 'prediction_accuracy_threshold':
-                    $settings_to_save[$key] = floatval($value);
+                    $settings_to_save[$key] = $this->sanitize_float($value);
                     break;
                 case 'email_from_name':
-                case 'fbs_stockmind_openai_key':
+                case 'openai_key':
+                case 'ai_provider':
+                case 'ai_model':
+                case 'ai_tone':
                     $settings_to_save[$key] = sanitize_text_field($value);
+                    break;
+                case 'fbs_stockmind_openai_key':
+                    $settings_to_save['openai_key'] = sanitize_text_field($value);
                     break;
                 case 'email_from_address':
                     $settings_to_save[$key] = sanitize_email($value);
                     break;
                 case 'enable_customer_reminders':
                 case 'enable_admin_alerts':
-                    $settings_to_save[$key] = (bool) $value;
+                    $settings_to_save[$key] = $this->sanitize_boolean($value);
                     break;
             }
         }
@@ -344,7 +355,7 @@ class Settings
      *
      * @return array
      * @since 1.0.0
-     * @author Fazle Bari <fazlebarisn@gmail.com>
+     * @author Fazle Bari <fazle@fbsfusion.com>
      */
     private function get_all_settings()
     {
@@ -363,6 +374,12 @@ class Settings
         
         $advance_days = $reminder_editable ? fbs_stockmind_get_option('reminder_advance_days', 5) : apply_filters('fbs_stockmind_default_reminder_advance_days', 5);
         $max_attempts = $reminder_editable ? fbs_stockmind_get_option('max_reminder_attempts', 1) : apply_filters('fbs_stockmind_default_max_reminder_attempts', 1);
+
+        $default_provider = (\FBS_StockMind\Inc\Features\AI_Assistant::is_wp_ai_ready()) ? 'wp_native' : 'gemini';
+        $saved_model      = (string) fbs_stockmind_get_option('ai_model', 'gemini-2.5-flash');
+        if (in_array($saved_model, ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-flash-latest'], true)) {
+            $saved_model = 'gemini-2.5-flash';
+        }
         
         return [
             'alert_window' => fbs_stockmind_get_option('alert_window', 14),
@@ -375,8 +392,8 @@ class Settings
             'email_from_name' => fbs_stockmind_get_option('email_from_name', get_bloginfo('name')),
             'email_from_address' => fbs_stockmind_get_option('email_from_address', get_option('admin_email')),
             'enable_admin_alerts' => fbs_stockmind_get_option('enable_admin_alerts', true),
-            'ai_provider' => fbs_stockmind_get_option('ai_provider', 'gemini'),
-            'ai_model' => fbs_stockmind_get_option('ai_model', 'gemini-3.6-flash'),
+            'ai_provider' => fbs_stockmind_get_option('ai_provider', $default_provider),
+            'ai_model' => $saved_model,
             'ai_api_key' => fbs_stockmind_get_option('ai_api_key', fbs_stockmind_get_option('openai_key', '')),
             'ai_tone' => fbs_stockmind_get_option('ai_tone', 'analytical'),
         ];
@@ -411,18 +428,40 @@ class Settings
     }
 
     /**
-     * Test AI connection (Google Gemini or OpenAI)
+     * Test AI connection (WordPress Native Connector, Google Gemini, or OpenAI)
      */
     public function test_ai_connection()
     {
         check_ajax_referer('fbs_stockmind_nonce', 'nonce');
 
-        if (!current_user_can('manage_options') && !current_user_can('manage_woocommerce')) {
+        if (!fbs_stockmind_can_manage()) {
             wp_send_json_error(['message' => __('Permission denied.', 'fbs-stockmind')]);
         }
 
         $provider = isset($_POST['provider']) ? sanitize_text_field(wp_unslash($_POST['provider'])) : 'gemini';
         $api_key  = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
+
+        if ('wp_native' === $provider) {
+            if (!\FBS_StockMind\Inc\Features\AI_Assistant::is_wp_ai_ready()) {
+                wp_send_json_error([
+                    'message' => __('No active AI provider is connected in WordPress. Please go to Settings -> Connectors to connect Google Gemini, OpenAI, or Anthropic.', 'fbs-stockmind'),
+                ]);
+            }
+
+            $result = \FBS_StockMind\Inc\Features\AI_Assistant::generate_with_wp_ai(
+                'Reply with the single word: OK',
+                'You are a connection verification assistant.',
+                0.1
+            );
+
+            if (is_wp_error($result)) {
+                wp_send_json_error(['message' => $result->get_error_message()]);
+            }
+
+            wp_send_json_success([
+                'message' => __('WordPress Default AI Connection verified successfully! StockMind AI Assistant is ready.', 'fbs-stockmind'),
+            ]);
+        }
 
         if (empty($api_key)) {
             $api_key = fbs_stockmind_get_option('ai_api_key', fbs_stockmind_get_option('openai_key', ''));
@@ -433,12 +472,12 @@ class Settings
         }
 
         // phpcs:disable PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- Testing user-configured direct API credentials
-        if ($provider === 'openai') {
+        if ('openai' === $provider) {
             $response = wp_remote_get('https://api.openai.com/v1/models', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $api_key
+                    'Authorization' => 'Bearer ' . $api_key,
                 ],
-                'timeout' => 15
+                'timeout' => 15,
             ]);
 
             if (is_wp_error($response)) {
@@ -446,17 +485,17 @@ class Settings
             }
 
             $code = wp_remote_retrieve_response_code($response);
-            if ($code !== 200) {
+            if (200 !== $code) {
                 $body = json_decode(wp_remote_retrieve_body($response), true);
-                $err = isset($body['error']['message']) ? $body['error']['message'] : __('Invalid OpenAI API Key or unauthorized request.', 'fbs-stockmind');
+                $err  = isset($body['error']['message']) ? $body['error']['message'] : __('Invalid OpenAI API Key or unauthorized request.', 'fbs-stockmind');
                 wp_send_json_error(['message' => $err]);
             }
 
             wp_send_json_success(['message' => __('Connection successful! OpenAI API key is valid.', 'fbs-stockmind')]);
         } else {
-            $url = 'https://generativelanguage.googleapis.com/v1beta/models?key=' . urlencode($api_key);
+            $url      = 'https://generativelanguage.googleapis.com/v1beta/models?key=' . rawurlencode($api_key);
             $response = wp_remote_get($url, [
-                'timeout' => 15
+                'timeout' => 15,
             ]);
 
             if (is_wp_error($response)) {
@@ -464,9 +503,9 @@ class Settings
             }
 
             $code = wp_remote_retrieve_response_code($response);
-            if ($code !== 200) {
+            if (200 !== $code) {
                 $body = json_decode(wp_remote_retrieve_body($response), true);
-                $err = isset($body['error']['message']) ? $body['error']['message'] : __('Invalid Google Gemini API Key or unauthorized request.', 'fbs-stockmind');
+                $err  = isset($body['error']['message']) ? $body['error']['message'] : __('Invalid Google Gemini API Key or unauthorized request.', 'fbs-stockmind');
                 wp_send_json_error(['message' => $err]);
             }
 

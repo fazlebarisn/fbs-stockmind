@@ -1,154 +1,89 @@
 <?php
 /**
- * Email reminder template
+ * Email reminder template (inline styles for universal email client & WP.org compliance)
  *
  * @package fbs-stockmind
- * @since 1.0.0
- * @author Fazle Bari <fazlebarisn@gmail.com>
+ * @since   1.0.0
+ * @author  Fazle Bari <fazle@fbsfusion.com>
  */
 
 defined('ABSPATH') or die('Nice Try!');
-?>
 
+$fbs_sm_email_subject = !empty($subject) ? $subject : __('Time to Reorder!', 'fbs-stockmind');
+$fbs_sm_unsub_link    = !empty($unsubscribe_url) ? $unsubscribe_url : home_url('/');
+?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo esc_html($subject); ?></title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .email-container {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .email-header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .email-header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-        }
-        .email-body {
-            padding: 30px;
-        }
-        .product-card {
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .product-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 6px;
-            object-fit: cover;
-        }
-        .product-details h3 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-        }
-        .product-details p {
-            margin: 5px 0;
-            color: #6c757d;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 600;
-            margin: 20px 0;
-        }
-        .email-footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        .unsubscribe-link {
-            color: #6c757d;
-            text-decoration: none;
-        }
-        @media (max-width: 600px) {
-            .product-card {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-    </style>
+    <title><?php echo esc_html($fbs_sm_email_subject); ?></title>
 </head>
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <h1>🔄 <?php esc_html_e('Time to Reorder!', 'fbs-stockmind'); ?></h1>
-            <p><?php esc_html_e('Your smart replenishment reminder', 'fbs-stockmind'); ?></p>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 24px 16px; background-color: #f1f5f9;">
+    <div style="background-color: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06); overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 60%, #0284c7 100%); color: #ffffff; padding: 30px 28px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">
+                🔄 <?php esc_html_e('Time to Reorder!', 'fbs-stockmind'); ?>
+            </h1>
+            <p style="margin: 8px 0 0 0; font-size: 14px; color: #cbd5e1;">
+                <?php esc_html_e('Your smart replenishment reminder from', 'fbs-stockmind'); ?> <?php echo esc_html(get_bloginfo('name')); ?>
+            </p>
         </div>
-        
-        <div class="email-body">
-            <p><?php esc_html_e('Hello!', 'fbs-stockmind'); ?></p>
-            
-            <p><?php esc_html_e('Based on your previous purchase patterns, it looks like you might be running low on one of your favorite products. We thought you\'d like to know!', 'fbs-stockmind'); ?></p>
-            
-            <div class="product-card">
-                <?php if ($product_image): ?>
-                    <img src="<?php echo esc_url($product_image); ?>" alt="<?php echo esc_attr($product_name); ?>" class="product-image" />
-                <?php endif; ?>
-                
-                <div class="product-details">
-                    <h3><?php echo esc_html($product_name); ?></h3>
-                    <p><strong><?php esc_html_e('Price:', 'fbs-stockmind'); ?></strong> <?php echo wp_kses_post($product_price); ?></p>
-                    <p><?php esc_html_e('This product is predicted to run out of stock soon based on your purchase history.', 'fbs-stockmind'); ?></p>
-                </div>
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="<?php echo esc_url($product_url); ?>" class="cta-button">
-                    <?php esc_html_e('Order Now', 'fbs-stockmind'); ?>
+
+        <div style="padding: 30px 28px;">
+            <p style="margin: 0 0 14px 0; font-size: 15px; color: #334155;">
+                <?php esc_html_e('Hello!', 'fbs-stockmind'); ?>
+            </p>
+
+            <p style="margin: 0 0 22px 0; font-size: 15px; color: #334155;">
+                <?php esc_html_e('Based on your previous order, you might be running low on one of your favorite items soon. Reorder now so you never miss a day!', 'fbs-stockmind'); ?>
+            </p>
+
+            <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #f8fafc; margin: 0 0 24px 0;">
+                <tr>
+                    <?php if (!empty($product_image)) : ?>
+                        <td width="96" style="padding: 18px 0 18px 18px; vertical-align: middle;">
+                            <img src="<?php echo esc_url($product_image); ?>" alt="<?php echo esc_attr($product_name); ?>" width="80" height="80" style="display: block; width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0;" />
+                        </td>
+                    <?php endif; ?>
+                    <td style="padding: 18px; vertical-align: middle;">
+                        <h3 style="margin: 0 0 6px 0; font-size: 17px; font-weight: 700; color: #0f172a;">
+                            <?php echo esc_html($product_name); ?>
+                        </h3>
+                        <?php if (!empty($product_price)) : ?>
+                            <p style="margin: 0 0 6px 0; font-size: 14px; color: #0284c7; font-weight: 700;">
+                                <?php echo wp_kses_post($product_price); ?>
+                            </p>
+                        <?php endif; ?>
+                        <p style="margin: 0; font-size: 13px; color: #64748b;">
+                            <?php esc_html_e('Ready for fast dispatch while in stock.', 'fbs-stockmind'); ?>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+            <div style="text-align: center; margin: 26px 0;">
+                <a href="<?php echo esc_url($product_url); ?>" style="display: inline-block; background: #0284c7; color: #ffffff; text-decoration: none; padding: 13px 28px; border-radius: 9px; font-size: 15px; font-weight: 700;">
+                    <?php esc_html_e('Reorder Product Now →', 'fbs-stockmind'); ?>
                 </a>
             </div>
-            
-            <p><?php esc_html_e('Don\'t worry if you\'re not ready to order yet - we\'ll send you another reminder if needed. You can also manage your reminders anytime from your account page.', 'fbs-stockmind'); ?></p>
-            
-            <p><?php esc_html_e('Thanks for being a valued customer!', 'fbs-stockmind'); ?></p>
-            
-            <p>
-                <?php esc_html_e('Best regards,', 'fbs-stockmind'); ?><br>
+
+            <p style="margin: 0 0 14px 0; font-size: 14px; color: #475569;">
+                <?php esc_html_e('Thank you for shopping with us!', 'fbs-stockmind'); ?>
+            </p>
+
+            <p style="margin: 0; font-size: 14px; color: #0f172a; font-weight: 600;">
                 <?php echo esc_html(get_bloginfo('name')); ?>
             </p>
         </div>
-        
-        <div class="email-footer">
-            <p>
-                <?php esc_html_e('This email was sent because you requested a replenishment reminder for this product.', 'fbs-stockmind'); ?>
+
+        <div style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 18px 28px; text-align: center; color: #64748b; font-size: 12.5px;">
+            <p style="margin: 0 0 8px 0;">
+                <?php esc_html_e('You received this email because you opted into a replenishment reminder on our store.', 'fbs-stockmind'); ?>
             </p>
-            <p>
-                <a href="<?php echo esc_url(home_url('/my-account/')); ?>" class="unsubscribe-link">
-                    <?php esc_html_e('Manage your reminders', 'fbs-stockmind'); ?>
+            <p style="margin: 0;">
+                <a href="<?php echo esc_url($fbs_sm_unsub_link); ?>" style="color: #475569; text-decoration: underline;">
+                    <?php esc_html_e('Unsubscribe from this reminder', 'fbs-stockmind'); ?>
                 </a>
             </p>
         </div>

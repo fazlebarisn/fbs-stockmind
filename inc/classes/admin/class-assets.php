@@ -94,21 +94,15 @@ class Assets
      */
     public function enqueue_frontend_assets()
     {
-        // Only load on WooCommerce pages
-        if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page()) {
-            return;
-        }
-
-        // Enqueue CSS
-        wp_enqueue_style(
+        // Register CSS & JS unconditionally so [fbs_stockmind_reminder] shortcode can enqueue on any page
+        wp_register_style(
             'fbs-stockmind-frontend',
             FBS_STOCKMIND_URL . '/assets/css/frontend.css',
             [],
             FBS_STOCKMIND_VERSION
         );
 
-        // Enqueue JavaScript
-        wp_enqueue_script(
+        wp_register_script(
             'fbs-stockmind-frontend',
             FBS_STOCKMIND_URL . '/assets/js/frontend.js',
             ['jquery'],
@@ -116,7 +110,6 @@ class Assets
             true
         );
 
-        // Localize script for AJAX
         wp_localize_script('fbs-stockmind-frontend', 'fbsStockMind', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('fbs_stockmind_nonce'),
@@ -131,5 +124,11 @@ class Assets
                 'alreadySet' => __('Already Set', 'fbs-stockmind'),
             ],
         ]);
+
+        // Automatically enqueue on WooCommerce pages
+        if (function_exists('is_woocommerce') && (is_woocommerce() || is_cart() || is_checkout() || is_account_page())) {
+            wp_enqueue_style('fbs-stockmind-frontend');
+            wp_enqueue_script('fbs-stockmind-frontend');
+        }
     }
 }

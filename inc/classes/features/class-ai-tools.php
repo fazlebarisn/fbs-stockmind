@@ -36,7 +36,31 @@ class AI_Tools
         ));
         
         $total_suppliers = $wpdb->get_var("SELECT COUNT(*) FROM $suppliers_table WHERE is_active = 1");
+        $urgent_rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT product_id, predicted_runout_date, days_until_runout
+             FROM $predictions_table
+             WHERE is_dismissed = 0
+             ORDER BY days_until_runout ASC
+             LIMIT %d",
+            5
+        ));
         // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+        $urgent_alerts = [];
+        if (!empty($urgent_rows)) {
+            foreach ($urgent_rows as $u_row) {
+                $u_product = wc_get_product($u_row->product_id);
+                if (!$u_product) {
+                    continue;
+                }
+                $urgent_alerts[] = [
+                    'name'                  => $u_product->get_name(),
+                    'current_stock'         => fbs_stockmind_get_product_stock($u_row->product_id),
+                    'days_until_runout'     => (float) $u_row->days_until_runout,
+                    'predicted_runout_date' => $u_row->predicted_runout_date,
+                ];
+            }
+        }
 
         $low_stock_count = count(wc_get_products([
             'limit' => -1,
@@ -64,9 +88,10 @@ class AI_Tools
         return [
             'products_needing_attention' => (int) $products_needing_attention,
             'total_suppliers_configured' => (int) $total_suppliers,
-            'low_stock_products_count' => (int) $low_stock_count,
-            'out_of_stock_products_count' => (int) $out_of_stock_count,
-            'current_date' => gmdate('Y-m-d')
+            'low_stock_products_count'   => (int) $low_stock_count,
+            'out_of_stock_products_count'=> (int) $out_of_stock_count,
+            'top_urgent_alerts'          => $urgent_alerts,
+            'current_date'               => gmdate('Y-m-d'),
         ];
     }
 
@@ -100,10 +125,10 @@ class AI_Tools
             $products[] = [
                 'name' => $product->get_name(),
                 'sku' => $product->get_sku(),
-                'current_stock' => $product->get_stock_quantity(),
+                'current_stock' => fbs_stockmind_get_product_stock($row->product_id),
                 'predicted_runout_date' => $row->predicted_runout_date,
-                'days_until_runout' => $row->days_until_runout,
-                'ai_confidence_score' => $row->confidence_score,
+                'days_until_runout' => (float) $row->days_until_runout,
+                'ai_confidence_score' => (float) $row->confidence_score,
                 'supplier_name' => $this->get_supplier_name($row->product_id)
             ];
         }
@@ -126,7 +151,7 @@ class AI_Tools
 
         // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Trusted table name, real-time best sellers aggregation for AI assistant
         $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT product_id, SUM(units_sold) as total_sold, SUM(revenue) as total_revenue
+            "SELECT product_id, SUM(GREATEST(0, CAST(units_sold AS SIGNED) - CAST(refund_quantity AS SIGNED))) as total_sold, SUM(revenue) as total_revenue
              FROM $sales_table 
              WHERE date >= %s
              GROUP BY product_id 
@@ -147,7 +172,7 @@ class AI_Tools
                 'sku' => $product->get_sku(),
                 'total_units_sold' => (int) $row->total_sold,
                 'total_revenue' => (float) $row->total_revenue,
-                'current_stock' => $product->get_stock_quantity()
+                'current_stock' => fbs_stockmind_get_product_stock($row->product_id)
             ];
         }
 
